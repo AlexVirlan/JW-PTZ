@@ -1,0 +1,63 @@
+﻿<Window x:Class="JWptz.Windows.WinMain"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:JWptz.Windows"
+        mc:Ignorable="d"
+        Title="JW PTZ - AvA.Soft" Height="450" Width="800" Background="#FF1A1A1A" Foreground="White" WindowStartupLocation="CenterScreen"
+        ResizeMode="CanMinimize" Loaded="Window_Loaded">
+    <Window.Resources>
+        <Style x:Key="CustomButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="#FF111111"/>
+            <Setter Property="BorderBrush" Value="#FF404040"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderThickness" Value="1.5"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="6">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" Margin="1"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#FF404040"/>
+                                <Setter TargetName="border" Property="BorderBrush" Value="Gray"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="Gray"/>
+                                <Setter TargetName="border" Property="BorderBrush" Value="Gray"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="border" Property="Background" Value="LightGray"/>
+                                <Setter TargetName="border" Property="BorderBrush" Value="Gray"/>
+                                <Setter Property="Foreground" Value="Gray"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Grid x:Name="grdRoot">
+
+        <Grid x:Name="grdMain" HorizontalAlignment="Left" Height="314" Margin="100,66,0,0" VerticalAlignment="Top" Width="658" Uid="Ceva">
+            <Button x:Name="btnSettings" Content="Settings" Margin="552,261,31,15" Style="{StaticResource CustomButtonStyle}" Click="btnSettings_Click" Width="75" Height="38"/>
+            <Button Content="Button" HorizontalAlignment="Left" Margin="210,245,0,0" VerticalAlignment="Top" Height="42" Width="114" Click="Button_Click"/>
+        </Grid>
+
+        <Grid x:Name="grdSettings" HorizontalAlignment="Left" Height="202" Margin="83,42,0,0" VerticalAlignment="Top" Width="347" Uid="Ceva">
+            <Button x:Name="btnBackToMain" Content="Back" Background="#FF111111" Foreground="White" Margin="157,14,130,158" Style="{StaticResource CustomButtonStyle}" Click="btnBackToMain_Click" Width="60" Height="30"/>
+            <Button x:Name="btnSaveSet" Content="Save" Background="#FF111111" Foreground="White" Margin="149,57,138,115" Style="{StaticResource CustomButtonStyle}" Width="60" Height="30"/>
+        </Grid>
+
+        <Button x:Name="btn" Content="Button" HorizontalAlignment="Left" Height="40" Margin="685,374,0,0" VerticalAlignment="Top" Width="87" Style="{StaticResource CustomButtonStyle}"/>
+    </Grid>
+
+</Window>

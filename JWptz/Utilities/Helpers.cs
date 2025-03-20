@@ -1,0 +1,54 @@
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Drawing;
+using System.Runtime.CompilerServices;
+using JWptz.Entities;
+using Newtonsoft.Json;
+using System.Windows;
+
+namespace JWptz.Utilities
+{
+    public class Helpers
+    {
+        private static string _NL = Environment.NewLine;
+
+        public static void WriteLog(string logInfo = "", LogType logType = LogType.Debug, Exception? exception = null,
+            [CallerFilePath] string cfp = "unknown", [CallerMemberName] string cmn = "unknown", [CallerLineNumber] int cln = 0)
+        {
+            if (exception is null && logInfo.INOE()) { return; }
+            if (exception is not null) { logType = LogType.Error; }
+
+            string logFolderPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Logs", $"{logType}");
+            Directory.CreateDirectory(logFolderPath);
+            string logFilePath = Path.Combine(logFolderPath, $"{DateTime.Now:dd.MM.yyyy}-JWptz-{logType.ToLowerString()}-logs.json");
+
+            LogData log = new LogData()
+            {
+                LogType = logType,
+                File = Path.GetFileName(cfp),
+                Method = cmn,
+                Line = cln,
+                Message = exception?.Message,
+                StackTrace = exception?.StackTrace,
+                LogInfo = logInfo
+            };
+
+            using (StreamWriter sw = File.AppendText(logFilePath))
+            {
+                sw.WriteLine(log.ToJsonString(Formatting.None));
+            }
+        }
+
+        public static Image ByteArrayToImage(byte[] byteArray)
+        {
+            using (MemoryStream ms = new MemoryStream(byteArray))
+            {
+                return Image.FromStream(ms);
+            }
+        }
+    }
+}
