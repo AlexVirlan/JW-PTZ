@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:JWptz.Windows"
         mc:Ignorable="d"
-        Title="JW PTZ - AvA.Soft" Height="450" Width="800" Background="#FF1A1A1A" Foreground="White" WindowStartupLocation="CenterScreen"
+        Title="JW PTZ - AvA.Soft" Height="600" Width="800" d:Height="600" d:Width="800" Background="#FF1A1A1A" Foreground="White" WindowStartupLocation="CenterScreen"
         ResizeMode="CanMinimize" Loaded="Window_Loaded">
     <Window.Resources>
         <Style x:Key="CustomButtonStyle" TargetType="Button">
@@ -47,17 +47,34 @@
 
     <Grid x:Name="grdRoot">
 
-        <Grid x:Name="grdMain" HorizontalAlignment="Left" Height="314" Margin="100,66,0,0" VerticalAlignment="Top" Width="658" Uid="Ceva">
-            <Button x:Name="btnSettings" Content="Settings" Margin="552,261,31,15" Style="{StaticResource CustomButtonStyle}" Click="btnSettings_Click" Width="75" Height="38"/>
-            <Button Content="Button" HorizontalAlignment="Left" Margin="210,245,0,0" VerticalAlignment="Top" Height="42" Width="114" Click="Button_Click"/>
-        </Grid>
+        <Grid x:Name="grdMain" HorizontalAlignment="Left" Height="47" Margin="21,89,0,0" VerticalAlignment="Top" Width="83" Uid="Ceva"/>
 
-        <Grid x:Name="grdSettings" HorizontalAlignment="Left" Height="202" Margin="83,42,0,0" VerticalAlignment="Top" Width="347" Uid="Ceva">
-            <Button x:Name="btnBackToMain" Content="Back" Background="#FF111111" Foreground="White" Margin="157,14,130,158" Style="{StaticResource CustomButtonStyle}" Click="btnBackToMain_Click" Width="60" Height="30"/>
-            <Button x:Name="btnSaveSet" Content="Save" Background="#FF111111" Foreground="White" Margin="149,57,138,115" Style="{StaticResource CustomButtonStyle}" Width="60" Height="30"/>
-        </Grid>
+        <Grid x:Name="grdSettings" HorizontalAlignment="Left" Height="48" Margin="20,17,0,0" VerticalAlignment="Top" Width="69" Uid="Ceva"/>
 
-        <Button x:Name="btn" Content="Button" HorizontalAlignment="Left" Height="40" Margin="685,374,0,0" VerticalAlignment="Top" Width="87" Style="{StaticResource CustomButtonStyle}"/>
+        <Button x:Name="btn" Content="XXXXXX" HorizontalAlignment="Left" Height="40" Margin="447,314,0,0" VerticalAlignment="Top" Width="87" Style="{StaticResource CustomButtonStyle}" Click="TEST_Click"/>
+        <Button x:Name="btnBackToMain" Content="Back" HorizontalAlignment="Left" VerticalAlignment="Top" Background="#FF111111" Foreground="White" Margin="658,139,0,0" Style="{StaticResource CustomButtonStyle}" Click="btnBackToMain_Click" Width="60" Height="30"/>
+        <Button x:Name="btnSaveSet" Content="Save" HorizontalAlignment="Left" VerticalAlignment="Top" Background="#FF111111" Foreground="White" Margin="658,184,0,0" Style="{StaticResource CustomButtonStyle}" Width="60" Height="30"/>
+        <Button x:Name="btnSettings" Content="Settings" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="688,268,0,0" Style="{StaticResource CustomButtonStyle}" Click="btnSettings_Click" Width="75" Height="38"/>
+        <RichTextBox x:Name="rtbLogs" HorizontalAlignment="Left" Height="112" Margin="12,440,0,0" VerticalAlignment="Top" Width="760" Foreground="White" SelectionBrush="#FF6B6B6B" BorderBrush="#FF404040" IsReadOnly="True" VerticalScrollBarVisibility="Auto" TextChanged="rtbLogs_TextChanged">
+            <RichTextBox.Background>
+                <SolidColorBrush Color="#FF111111" Opacity="1"/>
+            </RichTextBox.Background>
+            <FlowDocument>
+                <Paragraph>
+                    <Run Text=""/>
+                </Paragraph>
+            </FlowDocument>
+        </RichTextBox>
+        <CheckBox x:Name="chkAutoScrollUiLogs" Content="Auto scroll to end" HorizontalAlignment="Left" Height="15" Margin="187,421,0,0" VerticalAlignment="Top" Width="118" Foreground="White" IsChecked="True"/>
+        <CheckBox x:Name="chkIncludeParamsToUiLogs" Content="Include params" HorizontalAlignment="Left" Height="15" Margin="325,421,0,0" VerticalAlignment="Top" Width="108" Foreground="White" IsChecked="True" Checked="UpdateUILogsSettings" Unchecked="UpdateUILogsSettings"/>
+        <Image x:Name="imgTEST" HorizontalAlignment="Left" Height="175" Margin="21,169,0,0" VerticalAlignment="Top" Width="288"/>
+        <Label Content="Logs:" HorizontalAlignment="Left" Margin="12,415,0,0" VerticalAlignment="Top" Foreground="White"/>
+        <CheckBox x:Name="chkShowFullEndpointToUiLogs" Content="Show full endpoint" HorizontalAlignment="Left" Height="15" Margin="447,421,0,0" VerticalAlignment="Top" Width="130" Foreground="White" IsChecked="False" Checked="UpdateUILogsSettings" Unchecked="UpdateUILogsSettings"/>
+        <CheckBox x:Name="chkShowTimeStamp" Content="Show timestamp" HorizontalAlignment="Left" Height="15" Margin="64,421,0,0" VerticalAlignment="Top" Width="118" Foreground="White" IsChecked="True" Checked="UpdateUILogsSettings" Unchecked="UpdateUILogsSettings"/>
+        <Label x:Name="lblClearUiLogs" HorizontalAlignment="Left" Margin="707,415,0,0" VerticalAlignment="Top" Foreground="White" Cursor="Hand" MouseLeftButtonDown="lblClearUiLogs_MouseLeftButtonDown">
+            <TextBlock TextDecorations="Underline">Clear logs</TextBlock>
+        </Label>
+        <CheckBox x:Name="chkVerboseErrUiLogs" Content="Verbose errors" HorizontalAlignment="Left" Height="15" Margin="588,421,0,0" VerticalAlignment="Top" Width="107" Foreground="White" IsChecked="True" Checked="UpdateUILogsSettings" Unchecked="UpdateUILogsSettings"/>
     </Grid>
 
 </Window>

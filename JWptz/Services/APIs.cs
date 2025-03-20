@@ -4,9 +4,12 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Media.Imaging;
 
 namespace JWptz.Services
 {
@@ -14,43 +17,89 @@ namespace JWptz.Services
     {
         public static async Task<APIBaseResponse> SendCommand(PTZCommand ptzCommand)
         {
+            string endpoint = string.Empty;
+            HttpStatusCode? statusCode = null;
             try
             {
+                #region Validations
                 if (ptzCommand.CommandType == CommandType.None)
                 { throw new Exception("The 'CommandType' parameter is set to 'None'."); }
 
+                if (ptzCommand.Camera.IP.INOE())
+                { throw new Exception("The camera IP is not set."); }
+                #endregion
+
                 using HttpClient client = new HttpClient();
-                string endpoint = GetCameraEndpoint(ptzCommand);
+                SetAuthorization(client, ptzCommand.Camera);
+                client.Timeout = TimeSpan.FromMilliseconds(Settings.CommandTimeout);
+                endpoint = GetCameraEndpoint(ptzCommand);
 
                 HttpResponseMessage response = await client.GetAsync(endpoint);
                 string responseBody = await response.Content.ReadAsStringAsync();
+                statusCode = response.StatusCode;
 
                 response.EnsureSuccessStatusCode();
-                return new APIBaseResponse(successful: true, message: responseBody);
+                return new APIBaseResponse(successful: true, message: responseBody)
+                {
+                    Endpoint = endpoint,
+                    StatusCode = statusCode
+                };
             }
             catch (Exception ex)
             {
                 Helpers.WriteLog(exception: ex);
-                return new APIBaseResponse(ex);
+                return new APIBaseResponse(ex)
+                {
+                    Endpoint = endpoint,
+                    StatusCode = statusCode
+                };
             }
         }
 
         public static async Task<APIImageResponse> GetSnapshot(PTZCamera ptzCamera)
         {
+            string endpoint = string.Empty;
+            HttpStatusCode? statusCode = null;
             try
             {
                 using HttpClient client = new HttpClient();
-                string endpoint = GetSnapshotEndpoint(ptzCamera);
+                SetAuthorization(client, ptzCamera);
+                client.Timeout = TimeSpan.FromMilliseconds(Settings.CommandTimeout);
+                endpoint = GetSnapshotEndpoint(ptzCamera);
 
-                byte[] imageBytes = await client.GetByteArrayAsync(endpoint);
-                Image image = Helpers.ByteArrayToImage(imageBytes);
+                HttpResponseMessage response = await client.GetAsync(endpoint);
+                byte[] contentBytes = await response.Content.ReadAsByteArrayAsync();
+                statusCode = response.StatusCode;
 
-                return new APIImageResponse(image);
+                response.EnsureSuccessStatusCode();
+                BitmapImage bitmapImage = Helpers.ByteArrayToBitmapImage(contentBytes);
+
+                return new APIImageResponse(bitmapImage)
+                {
+                    Endpoint = endpoint,
+                    StatusCode = statusCode
+                };
             }
             catch (Exception ex)
             {
                 Helpers.WriteLog(exception: ex);
-                return new APIImageResponse(ex);
+                return new APIImageResponse(ex)
+                {
+                    Endpoint = endpoint,
+                    StatusCode = statusCode
+                };
+            }
+        }
+
+        public static void SetAuthorization(HttpClient httpClient, PTZCamera ptzCamera)
+        {
+            if (ptzCamera.UseAuth)
+            {
+                if (ptzCamera.Username.INOE()) { throw new Exception("The username fild for authorization is null or empty."); }
+                if (ptzCamera.Password.INOE()) { throw new Exception("The password fild for authorization is null or empty."); }
+
+                string authToken = Convert.ToBase64String(Encoding.ASCII.GetBytes($"{ptzCamera.Username}:{ptzCamera.Password}"));
+                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", authToken);
             }
         }
 
@@ -60,7 +109,7 @@ namespace JWptz.Services
             string apiParamPath = "cgi-bin/param.cgi";
             string apiSettingsPath = "cgi-bin/ptzctrl.cgi";
             string ptSpeeds = $"{ptzCommand.PTZFSpeeds.PanSpeed}&{ptzCommand.PTZFSpeeds.TiltSpeed}";
-            string result = $"{ptzCommand.Camera.ProtocolType}://{ptzCommand.Camera.IP}/";
+            string result = $"{ptzCommand.Camera.ProtocolType.ToLowerString()}://{ptzCommand.Camera.IP}/";
 
             switch (ptzCommand.CommandType)
             {
@@ -101,7 +150,59 @@ namespace JWptz.Services
 
         public static string GetSnapshotEndpoint(PTZCamera ptzCamera)
         {
-            return $"{ptzCamera.ProtocolType}://{ptzCamera.IP}/snapshot.jpg";
+            return $"{ptzCamera.ProtocolType.ToLowerString()}://{ptzCamera.IP}/snapshot.jpg";
+        }
+
+        public static string GetCommandParams(PTZCommand ptzCommand)
+        {
+            string ptSpeeds = $"{ptzCommand.PTZFSpeeds.PanSpeed}, {ptzCommand.PTZFSpeeds.TiltSpeed}";
+            string result = string.Empty;
+
+            switch (ptzCommand.CommandType)
+            {
+                case CommandType.PanLeft:
+                case CommandType.PanRight:
+                case CommandType.TiltUp:
+                case CommandType.TiltDown: result = ptSpeeds; break;
+
+                case CommandType.PanTiltStop: result = "0, 0"; break;
+
+                case CommandType.PanLeftTiltUp:
+                case CommandType.PanRightTiltUp:
+                case CommandType.PanLeftTiltDown:
+                case CommandType.PanRightTiltDown:
+                case CommandType.PanTiltFine: result = ptSpeeds; break;
+
+                case CommandType.PanTiltReset: result = ""; break;
+
+                case CommandType.ZoomIn:
+                case CommandType.ZoomOut: result = $"{ptzCommand.PTZFSpeeds.ZoomSpeed}"; break;
+
+                case CommandType.ZoomStop: result = "0"; break;
+
+                case CommandType.ZoomFine: result = $"{ptzCommand.PTZFSpeeds.ZoomSpeed}"; break;
+
+                case CommandType.FocusIn:
+                case CommandType.FocusOut: result = $"{ptzCommand.PTZFSpeeds.FocusSpeed}"; break;
+
+                case CommandType.FocusStop: result = "0"; break;
+
+                case CommandType.ActivateSnapFocus:
+                case CommandType.GoHome: result = ""; break;
+
+                case CommandType.SetPreset:
+                case CommandType.CallPreset: result = $"{ptzCommand.Preset}"; break;
+
+                case CommandType.AdjustLuminance: result = $"{ptzCommand.ImageSettings.Luminance}"; break;
+                case CommandType.AdjustSaturation: result = $"{ptzCommand.ImageSettings.Saturation}"; break;
+                case CommandType.AdjustContrast: result = $"{ptzCommand.ImageSettings.Contrast}"; break;
+                case CommandType.AdjustSharpness: result = $"{ptzCommand.ImageSettings.Sharpness}"; break;
+                case CommandType.AdjustHue: result = $"{ptzCommand.ImageSettings.Hue}"; break;
+
+                default: result = string.Empty; break;
+            }
+
+            return result;
         }
     }
 }

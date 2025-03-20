@@ -38,7 +38,11 @@ namespace JWptz.Entities
         FocusIn, FocusOut, FocusStop,
         ActivateSnapFocus,
         GoHome, SetPreset, CallPreset,
-        AdjustLuminance, AdjustSaturation, AdjustContrast, AdjustSharpness, AdjustHue,
+        AdjustLuminance, AdjustSaturation, AdjustContrast, AdjustSharpness, AdjustHue
+    }
 
+    public enum UILogType
+    {
+        Info, Command
     }
 }

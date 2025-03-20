@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Media.Imaging;
 
 namespace JWptz.Entities
 {
@@ -12,6 +14,8 @@ namespace JWptz.Entities
         #region Properties
         public bool Successful { get; set; } = true;
         public string Message { get; set; } = string.Empty;
+        public string Endpoint { get; set; } = string.Empty;
+        public HttpStatusCode? StatusCode { get; set; }
         #endregion
 
         #region Constructors
@@ -39,14 +43,14 @@ namespace JWptz.Entities
     public class APIImageResponse : APIBaseResponse
     {
         #region Properties
-        public Image? Image { get; set; }
+        public BitmapImage? BitmapImage { get; set; }
         #endregion
 
         #region Constructors
-        public APIImageResponse(Image? image)
+        public APIImageResponse(BitmapImage bitmapImage)
         {
-            Successful = image is null ? false : true;
-            Image = image;
+            Successful = true;
+            BitmapImage = bitmapImage;
         }
 
         public APIImageResponse(Exception exception)

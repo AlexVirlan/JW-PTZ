@@ -9,6 +9,13 @@ using System.Runtime.CompilerServices;
 using JWptz.Entities;
 using Newtonsoft.Json;
 using System.Windows;
+using Color = System.Windows.Media.Color;
+using ColorConverter = System.Windows.Media.ColorConverter;
+using SolidColorBrush = System.Windows.Media.SolidColorBrush;
+using System.Security.Policy;
+using System.Collections.Specialized;
+using System.Web;
+using System.Windows.Media.Imaging;
 
 namespace JWptz.Utilities
 {
@@ -50,5 +57,26 @@ namespace JWptz.Utilities
                 return Image.FromStream(ms);
             }
         }
+
+        public static BitmapImage ByteArrayToBitmapImage(byte[] byteArray)
+        {
+            using (var stream = new MemoryStream(byteArray))
+            {
+                BitmapImage bitmap = new BitmapImage();
+                bitmap.BeginInit();
+                bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                bitmap.StreamSource = stream;
+                bitmap.EndInit();
+                bitmap.Freeze();
+                return bitmap;
+            }
+        }
+
+        public static SolidColorBrush GetBrushFromHex(string hex)
+        {
+            Color color = (Color)ColorConverter.ConvertFromString(hex);
+            return new SolidColorBrush(color);
+        }
+
     }
 }
