@@ -36,7 +36,7 @@ namespace JWptz.Entities
         PanTiltFine, PanTiltReset,
         ZoomIn, ZoomOut, ZoomStop, ZoomFine,
         FocusIn, FocusOut, FocusStop,
-        ActivateSnapFocus,
+        ActivateAutoFocus,
         GoHome, SetPreset, CallPreset,
         AdjustLuminance, AdjustSaturation, AdjustContrast, AdjustSharpness, AdjustHue
     }

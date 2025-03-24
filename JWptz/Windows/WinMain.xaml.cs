@@ -57,17 +57,22 @@ namespace JWptz.Windows
         private async void TEST_Click(object sender, RoutedEventArgs e)
         {
 
-            PTZCamera cam = new PTZCamera("192.168.0.88", ProtocolType.HTTP);
-            cam.UseAuth = true;
-            cam.Username = "admin";
-            cam.Password = "admin";
-            cam.Name = "Cam 1";
-            PTZCommand cmd = PTZCommand.CallPresetInit(cam, 1);
-            APIBaseResponse response = await APIs.SendCommand(cmd);
-            AddUILog(UILogType.Command, null, cmd, response);
+            //PTZCamera cam = new PTZCamera("192.168.0.88", ProtocolType.HTTP);
+            //cam.UseAuth = true;
+            //cam.Username = "admin";
+            //cam.Password = "admin";
+            //cam.Name = "Cam 1";
+            //PTZCommand cmd = PTZCommand.CallPresetInit(cam, 1);
+            //APIBaseResponse response = await APIs.SendCommand(cmd);
+            //AddUILog(UILogType.Command, null, cmd, response);
 
-            APIImageResponse response2 = await APIs.GetSnapshot(cam);
-            imgTEST.Source = response2.BitmapImage;
+            _camera.IP = "192.168.0.88";
+
+            APIImageResponse response2 = await APIs.GetSnapshot(_camera);
+
+            CEVA_Copy2.Background = new ImageBrush(response2.BitmapImage) { Stretch = Stretch.Fill };
+            CEVA_Copy2.Content = "My button 1";
+
         }
 
         private void AddUILog(UILogType logType, string? text = null, PTZCommand? command = null, APIBaseResponse? response = null,
@@ -137,6 +142,65 @@ namespace JWptz.Windows
         private void lblClearUiLogs_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             rtbLogs.Document.Blocks.Clear();
+        }
+
+        private async void CallPreset_PreviewMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            Button? presetButton = sender as Button;
+            if (presetButton is null) { return; }
+
+            if (!int.TryParse(presetButton.Name.Replace("btnPreset", "", StringComparison.OrdinalIgnoreCase), out int preset))
+            { return; }
+
+            bool isCtrl = (Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control;
+            if (e.ChangedButton == MouseButton.Left)
+            {
+                PTZCommand cmd = PTZCommand.CallPresetInit(_camera, preset);
+                APIBaseResponse response = await APIs.SendCommand(cmd);
+                AddUILog(UILogType.Command, null, cmd, response);
+            }
+            else if (e.ChangedButton == MouseButton.Right)
+            {
+                PTZCommand cmd = PTZCommand.SetPresetInit(_camera, preset);
+                APIBaseResponse presRes = await APIs.SendCommand(cmd);
+                AddUILog(UILogType.Command, null, cmd, presRes);
+
+                APIImageResponse imgRes = await APIs.GetSnapshot(_camera);
+                presetButton.Background = new ImageBrush(imgRes.BitmapImage) { Stretch = Stretch.Fill };
+                Helpers.SavePresetCacheImage(_camera.Id, preset, imgRes.BitmapImage);
+            }
+            else if (e.ChangedButton == MouseButton.Middle)
+            {
+                presetButton.Background = Helpers.GetBrushFromHex("#FF111111");
+                Helpers.DeletePresetCacheImage(_camera.Id, preset);
+            }
+        }
+
+        private async void PTZFControl_PreviewMouseDownUp(object sender, MouseButtonEventArgs e)
+        {
+            Button? ptzfButton = sender as Button;
+            if (ptzfButton is null) { return; }
+
+            string cmdName = ptzfButton.Name.Replace("btn", "", StringComparison.OrdinalIgnoreCase);
+            CommandType cmdType = Helpers.ParseEnum<CommandType>(cmdName);
+
+            if (e.ButtonState == MouseButtonState.Released)
+            {
+                cmdType = APIs.GetStopCommandType(cmdType);
+                if (cmdType == CommandType.None) { return; }
+            }
+
+            PTZCommand pTZCommand = new PTZCommand()
+            {
+                Preset = 0,
+                Camera = _camera,
+                PTZFSpeeds = new(),
+                ImageSettings = new(),
+                CommandType = cmdType
+            };
+
+            APIBaseResponse response = await APIs.SendCommand(pTZCommand);
+            AddUILog(UILogType.Command, null, pTZCommand, response);
         }
     }
 }

@@ -78,5 +78,39 @@ namespace JWptz.Utilities
             return new SolidColorBrush(color);
         }
 
+        public static T ParseEnum<T>(string value) where T : struct
+        {
+            if (Enum.TryParse(value, true, out T result))
+            { return result; }
+            else
+            { throw new ArgumentException($"'{value}' is not a valid value for enum '{typeof(T).Name}'"); }
+        }
+
+        public static void SavePresetCacheImage(int cameraId, int presetId, BitmapImage? image)
+        {
+            if (image is null) { return; }
+            string imagePath = GetPresetCacheImagePath(cameraId, presetId);
+
+            using (FileStream fileStream = new FileStream(imagePath, FileMode.Create))
+            {
+                BitmapEncoder encoder = new JpegBitmapEncoder();
+                encoder.Frames.Add(BitmapFrame.Create(image));
+                encoder.Save(fileStream);
+            }
+        }
+
+        public static void DeletePresetCacheImage(int cameraId, int presetId)
+        {
+            string imagePath = GetPresetCacheImagePath(cameraId, presetId);
+            if (File.Exists(imagePath)) { File.Delete(imagePath); }
+        }
+
+        public static string GetPresetCacheImagePath(int cameraId, int presetId)
+        {
+
+            string dataCachePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data", "Cache");
+            Directory.CreateDirectory(dataCachePath);
+            return Path.Combine(dataCachePath, $"Cam{cameraId}-Preset{presetId}.jpg");
+        }
     }
 }

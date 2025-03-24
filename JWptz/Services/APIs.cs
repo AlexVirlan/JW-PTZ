@@ -131,7 +131,7 @@ namespace JWptz.Services
                 case CommandType.FocusIn: result += $"{apiControlPath}&focusin&{ptzCommand.PTZFSpeeds.FocusSpeed}"; break;
                 case CommandType.FocusOut: result += $"{apiControlPath}&focusout&{ptzCommand.PTZFSpeeds.FocusSpeed}"; break;
                 case CommandType.FocusStop: result += $"{apiControlPath}&focusstop&0"; break;
-                case CommandType.ActivateSnapFocus: result += $"{apiParamPath}?set_focus&one_shot_focus"; break;
+                case CommandType.ActivateAutoFocus: result += $"{apiParamPath}?set_focus&one_shot_focus"; break;
                 case CommandType.GoHome: result += $"{apiControlPath}&home"; break;
                 case CommandType.SetPreset: result += $"{apiControlPath}&posset&{ptzCommand.Preset}"; break;
                 case CommandType.CallPreset: result += $"{apiControlPath}&poscall&{ptzCommand.Preset}"; break;
@@ -151,6 +151,35 @@ namespace JWptz.Services
         public static string GetSnapshotEndpoint(PTZCamera ptzCamera)
         {
             return $"{ptzCamera.ProtocolType.ToLowerString()}://{ptzCamera.IP}/snapshot.jpg";
+        }
+
+        public static CommandType GetStopCommandType(CommandType commandType)
+        {
+            switch (commandType)
+            {
+                case CommandType.PanLeft:
+                case CommandType.PanRight:
+                case CommandType.TiltUp:
+                case CommandType.TiltDown:
+                case CommandType.PanLeftTiltUp:
+                case CommandType.PanRightTiltUp:
+                case CommandType.PanLeftTiltDown:
+                case CommandType.PanRightTiltDown:
+                case CommandType.PanTiltFine:
+                case CommandType.PanTiltReset:
+                    return CommandType.PanTiltStop;
+
+                case CommandType.ZoomIn:
+                case CommandType.ZoomOut:
+                case CommandType.ZoomFine:
+                    return CommandType.ZoomStop;
+
+                case CommandType.FocusIn:
+                case CommandType.FocusOut:
+                    return CommandType.FocusStop;
+
+                default: return CommandType.None;
+            }
         }
 
         public static string GetCommandParams(PTZCommand ptzCommand)
@@ -187,7 +216,7 @@ namespace JWptz.Services
 
                 case CommandType.FocusStop: result = "0"; break;
 
-                case CommandType.ActivateSnapFocus:
+                case CommandType.ActivateAutoFocus:
                 case CommandType.GoHome: result = ""; break;
 
                 case CommandType.SetPreset:
