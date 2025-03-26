@@ -8,6 +8,7 @@ using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows;
 using System.Windows.Media;
+using System.IO;
 
 namespace JWptz.Utilities
 {
@@ -15,6 +16,22 @@ namespace JWptz.Utilities
     {
         #region String
         public static bool INOE(this string? str) => string.IsNullOrEmpty(str);
+
+        public static (bool exists, string path) CombineWithStartupPath(this string fileName)
+        {
+            if (fileName.INOE()) { return (File.Exists(fileName), fileName); }
+            string file = Path.GetFileName(fileName);
+            string fullPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, file);
+            return (File.Exists(fullPath), fullPath);
+        }
+
+        public static T ToEnum<T>(this string value, T defaultValue)
+            where T : struct, Enum
+        {
+            if (string.IsNullOrEmpty(value)) { return defaultValue; }
+            T result;
+            return Enum.TryParse(value, true, out result) ? result : defaultValue;
+        }
         #endregion
 
         #region RichTextBox

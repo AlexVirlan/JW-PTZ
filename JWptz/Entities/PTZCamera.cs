@@ -10,9 +10,9 @@ namespace JWptz.Entities
     {
         #region Properties
         public int Id { get; set; } = 0;
-        public bool UseAuth { get; set; } = false;
-        public string Name { get; set; } = string.Empty;
         public string IP { get; set; } = string.Empty;
+        public string Name { get; set; } = string.Empty;
+        public bool UseAuth { get; set; } = false;
         public string Username { get; set; } = string.Empty;
         public string Password { get; set; } = string.Empty;
         public ProtocolType ProtocolType { get; set; } = ProtocolType.HTTP;
@@ -21,10 +21,10 @@ namespace JWptz.Entities
         #region Constructors
         public PTZCamera() { }
 
-        public PTZCamera(string ip, ProtocolType protocolType)
+        public PTZCamera(string ip, string name)
         {
             IP = ip;
-            ProtocolType = protocolType;
+            Name = name;
         }
         #endregion
     }

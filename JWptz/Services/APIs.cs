@@ -95,8 +95,8 @@ namespace JWptz.Services
         {
             if (ptzCamera.UseAuth)
             {
-                if (ptzCamera.Username.INOE()) { throw new Exception("The username fild for authorization is null or empty."); }
-                if (ptzCamera.Password.INOE()) { throw new Exception("The password fild for authorization is null or empty."); }
+                if (ptzCamera.Username.INOE()) { throw new Exception("The username field for authorization is null or empty."); }
+                if (ptzCamera.Password.INOE()) { throw new Exception("The password field for authorization is null or empty."); }
 
                 string authToken = Convert.ToBase64String(Encoding.ASCII.GetBytes($"{ptzCamera.Username}:{ptzCamera.Password}"));
                 httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", authToken);

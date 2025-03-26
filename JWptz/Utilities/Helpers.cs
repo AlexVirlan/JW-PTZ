@@ -105,9 +105,25 @@ namespace JWptz.Utilities
             if (File.Exists(imagePath)) { File.Delete(imagePath); }
         }
 
+        public static void DeletePresetCacheImage(int cameraId)
+        {
+            string dataCachePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data", "Cache");
+            if (!Directory.Exists(dataCachePath)) { return; }
+            Task task = Task.Run(() => DeleteFiles(dataCachePath, $"Cam{cameraId}-Preset*.jpg"));
+        }
+
+        public static void DeleteFiles(string path, string pattern)
+        {
+            string[] files = Directory.GetFiles(path, pattern);
+            foreach (string file in files)
+            {
+                try { File.Delete(file); }
+                catch (Exception) { }
+            }
+        }
+
         public static string GetPresetCacheImagePath(int cameraId, int presetId)
         {
-
             string dataCachePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data", "Cache");
             Directory.CreateDirectory(dataCachePath);
             return Path.Combine(dataCachePath, $"Cam{cameraId}-Preset{presetId}.jpg");

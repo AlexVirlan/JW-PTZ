@@ -20,18 +20,26 @@ namespace JWptz.Windows
     public partial class WinMain : Window
     {
         #region Variables
-        private PTZCamera _camera = new();
+        private bool _loading = false;
+        private PTZCamera? _camera = new();
         #endregion
 
         public WinMain()
         {
+            _loading = true;
             InitializeComponent();
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             SetView(ViewType.Main);
+
+            FunctionResponse frLoadSet = AppSettings.Load();
+            ApplySettingsToUI();
+            UpdateCamInfo();
+
             AddUILog(UILogType.Info, "App started. Welcome! :)");
+            _loading = false;
         }
 
         public void SetView(ViewType viewType)
@@ -42,6 +50,20 @@ namespace JWptz.Windows
                 case ViewType.Main: grdMain.Visibility = Visibility.Visible; break;
                 case ViewType.Settings: grdSettings.Visibility = Visibility.Visible; break;
             }
+        }
+
+        public void ApplySettingsToUI()
+        {
+            chkShowTimeStamp.IsChecked = Settings.UILogsSettings.ShowTimestamp;
+            chkAutoScrollUiLogs.IsChecked = Settings.UILogsSettings.AutoScroll;
+            chkIncludeParamsToUiLogs.IsChecked = Settings.UILogsSettings.IncludeParams;
+            chkShowFullEndpointToUiLogs.IsChecked = Settings.UILogsSettings.ShowFullEndpoint;
+            chkVerboseErrUiLogs.IsChecked = Settings.UILogsSettings.VerboseErrors;
+
+            sldPanSpeed.Value = Settings.PTZFSpeeds.PanSpeed;
+            sldTiltSpeed.Value = Settings.PTZFSpeeds.TiltSpeed;
+            sldZoomSpeed.Value = Settings.PTZFSpeeds.ZoomSpeed;
+            sldFocusSpeed.Value = Settings.PTZFSpeeds.FocusSpeed;
         }
 
         private void btnBackToMain_Click(object sender, RoutedEventArgs e)
@@ -56,23 +78,7 @@ namespace JWptz.Windows
 
         private async void TEST_Click(object sender, RoutedEventArgs e)
         {
-
-            //PTZCamera cam = new PTZCamera("192.168.0.88", ProtocolType.HTTP);
-            //cam.UseAuth = true;
-            //cam.Username = "admin";
-            //cam.Password = "admin";
-            //cam.Name = "Cam 1";
-            //PTZCommand cmd = PTZCommand.CallPresetInit(cam, 1);
-            //APIBaseResponse response = await APIs.SendCommand(cmd);
-            //AddUILog(UILogType.Command, null, cmd, response);
-
-            _camera.IP = "192.168.0.88";
-
-            APIImageResponse response2 = await APIs.GetSnapshot(_camera);
-
-            CEVA_Copy2.Background = new ImageBrush(response2.BitmapImage) { Stretch = Stretch.Fill };
-            CEVA_Copy2.Content = "My button 1";
-
+            Settings.Cameras.Clear();
         }
 
         private void AddUILog(UILogType logType, string? text = null, PTZCommand? command = null, APIBaseResponse? response = null,
@@ -99,7 +105,7 @@ namespace JWptz.Windows
                     else { rtbLogs.AppendFormattedText($"> ", brush: Helpers.GetBrushFromHex("#FFFF0000")); }
 
                     rtbLogs.AppendFormattedText($"Camera: ", brush: Helpers.GetBrushFromHex("#FFC8C8C8"));
-                    rtbLogs.AppendFormattedText($"{command.Camera.Name} ", bold: true);
+                    rtbLogs.AppendFormattedText($"{command.Camera.Id} - {command.Camera.Name} ", bold: true);
                     string camPath = uiLS.ShowFullEndpoint ? response.Endpoint : command.Camera.IP;
                     rtbLogs.AppendFormattedText($"({camPath}). Command: ", brush: Helpers.GetBrushFromHex("#FFC8C8C8"));
                     rtbLogs.AppendFormattedText($"{command.CommandType}", bold: true);
@@ -132,6 +138,7 @@ namespace JWptz.Windows
 
         private void UpdateUILogsSettings(object sender, RoutedEventArgs e)
         {
+            if (_loading) { return; }
             Settings.UILogsSettings.ShowTimestamp = chkShowTimeStamp.IsChecked();
             Settings.UILogsSettings.AutoScroll = chkAutoScrollUiLogs.IsChecked();
             Settings.UILogsSettings.IncludeParams = chkIncludeParamsToUiLogs.IsChecked();
@@ -146,61 +153,176 @@ namespace JWptz.Windows
 
         private async void CallPreset_PreviewMouseDown(object sender, MouseButtonEventArgs e)
         {
-            Button? presetButton = sender as Button;
-            if (presetButton is null) { return; }
-
-            if (!int.TryParse(presetButton.Name.Replace("btnPreset", "", StringComparison.OrdinalIgnoreCase), out int preset))
-            { return; }
-
-            bool isCtrl = (Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control;
-            if (e.ChangedButton == MouseButton.Left)
+            try
             {
-                PTZCommand cmd = PTZCommand.CallPresetInit(_camera, preset);
-                APIBaseResponse response = await APIs.SendCommand(cmd);
-                AddUILog(UILogType.Command, null, cmd, response);
+                #region Validations
+                if (_camera is null)
+                {
+                    ShowMessage("Please select a camera first.", MessageBoxImage.Warning);
+                    return;
+                }
+
+                Button? presetButton = sender as Button;
+                if (presetButton is null) { return; }
+
+                if (!int.TryParse(presetButton.Name.Replace("btnPreset", "", StringComparison.OrdinalIgnoreCase), out int preset))
+                { throw new Exception("Could not parse the preset button value."); }
+                #endregion
+
+                bool isCtrl = (Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control;
+                if (e.ChangedButton == MouseButton.Left)
+                {
+                    PTZCommand cmd = PTZCommand.CallPresetInit(_camera, preset);
+                    APIBaseResponse response = await APIs.SendCommand(cmd);
+                    AddUILog(UILogType.Command, null, cmd, response);
+                }
+                else if (e.ChangedButton == MouseButton.Right)
+                {
+                    PTZCommand cmd = PTZCommand.SetPresetInit(_camera, preset);
+                    APIBaseResponse presRes = await APIs.SendCommand(cmd);
+                    AddUILog(UILogType.Command, null, cmd, presRes);
+
+                    APIImageResponse imgRes = await APIs.GetSnapshot(_camera);
+                    if (imgRes.Successful)
+                    {
+                        presetButton.Background = new ImageBrush(imgRes.BitmapImage) { Stretch = Stretch.Fill };
+                        Helpers.SavePresetCacheImage(_camera.Id, preset, imgRes.BitmapImage);
+                    }
+                }
+                else if (e.ChangedButton == MouseButton.Middle)
+                {
+                    presetButton.Background = Helpers.GetBrushFromHex("#FF111111");
+                    Helpers.DeletePresetCacheImage(_camera.Id, preset);
+                }
             }
-            else if (e.ChangedButton == MouseButton.Right)
+            catch (Exception ex)
             {
-                PTZCommand cmd = PTZCommand.SetPresetInit(_camera, preset);
-                APIBaseResponse presRes = await APIs.SendCommand(cmd);
-                AddUILog(UILogType.Command, null, cmd, presRes);
-
-                APIImageResponse imgRes = await APIs.GetSnapshot(_camera);
-                presetButton.Background = new ImageBrush(imgRes.BitmapImage) { Stretch = Stretch.Fill };
-                Helpers.SavePresetCacheImage(_camera.Id, preset, imgRes.BitmapImage);
-            }
-            else if (e.ChangedButton == MouseButton.Middle)
-            {
-                presetButton.Background = Helpers.GetBrushFromHex("#FF111111");
-                Helpers.DeletePresetCacheImage(_camera.Id, preset);
+                ShowMessage(ex.Message, MessageBoxImage.Error);
             }
         }
 
         private async void PTZFControl_PreviewMouseDownUp(object sender, MouseButtonEventArgs e)
         {
-            Button? ptzfButton = sender as Button;
-            if (ptzfButton is null) { return; }
-
-            string cmdName = ptzfButton.Name.Replace("btn", "", StringComparison.OrdinalIgnoreCase);
-            CommandType cmdType = Helpers.ParseEnum<CommandType>(cmdName);
-
-            if (e.ButtonState == MouseButtonState.Released)
+            try
             {
-                cmdType = APIs.GetStopCommandType(cmdType);
-                if (cmdType == CommandType.None) { return; }
+                #region Validations
+                if (_camera is null)
+                {
+                    ShowMessage("Please select a camera first.", MessageBoxImage.Warning);
+                    return;
+                }
+
+                Button? ptzfButton = sender as Button;
+                if (ptzfButton is null) { return; }
+                #endregion
+
+                string cmdName = ptzfButton.Name.Replace("btn", "", StringComparison.OrdinalIgnoreCase);
+                CommandType cmdType = Helpers.ParseEnum<CommandType>(cmdName);
+
+                if (e.ButtonState == MouseButtonState.Released)
+                {
+                    cmdType = APIs.GetStopCommandType(cmdType);
+                    if (cmdType == CommandType.None) { return; }
+                }
+
+                PTZCommand pTZCommand = new PTZCommand()
+                {
+                    Preset = 0,
+                    Camera = _camera,
+                    PTZFSpeeds = Settings.PTZFSpeeds,
+                    ImageSettings = Settings.ImageSettings,
+                    CommandType = cmdType
+                };
+
+                APIBaseResponse response = await APIs.SendCommand(pTZCommand);
+                AddUILog(UILogType.Command, null, pTZCommand, response);
             }
-
-            PTZCommand pTZCommand = new PTZCommand()
+            catch (Exception ex)
             {
-                Preset = 0,
-                Camera = _camera,
-                PTZFSpeeds = new(),
-                ImageSettings = new(),
-                CommandType = cmdType
-            };
+                ShowMessage(ex.Message, MessageBoxImage.Error);
+            }
+        }
 
-            APIBaseResponse response = await APIs.SendCommand(pTZCommand);
-            AddUILog(UILogType.Command, null, pTZCommand, response);
+        private void cmbCamera_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (cmbCamera.SelectedItem is null)
+            {
+                _camera = null;
+                lblCamInfo.Content = "-";
+                return;
+            }
+            _camera = cmbCamera.SelectedItem as PTZCamera;
+            UpdateCamInfo();
+        }
+
+        public void UpdateCamInfo()
+        {
+            if (lblCamInfo is null) { return; }
+
+            string result = string.Empty;
+            if (_camera is not null)
+            {
+                string auth = _camera.UseAuth ? ", auth" : "";
+                result = $"{_camera.IP} ({_camera.ProtocolType.ToLowerString() + auth})";
+            }
+            lblCamInfo.Content = result;
+        }
+
+        public void ShowMessage(string text, MessageBoxImage mbi = MessageBoxImage.Information)
+        {
+            MessageBox.Show(this, text, "JW PTZ - AvA.Soft", MessageBoxButton.OK, mbi);
+        }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            UpdateSettingsFromUI();
+            AppSettings.Save();
+        }
+
+        private void UpdateSettingsFromUI()
+        {
+            Settings.CommandTimeout = 2500;
+
+        }
+
+        private void sldPanSpeed_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            int value = (int)e.NewValue;
+            Settings.PTZFSpeeds.PanSpeed = value;
+            lblPanSpeed.Content = $"Pan speed ({value}):";
+        }
+
+        private void sldTiltSpeed_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            int value = (int)e.NewValue;
+            Settings.PTZFSpeeds.TiltSpeed = value;
+            lblTiltSpeed.Content = $"Tilt speed ({value}):";
+        }
+
+        private void sldZoomSpeed_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            int value = (int)e.NewValue;
+            Settings.PTZFSpeeds.ZoomSpeed = value;
+            lblZoomSpeed.Content = $"Zoom speed ({value}):";
+        }
+
+        private void sldFocusSpeed_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            int value = (int)e.NewValue;
+            Settings.PTZFSpeeds.FocusSpeed = value;
+            lblFocusSpeed.Content = $"Focus speed ({value}):";
+        }
+
+        private void ToggleSlimMode(object sender, RoutedEventArgs e)
+        {
+            // settings
+            // update form size
+
+        }
+
+        private void btnExit_PreviewMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            Application.Current.Shutdown();
         }
     }
 }

@@ -10,8 +10,8 @@ namespace JWptz.Entities
     {
         public int PanSpeed { get; set; } = 8;
         public int TiltSpeed { get; set; } = 8;
-        public int ZoomSpeed { get; set; } = 4;
-        public int FocusSpeed { get; set; } = 4;
+        public int ZoomSpeed { get; set; } = 3;
+        public int FocusSpeed { get; set; } = 3;
     }
 
     public class ImageSettings
