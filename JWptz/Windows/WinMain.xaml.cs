@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,7 +12,7 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
+using System.Windows.Media.Media3D;
 using JWptz.Entities;
 using JWptz.Services;
 using JWptz.Utilities;
@@ -22,12 +24,20 @@ namespace JWptz.Windows
         #region Variables
         private bool _loading = false;
         private PTZCamera? _camera = new();
+        private KeyboardHook? _keyboardHook;
         #endregion
 
         public WinMain()
         {
             _loading = true;
             InitializeComponent();
+            HookCtrl();
+        }
+
+        private void HookCtrl()
+        {
+            _keyboardHook = new KeyboardHook([Key.LeftCtrl, Key.RightCtrl]);
+            _keyboardHook.KeyboardPressed += OnCtrlPressed;
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -37,6 +47,7 @@ namespace JWptz.Windows
             FunctionResponse frLoadSet = AppSettings.Load();
             ApplySettingsToUI();
             UpdateCamInfo();
+            LoadPresetCacheImage();
 
             AddUILog(UILogType.Info, "App started. Welcome! :)");
             _loading = false;
@@ -64,6 +75,51 @@ namespace JWptz.Windows
             sldTiltSpeed.Value = Settings.PTZFSpeeds.TiltSpeed;
             sldZoomSpeed.Value = Settings.PTZFSpeeds.ZoomSpeed;
             sldFocusSpeed.Value = Settings.PTZFSpeeds.FocusSpeed;
+        }
+
+        private void OnCtrlPressed(object? sender, KeyboardHookEventArgs e)
+        {
+            if (e.KeyboardState == KeyboardHook.KeyboardState.KeyDown)
+            {
+                grdPresetsMain.Background = Helpers.GetBrushFromHex(Globals.DarkRedHex);
+                btnCallOtherPreset.Content = "Set";
+                tabPresets.Header = "Presets (SETTING)";
+            }
+            else if (e.KeyboardState == KeyboardHook.KeyboardState.KeyUp)
+            {
+                grdPresetsMain.Background = Helpers.GetBrushFromHex(Globals.Gray26Hex);
+                btnCallOtherPreset.Content = "Call";
+                tabPresets.Header = "Presets (calling)";
+            }
+        }
+
+        private void LoadPresetCacheImage()
+        {
+            if (_camera is null) { return; }
+            string dataCachePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data", "Cache");
+            //if (!Directory.Exists(dataCachePath)) { return; }
+
+            string imgPath = string.Empty;
+            for (int i = 1; i <= 15; i++)
+            {
+                Button? presetButton = this.FindName($"btnPreset{i}") as Button;
+                if (presetButton is not null)
+                {
+                    imgPath = Path.Combine(dataCachePath, $"Cam{_camera.Id}-Preset{i}.jpg");
+                    if (File.Exists(imgPath))
+                    {
+                        BitmapImage bitmap = new BitmapImage();
+                        bitmap.BeginInit();
+                        bitmap.UriSource = new Uri(imgPath, UriKind.Absolute);
+                        bitmap.EndInit();
+                        presetButton.Background = new ImageBrush(bitmap);
+                    }
+                    else
+                    {
+                        presetButton.Background = Helpers.GetBrushFromHex(Globals.Gray17Hex);
+                    }
+                }
+            }
         }
 
         private void btnBackToMain_Click(object sender, RoutedEventArgs e)
@@ -101,31 +157,31 @@ namespace JWptz.Windows
                     break;
 
                 case UILogType.Command:
-                    if (response.Successful) { rtbLogs.AppendFormattedText($"> ", brush: Helpers.GetBrushFromHex("#FF00FF00")); }
-                    else { rtbLogs.AppendFormattedText($"> ", brush: Helpers.GetBrushFromHex("#FFFF0000")); }
+                    if (response.Successful) { rtbLogs.AppendFormattedText($"> ", brush: Helpers.GetBrushFromHex(Globals.GreenHex)); }
+                    else { rtbLogs.AppendFormattedText($"> ", brush: Helpers.GetBrushFromHex(Globals.RedHex)); }
 
-                    rtbLogs.AppendFormattedText($"Camera: ", brush: Helpers.GetBrushFromHex("#FFC8C8C8"));
+                    rtbLogs.AppendFormattedText($"Camera: ", brush: Helpers.GetBrushFromHex(Globals.Gray200Hex));
                     rtbLogs.AppendFormattedText($"{command.Camera.Id} - {command.Camera.Name} ", bold: true);
                     string camPath = uiLS.ShowFullEndpoint ? response.Endpoint : command.Camera.IP;
-                    rtbLogs.AppendFormattedText($"({camPath}). Command: ", brush: Helpers.GetBrushFromHex("#FFC8C8C8"));
+                    rtbLogs.AppendFormattedText($"({camPath}). Command: ", brush: Helpers.GetBrushFromHex(Globals.Gray200Hex));
                     rtbLogs.AppendFormattedText($"{command.CommandType}", bold: true);
 
                     if (uiLS.IncludeParams)
                     {
                         string qpStr = APIs.GetCommandParams(command);
-                        rtbLogs.AppendFormattedText($"{(qpStr.INOE() ? "" : $" ({qpStr})")}", brush: Helpers.GetBrushFromHex("#FFC8C8C8"));
+                        rtbLogs.AppendFormattedText($"{(qpStr.INOE() ? "" : $" ({qpStr})")}", brush: Helpers.GetBrushFromHex(Globals.Gray200Hex));
                     }
 
-                    rtbLogs.AppendFormattedText($". Result: ", brush: Helpers.GetBrushFromHex("#FFC8C8C8"));
+                    rtbLogs.AppendFormattedText($". Result: ", brush: Helpers.GetBrushFromHex(Globals.Gray200Hex));
                     if (response.StatusCode is not null)
                     { rtbLogs.AppendFormattedText($"{response.StatusCode} ", bold: true); }
 
-                    if (response.Successful) { rtbLogs.AppendFormattedText($"✔ Success!", brush: Helpers.GetBrushFromHex("#FF00FF00"), appendNewLine: true); }
+                    if (response.Successful) { rtbLogs.AppendFormattedText($"✔ Success!", brush: Helpers.GetBrushFromHex(Globals.GreenHex), appendNewLine: true); }
                     else
                     {
-                        rtbLogs.AppendFormattedText($"✖ Fail!", brush: Helpers.GetBrushFromHex("#FFFF0000"), appendNewLine: true);
+                        rtbLogs.AppendFormattedText($"✖ Fail!", brush: Helpers.GetBrushFromHex(Globals.RedHex), appendNewLine: true);
                         if (uiLS.VerboseErrors && !response.Message.INOE())
-                        { rtbLogs.AppendFormattedText(response.Message, brush: Helpers.GetBrushFromHex("#FFF65A5A"), appendNewLine: true); }
+                        { rtbLogs.AppendFormattedText(response.Message, brush: Helpers.GetBrushFromHex(Globals.LightRedHex), appendNewLine: true); }
                     }
                     break;
             }
@@ -169,29 +225,36 @@ namespace JWptz.Windows
                 { throw new Exception("Could not parse the preset button value."); }
                 #endregion
 
-                bool isCtrl = (Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control;
+                bool isCtrlPressed = (Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control;
                 if (e.ChangedButton == MouseButton.Left)
                 {
-                    PTZCommand cmd = PTZCommand.CallPresetInit(_camera, preset);
-                    APIBaseResponse response = await APIs.SendCommand(cmd);
-                    AddUILog(UILogType.Command, null, cmd, response);
+                    if (isCtrlPressed)
+                    {
+                        PTZCommand cmd = PTZCommand.SetPresetInit(_camera, preset);
+                        APIBaseResponse presRes = await APIs.SendCommand(cmd);
+                        AddUILog(UILogType.Command, null, cmd, presRes);
+
+                        APIImageResponse imgRes = await APIs.GetSnapshot(_camera);
+                        if (imgRes.Successful)
+                        {
+                            presetButton.Background = new ImageBrush(imgRes.BitmapImage) { Stretch = Stretch.Fill };
+                            Helpers.SavePresetCacheImage(_camera.Id, preset, imgRes.BitmapImage);
+                        }
+                    }
+                    else
+                    {
+                        PTZCommand cmd = PTZCommand.CallPresetInit(_camera, preset);
+                        APIBaseResponse response = await APIs.SendCommand(cmd);
+                        AddUILog(UILogType.Command, null, cmd, response);
+                    }
                 }
                 else if (e.ChangedButton == MouseButton.Right)
                 {
-                    PTZCommand cmd = PTZCommand.SetPresetInit(_camera, preset);
-                    APIBaseResponse presRes = await APIs.SendCommand(cmd);
-                    AddUILog(UILogType.Command, null, cmd, presRes);
-
-                    APIImageResponse imgRes = await APIs.GetSnapshot(_camera);
-                    if (imgRes.Successful)
-                    {
-                        presetButton.Background = new ImageBrush(imgRes.BitmapImage) { Stretch = Stretch.Fill };
-                        Helpers.SavePresetCacheImage(_camera.Id, preset, imgRes.BitmapImage);
-                    }
+                    // show image from preset
                 }
                 else if (e.ChangedButton == MouseButton.Middle)
                 {
-                    presetButton.Background = Helpers.GetBrushFromHex("#FF111111");
+                    presetButton.Background = Helpers.GetBrushFromHex(Globals.Gray17Hex);
                     Helpers.DeletePresetCacheImage(_camera.Id, preset);
                 }
             }
@@ -253,6 +316,7 @@ namespace JWptz.Windows
             }
             _camera = cmbCamera.SelectedItem as PTZCamera;
             UpdateCamInfo();
+            LoadPresetCacheImage();
         }
 
         public void UpdateCamInfo()
@@ -323,6 +387,41 @@ namespace JWptz.Windows
         private void btnExit_PreviewMouseDown(object sender, MouseButtonEventArgs e)
         {
             Application.Current.Shutdown();
+        }
+
+        private async void btnCallOtherPreset_PreviewMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            try
+            {
+                #region Validations
+                if (_camera is null)
+                {
+                    ShowMessage("Please select a camera first.", MessageBoxImage.Warning);
+                    return;
+                }
+                #endregion
+
+                bool isCtrlPressed = (Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control;
+                if (e.ChangedButton == MouseButton.Left)
+                {
+                    if (isCtrlPressed)
+                    {
+                        PTZCommand cmd = PTZCommand.SetPresetInit(_camera, numOtherPreset.Value);
+                        APIBaseResponse presRes = await APIs.SendCommand(cmd);
+                        AddUILog(UILogType.Command, null, cmd, presRes);
+                    }
+                    else
+                    {
+                        PTZCommand cmd = PTZCommand.CallPresetInit(_camera, numOtherPreset.Value);
+                        APIBaseResponse response = await APIs.SendCommand(cmd);
+                        AddUILog(UILogType.Command, null, cmd, response);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                ShowMessage(ex.Message, MessageBoxImage.Error);
+            }
         }
     }
 }

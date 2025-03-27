@@ -535,43 +535,66 @@
         </Grid>-->
 
         <TabControl HorizontalAlignment="Left" Height="366" Margin="264,30,0,0" VerticalAlignment="Top" Width="600" BorderThickness="1,1,1,1" BorderBrush="#FFACACAC">
-            <TabItem Header="Presets" Cursor="Hand">
+            <TabItem x:Name="tabPresets" Header="Presets (calling)">
                 <Border BorderBrush="#FF404040" BorderThickness="1,1,1,1">
-                    <Grid Margin="10">
+                    <Grid x:Name="grdPresetsMain">
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="*"/>
-                            <RowDefinition Height="*"/>
-                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="8*"/>
+                            <RowDefinition Height="auto"/>
                         </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
 
-                        <Button x:Name="btnPreset1" Grid.Row="0" Grid.Column="0" Style="{StaticResource ImageButtonStyle}" Content="1" PreviewMouseDown="CallPreset_PreviewMouseDown"/>
-                        <Button x:Name="btnPreset2" Grid.Row="0" Grid.Column="1" Style="{StaticResource ImageButtonStyle}" Content="2" PreviewMouseDown="CallPreset_PreviewMouseDown"/>
-                        <Button x:Name="btnPreset3" Grid.Row="0" Grid.Column="2" Style="{StaticResource ImageButtonStyle}" Content="3" PreviewMouseDown="CallPreset_PreviewMouseDown"/>
-                        <Button x:Name="btnPreset4" Grid.Row="0" Grid.Column="3" Style="{StaticResource ImageButtonStyle}" Content="4" PreviewMouseDown="CallPreset_PreviewMouseDown"/>
-                        <Button x:Name="btnPreset5" Grid.Row="0" Grid.Column="4" Style="{StaticResource ImageButtonStyle}" Content="5" PreviewMouseDown="CallPreset_PreviewMouseDown"/>
+                        <Grid Margin="0,0,0,0">
+                            <Label Content="Left click = call preset.   Ctrl + left click = set preset.   Right click = view image.   Middle click = clear image." HorizontalContentAlignment="Center" Foreground="LightGray"/>
+                        </Grid>
+                        
+                        <Grid Margin="10,0,10,0" Grid.Row="1" Grid.Column="0">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
 
-                        <Button x:Name="btnPreset6" Grid.Row="1" Grid.Column="0" Style="{StaticResource ImageButtonStyle}" Content="6" PreviewMouseDown="CallPreset_PreviewMouseDown"/>
-                        <Button x:Name="btnPreset7" Grid.Row="1" Grid.Column="1" Style="{StaticResource ImageButtonStyle}" Content="7" PreviewMouseDown="CallPreset_PreviewMouseDown"/>
-                        <Button x:Name="btnPreset8" Grid.Row="1" Grid.Column="2" Style="{StaticResource ImageButtonStyle}" Content="8" PreviewMouseDown="CallPreset_PreviewMouseDown"/>
-                        <Button x:Name="btnPreset9" Grid.Row="1" Grid.Column="3" Style="{StaticResource ImageButtonStyle}" Content="9" PreviewMouseDown="CallPreset_PreviewMouseDown"/>
-                        <Button x:Name="btnPreset10" Grid.Row="1" Grid.Column="4" Style="{StaticResource ImageButtonStyle}" Content="10" PreviewMouseDown="CallPreset_PreviewMouseDown"/>
+                            <Button x:Name="btnPreset1" Grid.Row="0" Grid.Column="0" Style="{StaticResource ImageButtonStyle}" Content="1" PreviewMouseDown="CallPreset_PreviewMouseDown"/>
+                            <Button x:Name="btnPreset2" Grid.Row="0" Grid.Column="1" Style="{StaticResource ImageButtonStyle}" Content="2" PreviewMouseDown="CallPreset_PreviewMouseDown"/>
+                            <Button x:Name="btnPreset3" Grid.Row="0" Grid.Column="2" Style="{StaticResource ImageButtonStyle}" Content="3" PreviewMouseDown="CallPreset_PreviewMouseDown"/>
+                            <Button x:Name="btnPreset4" Grid.Row="0" Grid.Column="3" Style="{StaticResource ImageButtonStyle}" Content="4" PreviewMouseDown="CallPreset_PreviewMouseDown"/>
+                            <Button x:Name="btnPreset5" Grid.Row="0" Grid.Column="4" Style="{StaticResource ImageButtonStyle}" Content="5" PreviewMouseDown="CallPreset_PreviewMouseDown"/>
 
-                        <Button x:Name="btnPreset11" Grid.Row="2" Grid.Column="0" Style="{StaticResource ImageButtonStyle}" Content="11" PreviewMouseDown="CallPreset_PreviewMouseDown"/>
-                        <Button x:Name="btnPreset12" Grid.Row="2" Grid.Column="1" Style="{StaticResource ImageButtonStyle}" Content="12" PreviewMouseDown="CallPreset_PreviewMouseDown"/>
-                        <Button x:Name="btnPreset13" Grid.Row="2" Grid.Column="2" Style="{StaticResource ImageButtonStyle}" Content="13" PreviewMouseDown="CallPreset_PreviewMouseDown"/>
-                        <Button x:Name="btnPreset14" Grid.Row="2" Grid.Column="3" Style="{StaticResource ImageButtonStyle}" Content="14" PreviewMouseDown="CallPreset_PreviewMouseDown"/>
-                        <Button x:Name="btnPreset15" Grid.Row="2" Grid.Column="4" Style="{StaticResource ImageButtonStyle}" Content="15" PreviewMouseDown="CallPreset_PreviewMouseDown"/>
+                            <Button x:Name="btnPreset6" Grid.Row="1" Grid.Column="0" Style="{StaticResource ImageButtonStyle}" Content="6" PreviewMouseDown="CallPreset_PreviewMouseDown"/>
+                            <Button x:Name="btnPreset7" Grid.Row="1" Grid.Column="1" Style="{StaticResource ImageButtonStyle}" Content="7" PreviewMouseDown="CallPreset_PreviewMouseDown"/>
+                            <Button x:Name="btnPreset8" Grid.Row="1" Grid.Column="2" Style="{StaticResource ImageButtonStyle}" Content="8" PreviewMouseDown="CallPreset_PreviewMouseDown"/>
+                            <Button x:Name="btnPreset9" Grid.Row="1" Grid.Column="3" Style="{StaticResource ImageButtonStyle}" Content="9" PreviewMouseDown="CallPreset_PreviewMouseDown"/>
+                            <Button x:Name="btnPreset10" Grid.Row="1" Grid.Column="4" Style="{StaticResource ImageButtonStyle}" Content="10" PreviewMouseDown="CallPreset_PreviewMouseDown"/>
+
+                            <Button x:Name="btnPreset11" Grid.Row="2" Grid.Column="0" Style="{StaticResource ImageButtonStyle}" Content="11" PreviewMouseDown="CallPreset_PreviewMouseDown"/>
+                            <Button x:Name="btnPreset12" Grid.Row="2" Grid.Column="1" Style="{StaticResource ImageButtonStyle}" Content="12" PreviewMouseDown="CallPreset_PreviewMouseDown"/>
+                            <Button x:Name="btnPreset13" Grid.Row="2" Grid.Column="2" Style="{StaticResource ImageButtonStyle}" Content="13" PreviewMouseDown="CallPreset_PreviewMouseDown"/>
+                            <Button x:Name="btnPreset14" Grid.Row="2" Grid.Column="3" Style="{StaticResource ImageButtonStyle}" Content="14" PreviewMouseDown="CallPreset_PreviewMouseDown"/>
+                            <Button x:Name="btnPreset15" Grid.Row="2" Grid.Column="4" Style="{StaticResource ImageButtonStyle}" Content="15" PreviewMouseDown="CallPreset_PreviewMouseDown"/>
+                        </Grid>
+                        
+                        <Grid Grid.Row="2" Grid.Column="0" Margin="0,5,0,5" HorizontalAlignment="Center">
+                            <StackPanel Orientation="Horizontal">
+                                <Label Content="Set or call other presets (16 - 254):" Margin="10,0,10,0"/>
+                                <materialDesign:NumericUpDown x:Name="numOtherPreset" Margin="5,0,5,0" Minimum="16" Value="16" Maximum="254" MaxWidth="100" BorderThickness="0,0,0,0"/>
+                                <Button x:Name="btnCallOtherPreset" Content="Call" Width="50" Margin="10,0,10,0" Style="{StaticResource CustomButtonStyle}" PreviewMouseDown="btnCallOtherPreset_PreviewMouseDown"/>
+                            </StackPanel>
+                        </Grid>
                     </Grid>
                 </Border>
             </TabItem>
-            <TabItem Header="Image settings" Cursor="Hand">
+            <TabItem Header="Image settings">
                 <Border BorderBrush="#FF404040" BorderThickness="1,1,1,1">
                     <Grid Margin="10"/>
                 </Border>
