@@ -156,15 +156,25 @@
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
                     <Label Content="Logs:" Foreground="White" HorizontalAlignment="Left"/>
 
-                    <CheckBox x:Name="chkAutoScrollUiLogs" Content="Auto scroll to end" Height="20" Width="120" Foreground="White" IsChecked="True" Checked="UpdateUILogsSettings" Unchecked="UpdateUILogsSettings" Margin="5,0,5,0"/>
+                    <CheckBox x:Name="chkAutoScrollUiLogs" Height="20" Width="120" Foreground="White" IsChecked="True" Checked="UpdateUILogsSettings" Unchecked="UpdateUILogsSettings" Margin="5,0,5,0">
+                        <TextBlock Text="Auto scroll to end" Margin="0,-2,0,0"/>
+                    </CheckBox>
 
-                    <CheckBox x:Name="chkIncludeParamsToUiLogs" Content="Include params" Height="20" Width="110" Foreground="White" IsChecked="True" Checked="UpdateUILogsSettings" Unchecked="UpdateUILogsSettings" Margin="5,0,5,0"/>
+                    <CheckBox x:Name="chkIncludeParamsToUiLogs" Height="20" Width="110" Foreground="White" IsChecked="True" Checked="UpdateUILogsSettings" Unchecked="UpdateUILogsSettings" Margin="5,0,5,0">
+                        <TextBlock Text="Include params" Margin="0,-2,0,0"/>
+                    </CheckBox>
 
-                    <CheckBox x:Name="chkShowFullEndpointToUiLogs" Content="Show full endpoint" Height="20" Width="126" Foreground="White" IsChecked="False" Checked="UpdateUILogsSettings" Unchecked="UpdateUILogsSettings" Margin="5,0,5,0"/>
+                    <CheckBox x:Name="chkShowFullEndpointToUiLogs"  Height="20" Width="126" Foreground="White" IsChecked="False" Checked="UpdateUILogsSettings" Unchecked="UpdateUILogsSettings" Margin="5,0,5,0">
+                        <TextBlock Text="Show full endpoint" Margin="0,-2,0,0"/>
+                    </CheckBox>
 
-                    <CheckBox x:Name="chkShowTimeStamp" Content="Show timestamp" Height="20" Width="116" Foreground="White" IsChecked="True" Checked="UpdateUILogsSettings" Unchecked="UpdateUILogsSettings" Margin="5,0,5,0"/>
+                    <CheckBox x:Name="chkShowTimeStamp" Height="20" Width="116" Foreground="White" IsChecked="True" Checked="UpdateUILogsSettings" Unchecked="UpdateUILogsSettings" Margin="5,0,5,0">
+                        <TextBlock Text="Show timestamp" Margin="0,-2,0,0"/>
+                    </CheckBox>
 
-                    <CheckBox x:Name="chkVerboseErrUiLogs" Content="Verbose errors" Height="20" Width="108" Foreground="White" IsChecked="True" Checked="UpdateUILogsSettings" Unchecked="UpdateUILogsSettings" Margin="5,0,5,0"/>
+                    <CheckBox x:Name="chkVerboseErrUiLogs" Height="20" Width="108" Foreground="White" IsChecked="True" Checked="UpdateUILogsSettings" Unchecked="UpdateUILogsSettings" Margin="5,0,5,0">
+                        <TextBlock Text="Verbose errors" Margin="0,-2,0,0"/>
+                    </CheckBox>
 
                     <Label x:Name="lblClearUiLogs" Foreground="White" Cursor="Hand" MouseLeftButtonDown="lblClearUiLogs_MouseLeftButtonDown">
                         <TextBlock TextDecorations="Underline"><Run Text="Clear logs"/></TextBlock>
@@ -586,6 +596,9 @@
                         
                         <Grid Grid.Row="2" Grid.Column="0" Margin="0,5,0,5" HorizontalAlignment="Center">
                             <StackPanel Orientation="Horizontal">
+                                <CheckBox x:Name="chkTakeSnapshots" Margin="5,0,17,1" IsChecked="True" Checked="chkTakeSnapshots_CheckChanged" Unchecked="chkTakeSnapshots_CheckChanged">
+                                    <TextBlock Text="Use snapshots" Margin="0,-2,0,0"/>
+                                </CheckBox>
                                 <Label Content="Set or call other presets (16 - 254):" Margin="10,0,10,0"/>
                                 <materialDesign:NumericUpDown x:Name="numOtherPreset" Margin="5,0,5,0" Minimum="16" Value="16" Maximum="254" MaxWidth="100" BorderThickness="0,0,0,0"/>
                                 <Button x:Name="btnCallOtherPreset" Content="Call" Width="50" Margin="10,0,10,0" Style="{StaticResource CustomButtonStyle}" PreviewMouseDown="btnCallOtherPreset_PreviewMouseDown"/>

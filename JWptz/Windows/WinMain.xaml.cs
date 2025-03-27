@@ -234,11 +234,14 @@ namespace JWptz.Windows
                         APIBaseResponse presRes = await APIs.SendCommand(cmd);
                         AddUILog(UILogType.Command, null, cmd, presRes);
 
-                        APIImageResponse imgRes = await APIs.GetSnapshot(_camera);
-                        if (imgRes.Successful)
+                        if (presRes.Successful && Settings.SnapshotOnSetPreset)
                         {
-                            presetButton.Background = new ImageBrush(imgRes.BitmapImage) { Stretch = Stretch.Fill };
-                            Helpers.SavePresetCacheImage(_camera.Id, preset, imgRes.BitmapImage);
+                            APIImageResponse imgRes = await APIs.GetSnapshot(_camera);
+                            if (imgRes.Successful)
+                            {
+                                presetButton.Background = new ImageBrush(imgRes.BitmapImage) { Stretch = Stretch.Fill };
+                                Helpers.SavePresetCacheImage(_camera.Id, preset, imgRes.BitmapImage);
+                            }
                         }
                     }
                     else
@@ -422,6 +425,11 @@ namespace JWptz.Windows
             {
                 ShowMessage(ex.Message, MessageBoxImage.Error);
             }
+        }
+
+        private void chkTakeSnapshots_CheckChanged(object sender, RoutedEventArgs e)
+        {
+            Settings.SnapshotOnSetPreset = chkTakeSnapshots.IsChecked();
         }
     }
 }

@@ -28,6 +28,7 @@ namespace JWptz.Utilities
         };
 
         public static int CommandTimeout { get; set; } = 2500;
+        public static bool SnapshotOnSetPreset { get; set; } = true;
         public static PTZFSpeeds PTZFSpeeds { get; set; } = new();
         public static ImageSettings ImageSettings { get; set; } = new();
         public static UILogsSettings UILogsSettings { get; set; } = new();
@@ -51,6 +52,9 @@ namespace JWptz.Utilities
 
         [JsonProperty("CommandTimeout")]
         public int commandTimeout { get { return CommandTimeout; } set { CommandTimeout = value; } }
+
+        [JsonProperty("SnapshotOnSetPreset")]
+        public bool snapshotOnSetPreset { get { return SnapshotOnSetPreset; } set { SnapshotOnSetPreset = value; } }
 
         [JsonProperty("PTZFSpeeds")]
         public PTZFSpeeds ptzfSpeeds { get { return PTZFSpeeds; } set { PTZFSpeeds = value; } }
