@@ -309,15 +309,15 @@ namespace JWptz.Windows
             }
         }
 
-        private void cmbCamera_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void cmbCameras_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (cmbCamera.SelectedItem is null)
+            if (cmbCameras.SelectedItem is null)
             {
                 _camera = null;
                 lblCamInfo.Content = "-";
                 return;
             }
-            _camera = cmbCamera.SelectedItem as PTZCamera;
+            _camera = cmbCameras.SelectedItem as PTZCamera;
             UpdateCamInfo();
             LoadPresetCacheImage();
         }
@@ -385,6 +385,12 @@ namespace JWptz.Windows
             // settings
             // update form size
 
+            //CollectionViewSource.GetDefaultView(cmbCameras.ItemsSource).Refresh();
+            Settings.Cameras.Add(new PTZCamera("123", "ABC") { Id = 99 });
+            Settings.Cameras2.Add(new PTZCamera("123", "ABC") { Id = 99 });
+            Settings.Cameras.Clear();
+            Settings.Cameras2.Clear();
+            this.Title += ", BP";
         }
 
         private void btnExit_PreviewMouseDown(object sender, MouseButtonEventArgs e)
@@ -429,7 +435,16 @@ namespace JWptz.Windows
 
         private void chkTakeSnapshots_CheckChanged(object sender, RoutedEventArgs e)
         {
+            if (_loading) { return; }
             Settings.SnapshotOnSetPreset = chkTakeSnapshots.IsChecked();
+        }
+
+        private void btnResetPtzfSpeeds_PreviewMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            sldPanSpeed.Value = 8;
+            sldTiltSpeed.Value = 8;
+            sldZoomSpeed.Value = 3;
+            sldFocusSpeed.Value = 3;
         }
     }
 }

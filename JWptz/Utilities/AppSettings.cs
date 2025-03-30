@@ -14,20 +14,21 @@ namespace JWptz.Utilities
 {
     public class Settings
     {
-        public static ObservableCollection<PTZCamera> Cameras = new ObservableCollection<PTZCamera>()
+        public static ObservableCollection<PTZCamera> Cameras { get; set; } = new ObservableCollection<PTZCamera>()
         {
-            { new PTZCamera() { Id = 1, Name = "Cam 1", IP = "" } },
-            { new PTZCamera() { Id = 2, Name = "Alta camera", IP = "123.456.789.000", UseAuth = true, ProtocolType = ProtocolType.HTTPS } },
-            { new PTZCamera() { Id = 3, Name = "Alta asdf", IP = "11.22.33.44", UseAuth = true } },
-            { new PTZCamera() { Id = 4, Name = "asgd camera", IP = "" } },
-            { new PTZCamera() { Id = 5, Name = "Alta camera", IP = "" } },
-            { new PTZCamera() { Id = 6, Name = "345 345", IP = "" } },
-            { new PTZCamera() { Id = 7, Name = "345 camera", IP = "" } },
-            { new PTZCamera() { Id = 8, Name = "3 dff", IP = "" } },
-            { new PTZCamera() { Id = 9, Name = "gg 3", IP = "" } }
+            { new PTZCamera() { Id = 1, Name = "Cam 1", IP = "192.168.0.88" } },
+            { new PTZCamera() { Id = 2, Name = "Cam 2", IP = "192.168.0.881" } },
+            { new PTZCamera() { Id = 3, Name = "Cam 3", IP = "192.168.0.882" } }
         };
 
-        public static int CommandTimeout { get; set; } = 2500;
+        public static List<PTZCamera> Cameras2 { get; set; } = new List<PTZCamera>()
+        {
+            { new PTZCamera() { Id = 1, Name = "Cam 1", IP = "192.168.0.88" } },
+            { new PTZCamera() { Id = 2, Name = "Cam 2", IP = "192.168.0.881" } },
+            { new PTZCamera() { Id = 3, Name = "Cam 3", IP = "192.168.0.882" } }
+        };
+
+        public static int CommandTimeout { get; set; } = 5000;
         public static bool SnapshotOnSetPreset { get; set; } = true;
         public static PTZFSpeeds PTZFSpeeds { get; set; } = new();
         public static ImageSettings ImageSettings { get; set; } = new();

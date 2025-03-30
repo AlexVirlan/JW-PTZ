@@ -247,7 +247,7 @@
                     <Label Content="Select a camera:" Foreground="LightGray" HorizontalContentAlignment="Center"/>
                 </Grid>
                 <Grid>
-                    <ComboBox x:Name="cmbCamera" Height="34" Width="auto" ItemsSource="{x:Static utils:Settings.Cameras}" SelectedIndex="0" SelectionChanged="cmbCamera_SelectionChanged">
+                    <ComboBox x:Name="cmbCameras" Height="34" Width="auto" ItemsSource="{x:Static utils:Settings.Cameras2}" SelectedIndex="0" SelectionChanged="cmbCameras_SelectionChanged">
                         <ComboBox.ItemTemplate>
                             <DataTemplate>
                                 <TextBlock>
@@ -635,11 +635,12 @@
                 <materialDesign:PackIcon Kind="MenuOpen" Foreground="White" Height="46" Width="46"/>
             </materialDesign:PopupBox.ToggleContent>
             <StackPanel Orientation="Vertical">
-                <CheckBox x:Name="chkSlimMode" Content="Slim mode" IsChecked="False" Style="{StaticResource MaterialDesignFilterChipPrimaryOutlineCheckBox}" Margin="6" Checked="ToggleSlimMode" Unchecked="ToggleSlimMode"  />
+                <CheckBox x:Name="chkSlimMode" Content="Slim mode" IsChecked="False" Style="{StaticResource MaterialDesignFilterChipPrimaryOutlineCheckBox}" Margin="6" Checked="ToggleSlimMode" Unchecked="ToggleSlimMode" HorizontalAlignment="Center"/>
                 <Separator/>
-                <Button x:Name="btnSettings" Content="Settings" PreviewMouseDown="btnSettings_Click"/>
+                <Button x:Name="btnSettings" Content="Settings" PreviewMouseDown="btnSettings_Click" HorizontalContentAlignment="Center"/>
+                <Button x:Name="btnResetPtzfSpeeds" Content="Reset PTZF speeds" PreviewMouseDown="btnResetPtzfSpeeds_PreviewMouseDown" HorizontalContentAlignment="Center"/>
                 <Separator/>
-                <Button x:Name="btnExit" Content="Exit" PreviewMouseDown="btnExit_PreviewMouseDown"/>
+                <Button x:Name="btnExit" Content="Exit" PreviewMouseDown="btnExit_PreviewMouseDown" HorizontalContentAlignment="Center"/>
             </StackPanel>
         </materialDesign:PopupBox>
 
