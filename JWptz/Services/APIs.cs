@@ -135,6 +135,7 @@ namespace JWptz.Services
                 case CommandType.GoHome: result += $"{apiControlPath}&home"; break;
                 case CommandType.SetPreset: result += $"{apiControlPath}&posset&{ptzCommand.Preset}"; break;
                 case CommandType.CallPreset: result += $"{apiControlPath}&poscall&{ptzCommand.Preset}"; break;
+
                 case CommandType.AdjustLuminance: result += $"{apiSettingsPath}?post_image_value&luminance&{ptzCommand.ImageSettings.Luminance}"; break;
                 case CommandType.AdjustSaturation: result += $"{apiSettingsPath}?post_image_value&saturation&{ptzCommand.ImageSettings.Saturation}"; break;
                 case CommandType.AdjustContrast: result += $"{apiSettingsPath}?post_image_value&contrast&{ptzCommand.ImageSettings.Contrast}"; break;

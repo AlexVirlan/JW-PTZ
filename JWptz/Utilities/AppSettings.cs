@@ -3,30 +3,58 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Documents;
 
 namespace JWptz.Utilities
 {
+    public class SettingsNotifier : Freezable, INotifyPropertyChanged
+    {
+        protected override Freezable CreateInstanceCore() => new SettingsNotifier();
+
+        public SettingsNotifier()
+        {
+            Settings.CamerasChanged += (s, e) => OnPropertyChanged(nameof(Cameras));
+        }
+
+        public ObservableCollection<PTZCamera> Cameras => Settings.Cameras;
+
+        public event PropertyChangedEventHandler? PropertyChanged;
+        private void OnPropertyChanged(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+    }
+
     public class Settings
     {
-        public static ObservableCollection<PTZCamera> Cameras { get; set; } = new ObservableCollection<PTZCamera>()
+        #region Cameras
+        private static ObservableCollection<PTZCamera> _cameras = new ObservableCollection<PTZCamera>();
+        public static ObservableCollection<PTZCamera> Cameras
         {
-            { new PTZCamera() { Id = 1, Name = "Cam 1", IP = "192.168.0.88" } },
-            { new PTZCamera() { Id = 2, Name = "Cam 2", IP = "192.168.0.881" } },
-            { new PTZCamera() { Id = 3, Name = "Cam 3", IP = "192.168.0.882" } }
-        };
+            get => _cameras;
+            set
+            {
+                if (_cameras != value)
+                {
+                    _cameras = value;
+                    OnCamerasChanged();
+                }
+            }
+        }
 
-        public static List<PTZCamera> Cameras2 { get; set; } = new List<PTZCamera>()
+        public static event EventHandler? CamerasChanged;
+        private static void OnCamerasChanged()
         {
-            { new PTZCamera() { Id = 1, Name = "Cam 1", IP = "192.168.0.88" } },
-            { new PTZCamera() { Id = 2, Name = "Cam 2", IP = "192.168.0.881" } },
-            { new PTZCamera() { Id = 3, Name = "Cam 3", IP = "192.168.0.882" } }
-        };
+            CamerasChanged?.Invoke(null, EventArgs.Empty);
+        }
+        #endregion
 
         public static int CommandTimeout { get; set; } = 5000;
         public static bool SnapshotOnSetPreset { get; set; } = true;
@@ -103,6 +131,7 @@ namespace JWptz.Utilities
                 string settingsData = File.ReadAllText(path);
                 JsonConvert.DeserializeObject<AppSettings>(settingsData,
                     new JsonSerializerSettings { ObjectCreationHandling = ObjectCreationHandling.Replace });
+
                 return new FunctionResponse(error: false, message: "Settings loaded successfully.");
             }
             catch (Exception ex)

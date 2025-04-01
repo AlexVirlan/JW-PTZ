@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -15,6 +17,8 @@ namespace JWptz.Entities
         public bool UseAuth { get; set; } = false;
         public string Username { get; set; } = string.Empty;
         public string Password { get; set; } = string.Empty;
+
+        [JsonConverter(typeof(StringEnumConverter))]
         public ProtocolType ProtocolType { get; set; } = ProtocolType.HTTP;
         #endregion
 

@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -23,7 +25,7 @@ namespace JWptz.Windows
     {
         #region Variables
         private bool _loading = false;
-        private PTZCamera? _camera = new();
+        private PTZCamera? _camera = null;
         private KeyboardHook? _keyboardHook;
         #endregion
 
@@ -314,9 +316,11 @@ namespace JWptz.Windows
             if (cmbCameras.SelectedItem is null)
             {
                 _camera = null;
-                lblCamInfo.Content = "-";
+                if (Settings.Cameras.Count == 0) { lblCamInfo.Content = "Go to settings to add cameras"; }
+                else { lblCamInfo.Content = "Please select a camera"; }
                 return;
             }
+
             _camera = cmbCameras.SelectedItem as PTZCamera;
             UpdateCamInfo();
             LoadPresetCacheImage();
@@ -331,6 +335,11 @@ namespace JWptz.Windows
             {
                 string auth = _camera.UseAuth ? ", auth" : "";
                 result = $"{_camera.IP} ({_camera.ProtocolType.ToLowerString() + auth})";
+            }
+            else
+            {
+                if (Settings.Cameras.Count == 0) { result = "Go to settings to add cameras"; }
+                else { result = "Please select a camera"; }
             }
             lblCamInfo.Content = result;
         }
@@ -385,12 +394,6 @@ namespace JWptz.Windows
             // settings
             // update form size
 
-            //CollectionViewSource.GetDefaultView(cmbCameras.ItemsSource).Refresh();
-            Settings.Cameras.Add(new PTZCamera("123", "ABC") { Id = 99 });
-            Settings.Cameras2.Add(new PTZCamera("123", "ABC") { Id = 99 });
-            Settings.Cameras.Clear();
-            Settings.Cameras2.Clear();
-            this.Title += ", BP";
         }
 
         private void btnExit_PreviewMouseDown(object sender, MouseButtonEventArgs e)

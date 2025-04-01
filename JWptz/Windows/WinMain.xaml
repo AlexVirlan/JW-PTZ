@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:JWptz.Windows"
+        xmlns:wins="clr-namespace:JWptz.Windows"
         xmlns:controls="clr-namespace:JWptz.Controls"
         xmlns:utils="clr-namespace:JWptz.Utilities"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" x:Class="JWptz.Windows.WinMain"
@@ -11,6 +11,7 @@
         Title="JW PTZ - AvA.Soft" Height="800" Width="1050" d:Height="800" d:Width="1050" Background="#FF1A1A1A" Foreground="White" WindowStartupLocation="CenterScreen"
         ResizeMode="CanMinimize" Loaded="Window_Loaded" Closing="Window_Closing">
     <Window.Resources>
+        <utils:SettingsNotifier x:Key="SettingsNotifier"/>
         <Style x:Key="BasicRadioStyle" TargetType="{x:Type RadioButton}">
             <Setter Property="Foreground" Value="White"/>
             <Setter Property="FontWeight" Value="Bold"/>
@@ -247,7 +248,7 @@
                     <Label Content="Select a camera:" Foreground="LightGray" HorizontalContentAlignment="Center"/>
                 </Grid>
                 <Grid>
-                    <ComboBox x:Name="cmbCameras" Height="34" Width="auto" ItemsSource="{x:Static utils:Settings.Cameras2}" SelectedIndex="0" SelectionChanged="cmbCameras_SelectionChanged">
+                    <ComboBox x:Name="cmbCameras" Height="34" Width="auto" ItemsSource="{Binding Cameras, Source={StaticResource SettingsNotifier}}" SelectedIndex="0" SelectionChanged="cmbCameras_SelectionChanged">
                         <ComboBox.ItemTemplate>
                             <DataTemplate>
                                 <TextBlock>
@@ -263,7 +264,7 @@
                     </ComboBox>
                 </Grid>
                 <Grid>
-                    <Label x:Name="lblCamInfo" Content="Camera info" Foreground="LightGray" HorizontalContentAlignment="Center"/>
+                    <Label x:Name="lblCamInfo" Content="-" Foreground="LightGray" HorizontalContentAlignment="Center"/>
                 </Grid>
             </StackPanel>
 
