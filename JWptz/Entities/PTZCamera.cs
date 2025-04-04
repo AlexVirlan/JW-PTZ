@@ -17,6 +17,7 @@ namespace JWptz.Entities
         public bool UseAuth { get; set; } = false;
         public string Username { get; set; } = string.Empty;
         public string Password { get; set; } = string.Empty;
+        public bool LockPresets { get; set; } = false;
 
         [JsonConverter(typeof(StringEnumConverter))]
         public ProtocolType ProtocolType { get; set; } = ProtocolType.HTTP;

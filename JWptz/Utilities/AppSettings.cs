@@ -58,6 +58,7 @@ namespace JWptz.Utilities
 
         public static int CommandTimeout { get; set; } = 5000;
         public static bool SnapshotOnSetPreset { get; set; } = true;
+        public static bool ButtonsWaitForResponse { get; set; } = false;
         public static PTZFSpeeds PTZFSpeeds { get; set; } = new();
         public static ImageSettings ImageSettings { get; set; } = new();
         public static UILogsSettings UILogsSettings { get; set; } = new();
@@ -84,6 +85,9 @@ namespace JWptz.Utilities
 
         [JsonProperty("SnapshotOnSetPreset")]
         public bool snapshotOnSetPreset { get { return SnapshotOnSetPreset; } set { SnapshotOnSetPreset = value; } }
+
+        [JsonProperty("ButtonsWaitForResponse")]
+        public bool buttonsWaitForResponse { get { return ButtonsWaitForResponse; } set { ButtonsWaitForResponse = value; } }
 
         [JsonProperty("PTZFSpeeds")]
         public PTZFSpeeds ptzfSpeeds { get { return PTZFSpeeds; } set { PTZFSpeeds = value; } }

@@ -81,11 +81,20 @@ namespace JWptz.Windows
 
         private void OnCtrlPressed(object? sender, KeyboardHookEventArgs e)
         {
+            if (_camera is null) { return; }
+
             if (e.KeyboardState == KeyboardHook.KeyboardState.KeyDown)
             {
-                grdPresetsMain.Background = Helpers.GetBrushFromHex(Globals.DarkRedHex);
-                btnCallOtherPreset.Content = "Set";
-                tabPresets.Header = "Presets (SETTING)";
+                if (_camera.LockPresets)
+                {
+                    tabPresets.Header = "Presets (locked for this camera)";
+                }
+                else
+                {
+                    grdPresetsMain.Background = Helpers.GetBrushFromHex(Globals.DarkRedHex);
+                    btnCallOtherPreset.Content = "Set";
+                    tabPresets.Header = "Presets (SETTING)";
+                }
             }
             else if (e.KeyboardState == KeyboardHook.KeyboardState.KeyUp)
             {
@@ -211,6 +220,7 @@ namespace JWptz.Windows
 
         private async void CallPreset_PreviewMouseDown(object sender, MouseButtonEventArgs e)
         {
+            Button? presetButton = null;
             try
             {
                 #region Validations
@@ -220,18 +230,26 @@ namespace JWptz.Windows
                     return;
                 }
 
-                Button? presetButton = sender as Button;
+                presetButton = sender as Button;
                 if (presetButton is null) { return; }
 
                 if (!int.TryParse(presetButton.Name.Replace("btnPreset", "", StringComparison.OrdinalIgnoreCase), out int preset))
                 { throw new Exception("Could not parse the preset button value."); }
                 #endregion
 
+                if (Settings.ButtonsWaitForResponse) { presetButton.IsEnabled = false; }
                 bool isCtrlPressed = (Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control;
                 if (e.ChangedButton == MouseButton.Left)
                 {
                     if (isCtrlPressed)
                     {
+                        if (_camera.LockPresets)
+                        {
+                            ShowMessage("The presets for this camera are locked. " +
+                                "You can change this for each camera individually, from this app's settings.");
+                            return;
+                        }
+
                         PTZCommand cmd = PTZCommand.SetPresetInit(_camera, preset);
                         APIBaseResponse presRes = await APIs.SendCommand(cmd);
                         AddUILog(UILogType.Command, null, cmd, presRes);
@@ -267,10 +285,15 @@ namespace JWptz.Windows
             {
                 ShowMessage(ex.Message, MessageBoxImage.Error);
             }
+            finally
+            {
+                presetButton.IsEnabled = true;
+            }
         }
 
         private async void PTZFControl_PreviewMouseDownUp(object sender, MouseButtonEventArgs e)
         {
+            Button? ptzfButton = null;
             try
             {
                 #region Validations
@@ -280,10 +303,11 @@ namespace JWptz.Windows
                     return;
                 }
 
-                Button? ptzfButton = sender as Button;
+                ptzfButton = sender as Button;
                 if (ptzfButton is null) { return; }
                 #endregion
 
+                if (Settings.ButtonsWaitForResponse) { ptzfButton.IsEnabled = false; }
                 string cmdName = ptzfButton.Name.Replace("btn", "", StringComparison.OrdinalIgnoreCase);
                 CommandType cmdType = Helpers.ParseEnum<CommandType>(cmdName);
 
@@ -308,6 +332,10 @@ namespace JWptz.Windows
             catch (Exception ex)
             {
                 ShowMessage(ex.Message, MessageBoxImage.Error);
+            }
+            finally
+            {
+                ptzfButton.IsEnabled = true;
             }
         }
 
