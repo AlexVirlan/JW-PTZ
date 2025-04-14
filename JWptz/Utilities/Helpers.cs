@@ -78,12 +78,33 @@ namespace JWptz.Utilities
             return new SolidColorBrush(color);
         }
 
-        public static T ParseEnum<T>(string value) where T : struct
+        public static T ParseEnum<T>(string value, bool strict = false, T? fallback = null) where T : struct, Enum
         {
-            if (Enum.TryParse(value, true, out T result))
-            { return result; }
-            else
-            { throw new ArgumentException($"'{value}' is not a valid value for enum '{typeof(T).Name}'"); }
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                if (fallback.HasValue) { return fallback.Value; }
+                throw new ArgumentException("Value cannot be null or whitespace.", nameof(value));
+            }
+
+            if (Enum.TryParse<T>(value, true, out T result)) { return result; }
+
+            if (!strict)
+            {
+                foreach (string name in Enum.GetNames(typeof(T)))
+                {
+                    if (name.Contains(value, StringComparison.OrdinalIgnoreCase))
+                    {
+                        return (T)Enum.Parse(typeof(T), name);
+                    }
+                }
+            }
+
+            if (fallback.HasValue)
+            {
+                return fallback.Value;
+            }
+
+            throw new ArgumentException($"'{value}' is not a valid value for enum '{typeof(T).Name}'.");
         }
 
         public static void SavePresetCacheImage(int cameraId, int presetId, BitmapImage? image)

@@ -25,12 +25,16 @@ namespace JWptz.Utilities
             return (File.Exists(fullPath), fullPath);
         }
 
-        public static T ToEnum<T>(this string value, T defaultValue)
-            where T : struct, Enum
+        public static T ToEnum<T>(this string value, T defaultValue) where T : struct, Enum
         {
             if (string.IsNullOrEmpty(value)) { return defaultValue; }
             T result;
             return Enum.TryParse(value, true, out result) ? result : defaultValue;
+        }
+
+        public static bool Contains(this string str, params string[] @params)
+        {
+            return @params.Any(param => str.Contains(param, StringComparison.OrdinalIgnoreCase));
         }
         #endregion
 

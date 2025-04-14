@@ -38,7 +38,8 @@ namespace JWptz.Entities
         FocusIn, FocusOut, FocusStop,
         ActivateAutoFocus,
         GoHome, SetPreset, CallPreset,
-        AdjustLuminance, AdjustSaturation, AdjustContrast, AdjustSharpness, AdjustHue
+        AdjustLuminance, AdjustSaturation, AdjustContrast, AdjustSharpness, AdjustHue,
+        OsdOn, OsdOff, OsdUp, OsdDown, OsdLeft, OsdRight, OsdEnter, OsdBack
     }
 
     public enum UILogType

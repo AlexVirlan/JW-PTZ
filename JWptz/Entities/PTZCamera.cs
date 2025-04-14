@@ -19,6 +19,9 @@ namespace JWptz.Entities
         public string Password { get; set; } = string.Empty;
         public bool LockPresets { get; set; } = false;
 
+        [JsonIgnore]
+        public bool OsdMode { get; set; } = false;
+
         [JsonConverter(typeof(StringEnumConverter))]
         public ProtocolType ProtocolType { get; set; } = ProtocolType.HTTP;
         #endregion

@@ -15,6 +15,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Media.Media3D;
+using JWptz.Controls;
 using JWptz.Entities;
 using JWptz.Services;
 using JWptz.Utilities;
@@ -25,7 +26,8 @@ namespace JWptz.Windows
     {
         #region Variables
         private bool _loading = false;
-        private PTZCamera? _camera = null;
+        private bool _internalChange = false;
+        public PTZCamera? _camera = null;
         private KeyboardHook? _keyboardHook;
         #endregion
 
@@ -141,11 +143,6 @@ namespace JWptz.Windows
         private void btnSettings_Click(object sender, RoutedEventArgs e)
         {
             SetView(ViewType.Settings);
-        }
-
-        private async void TEST_Click(object sender, RoutedEventArgs e)
-        {
-            Settings.Cameras.Clear();
         }
 
         private void AddUILog(UILogType logType, string? text = null, PTZCommand? command = null, APIBaseResponse? response = null,
@@ -291,9 +288,10 @@ namespace JWptz.Windows
             }
         }
 
-        private async void PTZFControl_PreviewMouseDownUp(object sender, MouseButtonEventArgs e)
+        private async void PTZFOControl_PreviewMouseDownUp(object sender, MouseButtonEventArgs? e)
         {
-            Button? ptzfButton = null;
+            dynamic? button = null;
+            string cmdName = string.Empty;
             try
             {
                 #region Validations
@@ -303,15 +301,47 @@ namespace JWptz.Windows
                     return;
                 }
 
-                ptzfButton = sender as Button;
-                if (ptzfButton is null) { return; }
+                if (sender is Button btn)
+                {
+                    button = btn;
+                    cmdName = btn.Name.Replace("btn", "", StringComparison.OrdinalIgnoreCase);
+                }
+                else if (sender is ImageToggleButton itb)
+                {
+                    button = itb;
+                    cmdName = itb.Tag.ToString() ?? string.Empty;
+                }
+                else
+                {
+                    ShowMessage("An error occurred while parsing the button data.", MessageBoxImage.Error);
+                    return;
+                }
                 #endregion
 
-                if (Settings.ButtonsWaitForResponse) { ptzfButton.IsEnabled = false; }
-                string cmdName = ptzfButton.Name.Replace("btn", "", StringComparison.OrdinalIgnoreCase);
-                CommandType cmdType = Helpers.ParseEnum<CommandType>(cmdName);
+                if (Settings.ButtonsWaitForResponse) { button.IsEnabled = false; }
+                CommandType cmdType;
 
-                if (e.ButtonState == MouseButtonState.Released)
+                if (_camera.OsdMode)
+                {
+                    if (cmdName.Contains("osd", "up", "down", "left", "right"))
+                    {
+                        cmdType = APIs.GetOSDCommand(cmdName);
+                    }
+                    else
+                    {
+                        if (e is not null && e.ButtonState == MouseButtonState.Pressed)
+                        {
+                            AddUILog(UILogType.Info, $"This command ({cmdName}) is invalid while the camera is in OSD mode.");
+                        }
+                        return;
+                    }
+                }
+                else
+                {
+                    cmdType = Helpers.ParseEnum<CommandType>(value: cmdName, strict: false, fallback: CommandType.None);
+                }
+
+                if (e is not null && e.ButtonState == MouseButtonState.Released)
                 {
                     cmdType = APIs.GetStopCommandType(cmdType);
                     if (cmdType == CommandType.None) { return; }
@@ -335,23 +365,32 @@ namespace JWptz.Windows
             }
             finally
             {
-                ptzfButton.IsEnabled = true;
+                if (button is not null) { button.IsEnabled = true; }
             }
         }
 
         private void cmbCameras_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (cmbCameras.SelectedItem is null)
+            try
             {
-                _camera = null;
-                if (Settings.Cameras.Count == 0) { lblCamInfo.Content = "Go to settings to add cameras"; }
-                else { lblCamInfo.Content = "Please select a camera"; }
-                return;
-            }
+                _internalChange = true;
 
-            _camera = cmbCameras.SelectedItem as PTZCamera;
-            UpdateCamInfo();
-            LoadPresetCacheImage();
+                if (cmbCameras.SelectedItem is null)
+                {
+                    _camera = null;
+                    itbOSD.IsChecked = false;
+                    if (Settings.Cameras.Count == 0) { lblCamInfo.Content = "Go to settings to add cameras"; }
+                    else { lblCamInfo.Content = "Please select a camera"; }
+                    return;
+                }
+
+                _camera = cmbCameras.SelectedItem as PTZCamera;
+                itbOSD.IsChecked = _camera?.OsdMode ?? false;
+                UpdateCamInfo();
+                LoadPresetCacheImage();
+            }
+            catch (Exception ex) { ShowMessage(ex.Message, MessageBoxImage.Error); }
+            finally { _internalChange = false; }
         }
 
         public void UpdateCamInfo()
@@ -476,6 +515,46 @@ namespace JWptz.Windows
             sldTiltSpeed.Value = 8;
             sldZoomSpeed.Value = 3;
             sldFocusSpeed.Value = 3;
+        }
+
+        private void OsdEnterBack_PreviewMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            #region Validations
+            if (_camera is null)
+            {
+                ShowMessage("Please select a camera first.", MessageBoxImage.Warning);
+                return;
+            }
+            #endregion
+
+            if (_camera.OsdMode)
+            { PTZFOControl_PreviewMouseDownUp(sender, e); }
+            else
+            { AddUILog(UILogType.Info, "The current camera is not in OSD mode. Please enable this mode before using the OSD buttons."); }
+        }
+
+        private void itbOSD_CheckedChanged(object sender, RoutedEventArgs e)
+        {
+            #region Validations
+            if (_internalChange) { return; }
+
+            if (_camera is null)
+            {
+                ShowMessage("Please select a camera first.", MessageBoxImage.Warning);
+                return;
+            }
+
+            ImageToggleButton? itb = sender as ImageToggleButton;
+            if (itb is null)
+            {
+                ShowMessage("An error occurred while parsing the OSD button data.", MessageBoxImage.Error);
+                return;
+            }
+            #endregion
+
+            _camera.OsdMode = itbOSD.IsChecked ?? false;
+            itb.Tag = _camera.OsdMode ? "OsdOn" : "OsdOff";
+            PTZFOControl_PreviewMouseDownUp(itb, null);
         }
     }
 }

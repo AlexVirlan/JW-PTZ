@@ -142,6 +142,15 @@ namespace JWptz.Services
                 case CommandType.AdjustSharpness: result += $"{apiSettingsPath}?post_image_value&sharpness&{ptzCommand.ImageSettings.Sharpness}"; break;
                 case CommandType.AdjustHue: result += $"{apiSettingsPath}?post_image_value&hue&{ptzCommand.ImageSettings.Hue}"; break;
 
+                case CommandType.OsdOn: result += $"{apiParamPath}?navigate_mode&OSD"; break;
+                case CommandType.OsdOff: result += $"{apiParamPath}?navigate_mode&PTZ"; break;
+                case CommandType.OsdUp: result += $"{apiControlPath}&up"; break;
+                case CommandType.OsdDown: result += $"{apiControlPath}&down"; break;
+                case CommandType.OsdLeft: result += $"{apiControlPath}&left"; break;
+                case CommandType.OsdRight: result += $"{apiControlPath}&right"; break;
+                case CommandType.OsdEnter: result += $"{apiParamPath}?navigate_mode&CONFIRM"; break;
+                case CommandType.OsdBack: result += $"{apiParamPath}?navigate_mode&OSD_BACK"; break;
+
                 case CommandType.None:
                 default: result = string.Empty; break;
             }
@@ -233,6 +242,26 @@ namespace JWptz.Services
             }
 
             return result;
+        }
+
+        public static CommandType GetOSDCommand(string command)
+        {
+            StringComparison sc = StringComparison.OrdinalIgnoreCase;
+            switch (command)
+            {
+                case string strOn when strOn.Contains("on", sc): return CommandType.OsdOn;
+                case string strOff when strOff.Contains("off", sc): return CommandType.OsdOff;
+
+                case string strUp when strUp.Contains("up", sc): return CommandType.OsdUp;
+                case string strDown when strDown.Contains("down", sc): return CommandType.OsdDown;
+                case string strLeft when strLeft.Contains("left", sc): return CommandType.OsdLeft;
+                case string strRight when strRight.Contains("right", sc): return CommandType.OsdRight;
+
+                case string strEnter when strEnter.Contains("enter", sc): return CommandType.OsdEnter;
+                case string strBack when strBack.Contains("back", sc): return CommandType.OsdBack;
+
+                default: return CommandType.None;
+            }
         }
     }
 }
