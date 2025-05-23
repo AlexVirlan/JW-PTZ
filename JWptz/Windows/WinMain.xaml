@@ -8,12 +8,17 @@
         xmlns:controls="clr-namespace:JWptz.Controls"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" x:Class="JWptz.Windows.WinMain"
         mc:Ignorable="d"
-        Title="JW PTZ - AvA.Soft" Height="800" Width="1050" d:Height="800" d:Width="1050" Background="#FF1A1A1A" Foreground="White" WindowStartupLocation="CenterScreen"
-        ResizeMode="CanMinimize" Loaded="Window_Loaded" Closing="Window_Closing">
+        Title="JW PTZ - AvA.Soft #FF1A1A1A" Height="690" Width="970" d:Height="690" d:Width="970" Background="#FF1A1A1A" Foreground="White" WindowStartupLocation="CenterScreen"
+        ResizeMode="CanMinimize" Loaded="Window_Loaded" Closing="Window_Closing" WindowStyle="None" AllowsTransparency="True" Opacity="1">
+
+    <!--<Window.Background>
+        <SolidColorBrush Opacity="0.5" Color="#FF1A1A1A"/>
+    </Window.Background>-->
+
     <Window.Resources>
         <utils:SettingsNotifier x:Key="SettingsNotifier"/>
         <controls:ToggleImageConverter x:Key="ToggleImageConverter"/>
-        
+
         <Style x:Key="BasicRadioStyle" TargetType="{x:Type RadioButton}">
             <Setter Property="Foreground" Value="White"/>
             <Setter Property="FontWeight" Value="Bold"/>
@@ -206,538 +211,223 @@
 
     </Window.Resources>
 
-    <Grid x:Name="grdRoot" Margin="0,0,0,0">
-
-
-
-        <!--<materialDesign:DrawerHost x:Name="DrawerHost222"  BottomDrawerBackground="{DynamicResource SecondaryHueLightBrush}" BottomDrawerCornerRadius="20 20 0 0" > -->
-        <!--Panel.ZIndex="1"-->
-        <!--
-
-            <materialDesign:DrawerHost.RightDrawerContent>
-                <StackPanel
-            Margin="16"
-            >
-                    <TextBlock
-                Margin="4"
-                HorizontalAlignment="Center"
-                Text="THE RIGHT STUFF" />
-                    <Button
-                Margin="4"
-                HorizontalAlignment="Center"
-                Command="{x:Static materialDesign:DrawerHost.CloseDrawerCommand}"
-                CommandParameter="{x:Static Dock.Right}"
-                Content="CLOSE THIS"
-                Style="{StaticResource MaterialDesignFlatButton}" />
-                    <Button
-                Margin="4"
-                HorizontalAlignment="Center"
-                Command="{x:Static materialDesign:DrawerHost.CloseDrawerCommand}"
-                Content="CLOSE ALL"
-                Style="{StaticResource MaterialDesignFlatButton}" />
-                </StackPanel>
-            </materialDesign:DrawerHost.RightDrawerContent>
-
-            <Grid HorizontalAlignment="Right" VerticalAlignment="Top" >
-                <Button Grid.Row="1" Grid.Column="2" Margin="4" Command="{x:Static materialDesign:DrawerHost.OpenDrawerCommand}" CommandParameter="{x:Static Dock.Right}" Content="{materialDesign:PackIcon Kind=ArrowRight}" />
-            </Grid>
-        </materialDesign:DrawerHost>-->
-
-
-
-
-
-        <Grid x:Name="grdMain" HorizontalAlignment="Left" Height="47" Margin="21,89,0,0" VerticalAlignment="Top" Width="83" Uid="Ceva">
-
-        </Grid>
-
-        <Grid x:Name="grdSettings" HorizontalAlignment="Left" Height="48" Margin="20,17,0,0" VerticalAlignment="Top" Width="69" Uid="Ceva">
-            <Button x:Name="btnBackToMain" Content="Back" HorizontalAlignment="Left" VerticalAlignment="Top" Background="#FF111111" Foreground="White" Margin="903,606,0,0" Style="{StaticResource CustomButtonStyle}" Click="btnBackToMain_Click" Width="60" Height="30"/>
-            <Button x:Name="btnSaveSet" Content="Save" HorizontalAlignment="Left" VerticalAlignment="Top" Background="#FF111111" Foreground="White" Margin="903,651,0,0" Style="{StaticResource CustomButtonStyle}" Width="60" Height="30"/>
-        </Grid>
-
-        <Grid x:Name="grdLogs" HorizontalAlignment="Left" Height="auto" Margin="264,410,0,0" VerticalAlignment="Top" Width="726">
-            <StackPanel Orientation="Vertical">
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
-                    <Label Content="Logs:" Foreground="White" HorizontalAlignment="Left"/>
-
-                    <CheckBox x:Name="chkAutoScrollUiLogs" Height="20" Width="120" Foreground="White" IsChecked="True" Checked="UpdateUILogsSettings" Unchecked="UpdateUILogsSettings" Margin="5,0,5,0">
-                        <TextBlock Text="Auto scroll to end" Margin="0,-2,0,0"/>
-                    </CheckBox>
-
-                    <CheckBox x:Name="chkIncludeParamsToUiLogs" Height="20" Width="110" Foreground="White" IsChecked="True" Checked="UpdateUILogsSettings" Unchecked="UpdateUILogsSettings" Margin="5,0,5,0">
-                        <TextBlock Text="Include params" Margin="0,-2,0,0"/>
-                    </CheckBox>
-
-                    <CheckBox x:Name="chkShowFullEndpointToUiLogs"  Height="20" Width="126" Foreground="White" IsChecked="False" Checked="UpdateUILogsSettings" Unchecked="UpdateUILogsSettings" Margin="5,0,5,0">
-                        <TextBlock Text="Show full endpoint" Margin="0,-2,0,0"/>
-                    </CheckBox>
-
-                    <CheckBox x:Name="chkShowTimeStamp" Height="20" Width="116" Foreground="White" IsChecked="True" Checked="UpdateUILogsSettings" Unchecked="UpdateUILogsSettings" Margin="5,0,5,0">
-                        <TextBlock Text="Show timestamp" Margin="0,-2,0,0"/>
-                    </CheckBox>
-
-                    <CheckBox x:Name="chkVerboseErrUiLogs" Height="20" Width="108" Foreground="White" IsChecked="True" Checked="UpdateUILogsSettings" Unchecked="UpdateUILogsSettings" Margin="5,0,5,0">
-                        <TextBlock Text="Verbose errors" Margin="0,-2,0,0"/>
-                    </CheckBox>
-
-                    <Label x:Name="lblClearUiLogs" Foreground="White" Cursor="Hand" MouseLeftButtonDown="lblClearUiLogs_MouseLeftButtonDown">
-                        <TextBlock TextDecorations="Underline"><Run Text="Clear logs"/></TextBlock>
-                    </Label>
-                </StackPanel>
-                <RichTextBox x:Name="rtbLogs" Foreground="White" SelectionBrush="#FF6B6B6B" BorderBrush="#FF404040" IsReadOnly="True" VerticalScrollBarVisibility="Auto" Height="150" TextChanged="rtbLogs_TextChanged" Style="{x:Null}">
-                    <RichTextBox.Background>
-                        <SolidColorBrush Color="#FF111111" Opacity="1"/>
-                    </RichTextBox.Background>
-                    <FlowDocument>
-                        <Paragraph>
-                            <Run Text=""/>
-                        </Paragraph>
-                    </FlowDocument>
-                </RichTextBox>
-            </StackPanel>
-        </Grid>
-
-
-
-        <!--<CheckBox x:Name="chkAutoScrollUiLogs" Content="Auto scroll to end" HorizontalAlignment="Left" Height="20" Margin="259,619,0,0" VerticalAlignment="Top" Width="120" Foreground="White" IsChecked="True" Checked="UpdateUILogsSettings" Unchecked="UpdateUILogsSettings"/>
-        <CheckBox x:Name="chkIncludeParamsToUiLogs" Content="Include params" HorizontalAlignment="Left" Height="20" Margin="390,619,0,0" VerticalAlignment="Top" Width="110" Foreground="White" IsChecked="True" Checked="UpdateUILogsSettings" Unchecked="UpdateUILogsSettings"/>
-        <Label Content="Logs:" HorizontalAlignment="Left" Margin="82,618,0,0" VerticalAlignment="Top" Foreground="White"/>
-
-        <CheckBox x:Name="chkShowFullEndpointToUiLogs" Content="Show full endpoint" HorizontalAlignment="Left" Height="20" Margin="515,619,0,0" VerticalAlignment="Top" Width="126" Foreground="White" IsChecked="False" Checked="UpdateUILogsSettings" Unchecked="UpdateUILogsSettings"/>
-
-        <CheckBox x:Name="chkShowTimeStamp" Content="Show timestamp" HorizontalAlignment="Left" Height="20" Margin="131,619,0,0" VerticalAlignment="Top" Width="116" Foreground="White" IsChecked="True" Checked="UpdateUILogsSettings" Unchecked="UpdateUILogsSettings"/>
-        <Label x:Name="lblClearUiLogs" HorizontalAlignment="Left" Margin="777,618,0,0" VerticalAlignment="Top" Foreground="White" Cursor="Hand" MouseLeftButtonDown="lblClearUiLogs_MouseLeftButtonDown">
-            <TextBlock TextDecorations="Underline">Clear logs</TextBlock>
-        </Label>
-
-        <CheckBox x:Name="chkVerboseErrUiLogs" Content="Verbose errors" HorizontalAlignment="Left" Height="20" Margin="655,619,0,0" VerticalAlignment="Top" Width="108" Foreground="White" IsChecked="True" Checked="UpdateUILogsSettings" Unchecked="UpdateUILogsSettings"/>-->
-
-        <!--<Grid HorizontalAlignment="Left" VerticalAlignment="Top" Width="500" Height="290" Margin="316,46,0,0">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="*"/>
-            </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
-
-            <Button x:Name="btnPreset1" Grid.Row="0" Grid.Column="0" Style="{StaticResource ImageButtonStyle}" Content="1" PreviewMouseDown="CallPreset_PreviewMouseDown"/>
-            <Button x:Name="btnPreset2" Grid.Row="0" Grid.Column="1" Style="{StaticResource ImageButtonStyle}" Content="2" PreviewMouseDown="CallPreset_PreviewMouseDown"/>
-            <Button x:Name="btnPreset3" Grid.Row="0" Grid.Column="2" Style="{StaticResource ImageButtonStyle}" Content="3" PreviewMouseDown="CallPreset_PreviewMouseDown"/>
-            <Button x:Name="btnPreset4" Grid.Row="0" Grid.Column="3" Style="{StaticResource ImageButtonStyle}" Content="4" PreviewMouseDown="CallPreset_PreviewMouseDown"/>
-            <Button x:Name="btnPreset5" Grid.Row="0" Grid.Column="4" Style="{StaticResource ImageButtonStyle}" Content="5" PreviewMouseDown="CallPreset_PreviewMouseDown"/>
-
-            <Button x:Name="btnPreset6" Grid.Row="1" Grid.Column="0" Style="{StaticResource ImageButtonStyle}" Content="6" PreviewMouseDown="CallPreset_PreviewMouseDown"/>
-            <Button x:Name="btnPreset7" Grid.Row="1" Grid.Column="1" Style="{StaticResource ImageButtonStyle}" Content="7" PreviewMouseDown="CallPreset_PreviewMouseDown"/>
-            <Button x:Name="btnPreset8" Grid.Row="1" Grid.Column="2" Style="{StaticResource ImageButtonStyle}" Content="8" PreviewMouseDown="CallPreset_PreviewMouseDown"/>
-            <Button x:Name="btnPreset9" Grid.Row="1" Grid.Column="3" Style="{StaticResource ImageButtonStyle}" Content="9" PreviewMouseDown="CallPreset_PreviewMouseDown"/>
-            <Button x:Name="btnPreset10" Grid.Row="1" Grid.Column="4" Style="{StaticResource ImageButtonStyle}" Content="10" PreviewMouseDown="CallPreset_PreviewMouseDown"/>
-
-            <Button x:Name="btnPreset11" Grid.Row="2" Grid.Column="0" Style="{StaticResource ImageButtonStyle}" Content="11" PreviewMouseDown="CallPreset_PreviewMouseDown"/>
-            <Button x:Name="btnPreset12" Grid.Row="2" Grid.Column="1" Style="{StaticResource ImageButtonStyle}" Content="12" PreviewMouseDown="CallPreset_PreviewMouseDown"/>
-            <Button x:Name="btnPreset13" Grid.Row="2" Grid.Column="2" Style="{StaticResource ImageButtonStyle}" Content="13" PreviewMouseDown="CallPreset_PreviewMouseDown"/>
-            <Button x:Name="btnPreset14" Grid.Row="2" Grid.Column="3" Style="{StaticResource ImageButtonStyle}" Content="14" PreviewMouseDown="CallPreset_PreviewMouseDown"/>
-            <Button x:Name="btnPreset15" Grid.Row="2" Grid.Column="4" Style="{StaticResource ImageButtonStyle}" Content="15" PreviewMouseDown="CallPreset_PreviewMouseDown"/>
-        </Grid>-->
-
-        <Grid x:Name="grdCams" HorizontalAlignment="Left" Height="80" Margin="50,20,0,0" VerticalAlignment="Top" Width="170">
-            <StackPanel Orientation="Vertical">
+    <Border x:Name="brdMain" BorderBrush="#FF404040" BorderThickness="1">
+        <DockPanel>
+            <DockPanel Background="#FF404040" Height="30" DockPanel.Dock="Top" MouseLeftButtonDown="TitleBar_MouseLeftButtonDown">
                 <Grid>
-                    <Label Content="Select a camera:" Foreground="LightGray" HorizontalContentAlignment="Center"/>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Grid.Column="0">
+                        <TextBlock Text="JW PTZ - AvA.Soft" Foreground="White" VerticalAlignment="Center" Margin="10,0,0,0" />
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Grid.Column="1">
+                        <TextBlock Text=":)" Foreground="White" VerticalAlignment="Center"/>
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Grid.Column="2">
+                        <Button Content="–" Width="30" Style="{StaticResource CustomButtonStyle}" Click="MinimizeButton_Click"/>
+                        <Button Content="□" Width="30" Style="{StaticResource CustomButtonStyle}" Click="MaximizeRestoreButton_Click" IsEnabled="False" Opacity="0.26"/>
+                        <Button Content="X" Width="30" Style="{StaticResource CustomButtonStyle}" Click="CloseButton_Click"/>
+                    </StackPanel>
                 </Grid>
-                <Grid>
-                    <ComboBox x:Name="cmbCameras" Height="34" Width="auto" ItemsSource="{Binding Cameras, Source={StaticResource SettingsNotifier}}" SelectedIndex="0" SelectionChanged="cmbCameras_SelectionChanged">
-                        <ComboBox.ItemTemplate>
-                            <DataTemplate>
-                                <TextBlock>
-                                    <TextBlock.Text>
-                                        <MultiBinding StringFormat="{}{0} - {1}">
-                                            <Binding Path="Id"/>
-                                            <Binding Path="Name"/>
-                                        </MultiBinding>
-                                    </TextBlock.Text>
-                                </TextBlock>
-                            </DataTemplate>
-                        </ComboBox.ItemTemplate>
-                    </ComboBox>
-                </Grid>
-                <Grid>
-                    <Label x:Name="lblCamInfo" Content="-" Foreground="LightGray" HorizontalContentAlignment="Center"/>
-                </Grid>
+            </DockPanel>
+
+
+            <Grid x:Name="grdRoot" Margin="0,0,0,0">
+
+
+
+                <!--<materialDesign:DrawerHost x:Name="DrawerHost222"  BottomDrawerBackground="{DynamicResource SecondaryHueLightBrush}" BottomDrawerCornerRadius="20 20 0 0" > -->
+                <!--Panel.ZIndex="1"-->
+                <!--
+
+        <materialDesign:DrawerHost.RightDrawerContent>
+            <StackPanel
+        Margin="16"
+        >
+                <TextBlock
+            Margin="4"
+            HorizontalAlignment="Center"
+            Text="THE RIGHT STUFF" />
+                <Button
+            Margin="4"
+            HorizontalAlignment="Center"
+            Command="{x:Static materialDesign:DrawerHost.CloseDrawerCommand}"
+            CommandParameter="{x:Static Dock.Right}"
+            Content="CLOSE THIS"
+            Style="{StaticResource MaterialDesignFlatButton}" />
+                <Button
+            Margin="4"
+            HorizontalAlignment="Center"
+            Command="{x:Static materialDesign:DrawerHost.CloseDrawerCommand}"
+            Content="CLOSE ALL"
+            Style="{StaticResource MaterialDesignFlatButton}" />
             </StackPanel>
+        </materialDesign:DrawerHost.RightDrawerContent>
 
-            <!--<Grid.RowDefinitions>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="*"/>
-            </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
-
-            <Rectangle Grid.Row="0" Grid.Column="0" Style="{StaticResource ImgBtnBGStyle}" />
-            <Rectangle Grid.Row="0" Grid.Column="1" Style="{StaticResource ImgBtnBGStyle}" />
-            
-            <RadioButton x:Name="rbCam1" Grid.Row="0" Grid.Column="0" Content="Cam. 1" Style="{StaticResource BasicRadioStyle}" GroupName="Cams" IsChecked="True"/>
-            <RadioButton x:Name="rbCam2" Grid.Row="0" Grid.Column="1" Content="Cam. 2" Style="{StaticResource BasicRadioStyle}" GroupName="Cams"/>
-            <RadioButton x:Name="rbCam3" Grid.Row="0" Grid.Column="2" Content="Cam. 3" Style="{StaticResource BasicRadioStyle}" GroupName="Cams"/>
-
-            <Label x:Name="lblInfoCam1" Grid.Row="0" Grid.Column="0" Content="Info" Foreground="LightGray" Margin="-3,12,0,0"/>
-            <Label x:Name="lblInfoCam2" Grid.Row="0" Grid.Column="1" Content="Info" Foreground="LightGray" Margin="-3,12,0,0"/>
-            <Label x:Name="lblInfoCam3" Grid.Row="0" Grid.Column="2" Content="Info" Foreground="LightGray" Margin="-3,12,0,0"/>-->
+        <Grid HorizontalAlignment="Right" VerticalAlignment="Top" >
+            <Button Grid.Row="1" Grid.Column="2" Margin="4" Command="{x:Static materialDesign:DrawerHost.OpenDrawerCommand}" CommandParameter="{x:Static Dock.Right}" Content="{materialDesign:PackIcon Kind=ArrowRight}" />
         </Grid>
+    </materialDesign:DrawerHost>-->
 
-        <Grid x:Name="grdPTZF" HorizontalAlignment="Left" VerticalAlignment="Top" Height="auto" Width="auto" Margin="50,110,0,0">
-            <StackPanel Orientation="Vertical">
-                <Grid Width="170" Height="170">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="*"/>
-                        <RowDefinition Height="*"/>
-                        <RowDefinition Height="*"/>
-                    </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
 
-                    <Rectangle Grid.Row="0" Grid.Column="0" Style="{StaticResource ImgBtnBGStyle}" />
-                    <Rectangle Grid.Row="0" Grid.Column="1" Style="{StaticResource ImgBtnBGStyle}" />
-                    <Rectangle Grid.Row="0" Grid.Column="2" Style="{StaticResource ImgBtnBGStyle}" />
-                    <Rectangle Grid.Row="1" Grid.Column="0" Style="{StaticResource ImgBtnBGStyle}" />
-                    <Rectangle Grid.Row="1" Grid.Column="1" Style="{StaticResource ImgBtnBGStyle}" />
-                    <Rectangle Grid.Row="1" Grid.Column="2" Style="{StaticResource ImgBtnBGStyle}" />
-                    <Rectangle Grid.Row="2" Grid.Column="0" Style="{StaticResource ImgBtnBGStyle}" />
-                    <Rectangle Grid.Row="2" Grid.Column="1" Style="{StaticResource ImgBtnBGStyle}" />
-                    <Rectangle Grid.Row="2" Grid.Column="2" Style="{StaticResource ImgBtnBGStyle}" />
 
-                    <Button x:Name="btnPanLeftTiltUp" Grid.Row="0" Grid.Column="0" Style="{StaticResource ImageButtonStyle}" Margin="5" PreviewMouseDown="PTZFOControl_PreviewMouseDownUp" PreviewMouseUp="PTZFOControl_PreviewMouseDownUp">
-                        <Button.Background>
-                            <ImageBrush ImageSource="/Resources/Images/up-left-arrow-white.png" Viewport="0.1,0.1,0.8,0.8" Opacity="0.64"/>
-                        </Button.Background>
-                    </Button>
-                    <Button x:Name="btnTiltUp" Grid.Row="0" Grid.Column="1" Style="{StaticResource ImageButtonStyle}" Margin="5" PreviewMouseDown="PTZFOControl_PreviewMouseDownUp" PreviewMouseUp="PTZFOControl_PreviewMouseDownUp">
-                        <Button.Background>
-                            <ImageBrush ImageSource="/Resources/Images/up-arrow-white.png" Viewport="0.1,0.1,0.8,0.8" Opacity="0.64"/>
-                        </Button.Background>
-                    </Button>
-                    <Button x:Name="btnPanRightTiltUp" Grid.Row="0" Grid.Column="2" Style="{StaticResource ImageButtonStyle}" Margin="5" PreviewMouseDown="PTZFOControl_PreviewMouseDownUp" PreviewMouseUp="PTZFOControl_PreviewMouseDownUp">
-                        <Button.Background>
-                            <ImageBrush ImageSource="/Resources/Images/up-right-arrow-white.png" Viewport="0.1,0.1,0.8,0.8" Opacity="0.64"/>
-                        </Button.Background>
-                    </Button>
 
-                    <Button x:Name="btnPanLeft" Grid.Row="1" Grid.Column="0" Style="{StaticResource ImageButtonStyle}" Margin="5" PreviewMouseDown="PTZFOControl_PreviewMouseDownUp" PreviewMouseUp="PTZFOControl_PreviewMouseDownUp">
-                        <Button.Background>
-                            <ImageBrush ImageSource="/Resources/Images/left-arrow-white.png" Viewport="0.1,0.1,0.8,0.8" Opacity="0.64"/>
-                        </Button.Background>
-                    </Button>
-                    <Button x:Name="btnGoHome" Grid.Row="1" Grid.Column="1" Style="{StaticResource ImageButtonStyle}" Margin="5" PreviewMouseDown="PTZFOControl_PreviewMouseDownUp" PreviewMouseUp="PTZFOControl_PreviewMouseDownUp">
-                        <Button.Background>
-                            <ImageBrush ImageSource="/Resources/Images/home2-white.png" Viewport="0.1,0.1,0.8,0.8" Opacity="0.64"/>
-                        </Button.Background>
-                    </Button>
-                    <Button x:Name="btnPanRight" Grid.Row="1" Grid.Column="2" Style="{StaticResource ImageButtonStyle}" Margin="5" PreviewMouseDown="PTZFOControl_PreviewMouseDownUp" PreviewMouseUp="PTZFOControl_PreviewMouseDownUp">
-                        <Button.Background>
-                            <ImageBrush ImageSource="/Resources/Images/right-arrow-white.png" Viewport="0.1,0.1,0.8,0.8" Opacity="0.64"/>
-                        </Button.Background>
-                    </Button>
 
-                    <Button x:Name="btnPanLeftTiltDown" Grid.Row="2" Grid.Column="0" Style="{StaticResource ImageButtonStyle}" Margin="5" PreviewMouseDown="PTZFOControl_PreviewMouseDownUp" PreviewMouseUp="PTZFOControl_PreviewMouseDownUp">
-                        <Button.Background>
-                            <ImageBrush ImageSource="/Resources/Images/down-left-arrow-white.png" Viewport="0.1,0.1,0.8,0.8" Opacity="0.64"/>
-                        </Button.Background>
-                    </Button>
-                    <Button x:Name="btnTiltDown" Grid.Row="2" Grid.Column="1" Style="{StaticResource ImageButtonStyle}" Margin="5" PreviewMouseDown="PTZFOControl_PreviewMouseDownUp" PreviewMouseUp="PTZFOControl_PreviewMouseDownUp">
-                        <Button.Background>
-                            <ImageBrush ImageSource="/Resources/Images/down-arrow-white.png" Viewport="0.1,0.1,0.8,0.8" Opacity="0.64"/>
-                        </Button.Background>
-                    </Button>
-                    <Button x:Name="btnPanRightTiltDown" Grid.Row="2" Grid.Column="2" Style="{StaticResource ImageButtonStyle}" Margin="5" PreviewMouseDown="PTZFOControl_PreviewMouseDownUp" PreviewMouseUp="PTZFOControl_PreviewMouseDownUp">
-                        <Button.Background>
-                            <ImageBrush ImageSource="/Resources/Images/down-right-arrow-white.png" Viewport="0.1,0.1,0.8,0.8" Opacity="0.64"/>
-                        </Button.Background>
-                    </Button>
+                <!--<Grid x:Name="grdMain" HorizontalAlignment="Left" Height="47" Margin="21,89,0,0" VerticalAlignment="Top" Width="83" Uid="Ceva">
+
                 </Grid>
 
-                <Grid Width="170" Height="55" Margin="0,6,0,6">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="*"/>
-                    </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
+                <Grid x:Name="grdSettings" HorizontalAlignment="Left" Height="48" Margin="20,17,0,0" VerticalAlignment="Top" Width="69" Uid="Ceva">
+                    <Button x:Name="btnBackToMain" Content="Back" HorizontalAlignment="Left" VerticalAlignment="Top" Background="#FF111111" Foreground="White" Margin="903,606,0,0" Style="{StaticResource CustomButtonStyle}" Click="btnBackToMain_Click" Width="60" Height="30"/>
+                    <Button x:Name="btnSaveSet" Content="Save" HorizontalAlignment="Left" VerticalAlignment="Top" Background="#FF111111" Foreground="White" Margin="903,651,0,0" Style="{StaticResource CustomButtonStyle}" Width="60" Height="30"/>
+                </Grid>-->
 
-                    <Rectangle Grid.Row="0" Grid.Column="0" Style="{StaticResource ImgBtnBGStyle}" />
-                    <Rectangle Grid.Row="0" Grid.Column="1" Style="{StaticResource ImgBtnBGStyle}" />
+                <Grid x:Name="grdLogs" HorizontalAlignment="Left" Height="auto" Margin="26,470,0,0" VerticalAlignment="Top" Width="920">
+                    <StackPanel Orientation="Vertical">
+                        <UniformGrid Rows="1" Columns="7" HorizontalAlignment="Stretch">
+                            <Label Content="Logs:" Foreground="White" HorizontalAlignment="Left"/>
 
-                    <Button x:Name="btnZoomIn" Grid.Row="0" Grid.Column="0" Style="{StaticResource ImageButtonStyle}" Margin="5" PreviewMouseDown="PTZFOControl_PreviewMouseDownUp" PreviewMouseUp="PTZFOControl_PreviewMouseDownUp">
-                        <Button.Background>
-                            <ImageBrush ImageSource="/Resources/Images/zoom-in-white.png" Stretch="Uniform" Viewport="0.1,0.1,0.8,0.8" Opacity="0.64"/>
-                        </Button.Background>
-                    </Button>
-                    <Button x:Name="btnZoomOut" Grid.Row="0" Grid.Column="1" Style="{StaticResource ImageButtonStyle}" Margin="5" PreviewMouseDown="PTZFOControl_PreviewMouseDownUp" PreviewMouseUp="PTZFOControl_PreviewMouseDownUp">
-                        <Button.Background>
-                            <ImageBrush ImageSource="/Resources/Images/zoom-out-white.png" Stretch="Uniform" Viewport="0.1,0.1,0.8,0.8" Opacity="0.64"/>
-                        </Button.Background>
-                    </Button>
+                            <CheckBox x:Name="chkAutoScrollUiLogs" Height="20" Width="120" Foreground="White" IsChecked="True" Checked="UpdateUILogsSettings" Unchecked="UpdateUILogsSettings">
+                                <TextBlock Text="Auto scroll to end" Margin="0,-2,0,0"/>
+                            </CheckBox>
+
+                            <CheckBox x:Name="chkShowTimeStamp" Height="20" Width="116" Foreground="White" IsChecked="True" Checked="UpdateUILogsSettings" Unchecked="UpdateUILogsSettings">
+                                <TextBlock Text="Show timestamp" Margin="0,-2,0,0"/>
+                            </CheckBox>
+
+                            <CheckBox x:Name="chkIncludeParamsToUiLogs" Height="20" Width="110" Foreground="White" IsChecked="True" Checked="UpdateUILogsSettings" Unchecked="UpdateUILogsSettings">
+                                <TextBlock Text="Include params" Margin="0,-2,0,0"/>
+                            </CheckBox>
+
+                            <CheckBox x:Name="chkVerboseErrUiLogs" Height="20" Width="108" Foreground="White" IsChecked="True" Checked="UpdateUILogsSettings" Unchecked="UpdateUILogsSettings">
+                                <TextBlock Text="Verbose errors" Margin="0,-2,0,0"/>
+                            </CheckBox>
+
+                            <CheckBox x:Name="chkShowFullEndpointToUiLogs"  Height="20" Width="126" Foreground="White" IsChecked="False" Checked="UpdateUILogsSettings" Unchecked="UpdateUILogsSettings">
+                                <TextBlock Text="Show full endpoint" Margin="0,-2,0,0"/>
+                            </CheckBox>
+
+                            <Label x:Name="lblClearUiLogs" Foreground="White" Cursor="Hand" MouseLeftButtonDown="lblClearUiLogs_MouseLeftButtonDown" HorizontalAlignment="Right">
+                                <TextBlock TextDecorations="Underline"><Run Text="Clear logs"/></TextBlock>
+                            </Label>
+                        </UniformGrid>
+                        <RichTextBox x:Name="rtbLogs" Foreground="White" SelectionBrush="#FF6B6B6B" BorderBrush="#FF404040" IsReadOnly="True" VerticalScrollBarVisibility="Auto" Height="150" TextChanged="rtbLogs_TextChanged" Style="{x:Null}">
+                            <RichTextBox.Background>
+                                <SolidColorBrush Color="#FF111111" Opacity="1"/>
+                            </RichTextBox.Background>
+                            <FlowDocument>
+                                <Paragraph>
+                                    <Run Text=""/>
+                                </Paragraph>
+                            </FlowDocument>
+                        </RichTextBox>
+                    </StackPanel>
                 </Grid>
 
-                <Grid Width="170" Height="55" Margin="0,0,0,6">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="*"/>
-                    </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-
-                    <Rectangle Grid.Row="0" Grid.Column="0" Style="{StaticResource ImgBtnBGStyle}" />
-                    <Rectangle Grid.Row="0" Grid.Column="1" Style="{StaticResource ImgBtnBGStyle}" />
-                    <Rectangle Grid.Row="0" Grid.Column="2" Style="{StaticResource ImgBtnBGStyle}" />
-
-                    <Button x:Name="btnFocusIn" Grid.Row="0" Grid.Column="0" Style="{StaticResource ImageButtonStyle}" Margin="5" PreviewMouseDown="PTZFOControl_PreviewMouseDownUp" PreviewMouseUp="PTZFOControl_PreviewMouseDownUp">
-                        <Button.Background>
-                            <ImageBrush ImageSource="/Resources/Images/focus-in-white.png" Stretch="Uniform" Viewport="0.1,0.1,0.8,0.8" Opacity="0.64"/>
-                        </Button.Background>
-                    </Button>
-                    <Button x:Name="btnFocusOut" Grid.Row="0" Grid.Column="1" Style="{StaticResource ImageButtonStyle}" Margin="5" PreviewMouseDown="PTZFOControl_PreviewMouseDownUp" PreviewMouseUp="PTZFOControl_PreviewMouseDownUp">
-                        <Button.Background>
-                            <ImageBrush ImageSource="/Resources/Images/focus-out-white.png" Stretch="Uniform" Viewport="0.1,0.1,0.8,0.8" Opacity="0.64"/>
-                        </Button.Background>
-                    </Button>
-                    <Button x:Name="btnActivateAutoFocus" Grid.Row="0" Grid.Column="2" Style="{StaticResource ImageButtonStyle}" Margin="5" PreviewMouseDown="PTZFOControl_PreviewMouseDownUp" PreviewMouseUp="PTZFOControl_PreviewMouseDownUp">
-                        <Button.Background>
-                            <ImageBrush ImageSource="/Resources/Images/focus-auto-white.png" Stretch="Uniform" Viewport="0.1,0.1,0.8,0.8" Opacity="0.64"/>
-                        </Button.Background>
-                    </Button>
-                </Grid>
-
-                <Grid Width="170" Height="55">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="*"/>
-                    </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-
-                    <Rectangle Grid.Row="0" Grid.Column="0" Style="{StaticResource ImgBtnBGStyle}" />
-                    <Rectangle Grid.Row="0" Grid.Column="1" Style="{StaticResource ImgBtnBGStyle}" />
-                    <Rectangle Grid.Row="0" Grid.Column="2" Style="{StaticResource ImgBtnBGStyle}" />
-
-                    <!--<CheckBox x:Name="chkOSD" Content="OSD" IsChecked="True" Style="{StaticResource MaterialDesignFilterChipPrimaryOutlineCheckBox}" Checked="" Unchecked=""/>-->
-
-                    <!--<ToggleButton Content="OSD" IsChecked="False" Style="{StaticResource MaterialDesignFlatPrimaryToggleButton}"/>-->
-
-                    <!--<ToggleButton
-                          Style="{StaticResource MaterialDesignActionToggleButton}"
-                          ToolTip="MaterialDesignActionToggleButton" IsChecked="False" Margin="0,0,0,0"
-                         >
-                        <Image
-                            Source="/Resources/Images/OSD-white.png" />
-                    </ToggleButton>-->
-
-                    <!--<ToggleButton
-                        Width="46px"
-                        Height="46px"
-                        Style="{StaticResource MaterialDesignActionToggleButton}"
-                        ToolTip="MaterialDesignActionToggleButton" IsChecked="False">
-                        <Image Source="/Resources/Images/OSD-white.png" Stretch="Uniform" />
-                    </ToggleButton>-->
-
-                    <!--<ToggleButton IsChecked="False" Style="{StaticResource ToggleButtonStyle}">
-                        <Image Source="/Resources/Images/OSD-white.png"/>
-                    </ToggleButton>-->
-
-                    <!--<ToggleButton IsChecked="False" Style="{StaticResource ToggleButtonStyle}"/>-->
-
-                    <!--MaterialDesignFlatPrimaryToggleButton-->
-                    <!--<ToggleButton IsChecked="False" Margin="5" Style="{StaticResource ToggleButtonStyle}" Content="OSD">
-                        --><!--<Image Source="/Resources/Images/OSD-white.png"/>--><!--
-                    </ToggleButton>-->
-
-                    <controls:ImageToggleButton x:Name="itbOSD" Grid.Row="0" Grid.Column="0"
-                        IsChecked="False"
-                        Style="{StaticResource ToggleButtonStyle}"
-                        Content="OSD"
-                        UncheckedImageSource="/Resources/Images/empty.png"
-                        CheckedImageSource="/Resources/Images/check-white.png"
-                        ImageOpacity="0.46" 
-                        Checked="itbOSD_CheckedChanged"
-                        Unchecked="itbOSD_CheckedChanged"
-                        Margin="5"/>
 
 
-                    <Button x:Name="btnOsdEnter" Grid.Row="0" Grid.Column="1" Style="{StaticResource ImageButtonStyle}" Margin="5" PreviewMouseDown="OsdEnterBack_PreviewMouseDown">
-                        <Button.Background>
-                            <ImageBrush ImageSource="/Resources/Images/enter-white.png" Stretch="Uniform" Viewport="0.1,0.1,0.8,0.8" Opacity="0.64"/>
-                        </Button.Background>
-                    </Button>
-                    
-                    <Button x:Name="btnOsdBack" Grid.Row="0" Grid.Column="2" Style="{StaticResource ImageButtonStyle}" Margin="5" PreviewMouseDown="OsdEnterBack_PreviewMouseDown">
-                        <Button.Background>
-                            <ImageBrush ImageSource="/Resources/Images/back-white.png" Stretch="Uniform" Viewport="0.1,0.1,0.8,0.8" Opacity="0.64"/>
-                        </Button.Background>
-                    </Button>
-                    
-                </Grid>
-            </StackPanel>
-        </Grid>
+                <!--<CheckBox x:Name="chkAutoScrollUiLogs" Content="Auto scroll to end" HorizontalAlignment="Left" Height="20" Margin="259,619,0,0" VerticalAlignment="Top" Width="120" Foreground="White" IsChecked="True" Checked="UpdateUILogsSettings" Unchecked="UpdateUILogsSettings"/>
+    <CheckBox x:Name="chkIncludeParamsToUiLogs" Content="Include params" HorizontalAlignment="Left" Height="20" Margin="390,619,0,0" VerticalAlignment="Top" Width="110" Foreground="White" IsChecked="True" Checked="UpdateUILogsSettings" Unchecked="UpdateUILogsSettings"/>
+    <Label Content="Logs:" HorizontalAlignment="Left" Margin="82,618,0,0" VerticalAlignment="Top" Foreground="White"/>
 
-        <!--<Grid HorizontalAlignment="Left" VerticalAlignment="Top" Height="170" Width="170" Margin="120,46,0,0">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="*"/>
-            </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
+    <CheckBox x:Name="chkShowFullEndpointToUiLogs" Content="Show full endpoint" HorizontalAlignment="Left" Height="20" Margin="515,619,0,0" VerticalAlignment="Top" Width="126" Foreground="White" IsChecked="False" Checked="UpdateUILogsSettings" Unchecked="UpdateUILogsSettings"/>
 
-            <Rectangle Grid.Row="0" Grid.Column="0" Style="{StaticResource ImgBtnBGStyle}" />
-            <Rectangle Grid.Row="0" Grid.Column="1" Style="{StaticResource ImgBtnBGStyle}" />
-            <Rectangle Grid.Row="0" Grid.Column="2" Style="{StaticResource ImgBtnBGStyle}" />
-            <Rectangle Grid.Row="1" Grid.Column="0" Style="{StaticResource ImgBtnBGStyle}" />
-            <Rectangle Grid.Row="1" Grid.Column="1" Style="{StaticResource ImgBtnBGStyle}" />
-            <Rectangle Grid.Row="1" Grid.Column="2" Style="{StaticResource ImgBtnBGStyle}" />
-            <Rectangle Grid.Row="2" Grid.Column="0" Style="{StaticResource ImgBtnBGStyle}" />
-            <Rectangle Grid.Row="2" Grid.Column="1" Style="{StaticResource ImgBtnBGStyle}" />
-            <Rectangle Grid.Row="2" Grid.Column="2" Style="{StaticResource ImgBtnBGStyle}" />
+    <CheckBox x:Name="chkShowTimeStamp" Content="Show timestamp" HorizontalAlignment="Left" Height="20" Margin="131,619,0,0" VerticalAlignment="Top" Width="116" Foreground="White" IsChecked="True" Checked="UpdateUILogsSettings" Unchecked="UpdateUILogsSettings"/>
+    <Label x:Name="lblClearUiLogs" HorizontalAlignment="Left" Margin="777,618,0,0" VerticalAlignment="Top" Foreground="White" Cursor="Hand" MouseLeftButtonDown="lblClearUiLogs_MouseLeftButtonDown">
+        <TextBlock TextDecorations="Underline">Clear logs</TextBlock>
+    </Label>
 
-            <Button x:Name="btnPanLeftTiltUp" Grid.Row="0" Grid.Column="0" Style="{StaticResource ImageButtonStyle}" Margin="5" PreviewMouseDown="PTZFControl_PreviewMouseDownUp" PreviewMouseUp="PTZFControl_PreviewMouseDownUp">
-                <Button.Background>
-                    <ImageBrush ImageSource="/Resources/Images/up-left-arrow-white.png" Viewport="0.1,0.1,0.8,0.8" Opacity="0.64"/>
-                </Button.Background>
-            </Button>
-            <Button x:Name="btnTiltUp" Grid.Row="0" Grid.Column="1" Style="{StaticResource ImageButtonStyle}" Margin="5" PreviewMouseDown="PTZFControl_PreviewMouseDownUp" PreviewMouseUp="PTZFControl_PreviewMouseDownUp">
-                <Button.Background>
-                    <ImageBrush ImageSource="/Resources/Images/up-arrow-white.png" Viewport="0.1,0.1,0.8,0.8" Opacity="0.64"/>
-                </Button.Background>
-            </Button>
-            <Button x:Name="btnPanRightTiltUp" Grid.Row="0" Grid.Column="2" Style="{StaticResource ImageButtonStyle}" Margin="5" PreviewMouseDown="PTZFControl_PreviewMouseDownUp" PreviewMouseUp="PTZFControl_PreviewMouseDownUp">
-                <Button.Background>
-                    <ImageBrush ImageSource="/Resources/Images/up-right-arrow-white.png" Viewport="0.1,0.1,0.8,0.8" Opacity="0.64"/>
-                </Button.Background>
-            </Button>
+    <CheckBox x:Name="chkVerboseErrUiLogs" Content="Verbose errors" HorizontalAlignment="Left" Height="20" Margin="655,619,0,0" VerticalAlignment="Top" Width="108" Foreground="White" IsChecked="True" Checked="UpdateUILogsSettings" Unchecked="UpdateUILogsSettings"/>-->
 
-            <Button x:Name="btnPanLeft" Grid.Row="1" Grid.Column="0" Style="{StaticResource ImageButtonStyle}" Margin="5" PreviewMouseDown="PTZFControl_PreviewMouseDownUp" PreviewMouseUp="PTZFControl_PreviewMouseDownUp">
-                <Button.Background>
-                    <ImageBrush ImageSource="/Resources/Images/left-arrow-white.png" Viewport="0.1,0.1,0.8,0.8" Opacity="0.64"/>
-                </Button.Background>
-            </Button>
-            <Button x:Name="btnGoHome" Grid.Row="1" Grid.Column="1" Style="{StaticResource ImageButtonStyle}" Margin="5" PreviewMouseDown="PTZFControl_PreviewMouseDownUp" PreviewMouseUp="PTZFControl_PreviewMouseDownUp">
-                <Button.Background>
-                    <ImageBrush ImageSource="/Resources/Images/home2-white.png" Viewport="0.1,0.1,0.8,0.8" Opacity="0.64"/>
-                </Button.Background>
-            </Button>
-            <Button x:Name="btnPanRight" Grid.Row="1" Grid.Column="2" Style="{StaticResource ImageButtonStyle}" Margin="5" PreviewMouseDown="PTZFControl_PreviewMouseDownUp" PreviewMouseUp="PTZFControl_PreviewMouseDownUp">
-                <Button.Background>
-                    <ImageBrush ImageSource="/Resources/Images/right-arrow-white.png" Viewport="0.1,0.1,0.8,0.8" Opacity="0.64"/>
-                </Button.Background>
-            </Button>
+                <!--<Grid HorizontalAlignment="Left" VerticalAlignment="Top" Width="500" Height="290" Margin="316,46,0,0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
 
-            <Button x:Name="btnPanLeftTiltDown" Grid.Row="2" Grid.Column="0" Style="{StaticResource ImageButtonStyle}" Margin="5" PreviewMouseDown="PTZFControl_PreviewMouseDownUp" PreviewMouseUp="PTZFControl_PreviewMouseDownUp">
-                <Button.Background>
-                    <ImageBrush ImageSource="/Resources/Images/down-left-arrow-white.png" Viewport="0.1,0.1,0.8,0.8" Opacity="0.64"/>
-                </Button.Background>
-            </Button>
-            <Button x:Name="btnTiltDown" Grid.Row="2" Grid.Column="1" Style="{StaticResource ImageButtonStyle}" Margin="5" PreviewMouseDown="PTZFControl_PreviewMouseDownUp" PreviewMouseUp="PTZFControl_PreviewMouseDownUp">
-                <Button.Background>
-                    <ImageBrush ImageSource="/Resources/Images/down-arrow-white.png" Viewport="0.1,0.1,0.8,0.8" Opacity="0.64"/>
-                </Button.Background>
-            </Button>
-            <Button x:Name="btnPanRightTiltDown" Grid.Row="2" Grid.Column="2" Style="{StaticResource ImageButtonStyle}" Margin="5" PreviewMouseDown="PTZFControl_PreviewMouseDownUp" PreviewMouseUp="PTZFControl_PreviewMouseDownUp">
-                <Button.Background>
-                    <ImageBrush ImageSource="/Resources/Images/down-right-arrow-white.png" Viewport="0.1,0.1,0.8,0.8" Opacity="0.64"/>
-                </Button.Background>
-            </Button>
-        </Grid>
+        <Button x:Name="btnPreset1" Grid.Row="0" Grid.Column="0" Style="{StaticResource ImageButtonStyle}" Content="1" PreviewMouseDown="CallPreset_PreviewMouseDown"/>
+        <Button x:Name="btnPreset2" Grid.Row="0" Grid.Column="1" Style="{StaticResource ImageButtonStyle}" Content="2" PreviewMouseDown="CallPreset_PreviewMouseDown"/>
+        <Button x:Name="btnPreset3" Grid.Row="0" Grid.Column="2" Style="{StaticResource ImageButtonStyle}" Content="3" PreviewMouseDown="CallPreset_PreviewMouseDown"/>
+        <Button x:Name="btnPreset4" Grid.Row="0" Grid.Column="3" Style="{StaticResource ImageButtonStyle}" Content="4" PreviewMouseDown="CallPreset_PreviewMouseDown"/>
+        <Button x:Name="btnPreset5" Grid.Row="0" Grid.Column="4" Style="{StaticResource ImageButtonStyle}" Content="5" PreviewMouseDown="CallPreset_PreviewMouseDown"/>
 
-        <Grid HorizontalAlignment="Left" VerticalAlignment="Top" Width="170" Height="55" Margin="120,221,0,0">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="*"/>
-            </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
+        <Button x:Name="btnPreset6" Grid.Row="1" Grid.Column="0" Style="{StaticResource ImageButtonStyle}" Content="6" PreviewMouseDown="CallPreset_PreviewMouseDown"/>
+        <Button x:Name="btnPreset7" Grid.Row="1" Grid.Column="1" Style="{StaticResource ImageButtonStyle}" Content="7" PreviewMouseDown="CallPreset_PreviewMouseDown"/>
+        <Button x:Name="btnPreset8" Grid.Row="1" Grid.Column="2" Style="{StaticResource ImageButtonStyle}" Content="8" PreviewMouseDown="CallPreset_PreviewMouseDown"/>
+        <Button x:Name="btnPreset9" Grid.Row="1" Grid.Column="3" Style="{StaticResource ImageButtonStyle}" Content="9" PreviewMouseDown="CallPreset_PreviewMouseDown"/>
+        <Button x:Name="btnPreset10" Grid.Row="1" Grid.Column="4" Style="{StaticResource ImageButtonStyle}" Content="10" PreviewMouseDown="CallPreset_PreviewMouseDown"/>
 
-            <Rectangle Grid.Row="0" Grid.Column="0" Style="{StaticResource ImgBtnBGStyle}" />
-            <Rectangle Grid.Row="0" Grid.Column="1" Style="{StaticResource ImgBtnBGStyle}" />
-            <Rectangle Grid.Row="0" Grid.Column="2" Style="{StaticResource ImgBtnBGStyle}" />
+        <Button x:Name="btnPreset11" Grid.Row="2" Grid.Column="0" Style="{StaticResource ImageButtonStyle}" Content="11" PreviewMouseDown="CallPreset_PreviewMouseDown"/>
+        <Button x:Name="btnPreset12" Grid.Row="2" Grid.Column="1" Style="{StaticResource ImageButtonStyle}" Content="12" PreviewMouseDown="CallPreset_PreviewMouseDown"/>
+        <Button x:Name="btnPreset13" Grid.Row="2" Grid.Column="2" Style="{StaticResource ImageButtonStyle}" Content="13" PreviewMouseDown="CallPreset_PreviewMouseDown"/>
+        <Button x:Name="btnPreset14" Grid.Row="2" Grid.Column="3" Style="{StaticResource ImageButtonStyle}" Content="14" PreviewMouseDown="CallPreset_PreviewMouseDown"/>
+        <Button x:Name="btnPreset15" Grid.Row="2" Grid.Column="4" Style="{StaticResource ImageButtonStyle}" Content="15" PreviewMouseDown="CallPreset_PreviewMouseDown"/>
+    </Grid>-->
 
-            <Button x:Name="btnFocusIn" Grid.Row="0" Grid.Column="0" Style="{StaticResource ImageButtonStyle}" Margin="5" PreviewMouseDown="PTZFControl_PreviewMouseDownUp" PreviewMouseUp="PTZFControl_PreviewMouseDownUp">
-                <Button.Background>
-                    <ImageBrush ImageSource="/Resources/Images/focus-in-white.png" Stretch="Uniform" Viewport="0.1,0.1,0.8,0.8" Opacity="0.64"/>
-                </Button.Background>
-            </Button>
-            <Button x:Name="btnFocusOut" Grid.Row="0" Grid.Column="1" Style="{StaticResource ImageButtonStyle}" Margin="5" PreviewMouseDown="PTZFControl_PreviewMouseDownUp" PreviewMouseUp="PTZFControl_PreviewMouseDownUp">
-                <Button.Background>
-                    <ImageBrush ImageSource="/Resources/Images/focus-out-white.png" Stretch="Uniform" Viewport="0.1,0.1,0.8,0.8" Opacity="0.64"/>
-                </Button.Background>
-            </Button>
-            <Button x:Name="btnActivateAutoFocus" Grid.Row="0" Grid.Column="2" Style="{StaticResource ImageButtonStyle}" Margin="5" PreviewMouseDown="PTZFControl_PreviewMouseDownUp" PreviewMouseUp="PTZFControl_PreviewMouseDownUp">
-                <Button.Background>
-                    <ImageBrush ImageSource="/Resources/Images/focus-auto-white.png" Stretch="Uniform" Viewport="0.1,0.1,0.8,0.8" Opacity="0.64"/>
-                </Button.Background>
-            </Button>
-        </Grid>
-
-        <Grid HorizontalAlignment="Left" VerticalAlignment="Top" Width="170" Height="55" Margin="120,281,0,0">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="*"/>
-            </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
-
-            <Rectangle Grid.Row="0" Grid.Column="0" Style="{StaticResource ImgBtnBGStyle}" />
-            <Rectangle Grid.Row="0" Grid.Column="1" Style="{StaticResource ImgBtnBGStyle}" />
-
-            <Button x:Name="btnZoomIn" Grid.Row="0" Grid.Column="0" Style="{StaticResource ImageButtonStyle}" Margin="5" PreviewMouseDown="PTZFControl_PreviewMouseDownUp" PreviewMouseUp="PTZFControl_PreviewMouseDownUp">
-                <Button.Background>
-                    <ImageBrush ImageSource="/Resources/Images/zoom-in-white.png" Stretch="Uniform" Viewport="0.1,0.1,0.8,0.8" Opacity="0.64"/>
-                </Button.Background>
-            </Button>
-            <Button x:Name="btnZoomOut" Grid.Row="0" Grid.Column="1" Style="{StaticResource ImageButtonStyle}" Margin="5" PreviewMouseDown="PTZFControl_PreviewMouseDownUp" PreviewMouseUp="PTZFControl_PreviewMouseDownUp">
-                <Button.Background>
-                    <ImageBrush ImageSource="/Resources/Images/zoom-out-white.png" Stretch="Uniform" Viewport="0.1,0.1,0.8,0.8" Opacity="0.64"/>
-                </Button.Background>
-            </Button>
-        </Grid>-->
-
-        <TabControl HorizontalAlignment="Left" Height="366" Margin="264,30,0,0" VerticalAlignment="Top" Width="600" BorderThickness="1,1,1,1" BorderBrush="#FFACACAC">
-            <TabItem x:Name="tabPresets" Header="Presets (calling)">
-                <Border BorderBrush="#FF404040" BorderThickness="1,1,1,1">
-                    <Grid x:Name="grdPresetsMain">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="auto"/>
-                            <RowDefinition Height="8*"/>
-                            <RowDefinition Height="auto"/>
-                        </Grid.RowDefinitions>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-
-                        <Grid Margin="0,0,0,0">
-                            <Label Content="Left click = call preset.   Ctrl + left click = set preset.   Right click = view image.   Middle click = clear image." HorizontalContentAlignment="Center" Foreground="LightGray"/>
+                <Grid x:Name="grdCams" HorizontalAlignment="Left" Height="80" Margin="20,20,0,0" VerticalAlignment="Top" Width="170">
+                    <StackPanel Orientation="Vertical">
+                        <Grid>
+                            <Label Content="Select a camera:" Foreground="LightGray" HorizontalContentAlignment="Center"/>
                         </Grid>
+                        <Grid>
+                            <ComboBox x:Name="cmbCameras" Height="34" Width="auto" ItemsSource="{Binding Cameras, Source={StaticResource SettingsNotifier}}" SelectedIndex="0" SelectionChanged="cmbCameras_SelectionChanged">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock>
+                                            <TextBlock.Text>
+                                                <MultiBinding StringFormat="{}{0} - {1}">
+                                                    <Binding Path="Id"/>
+                                                    <Binding Path="Name"/>
+                                                </MultiBinding>
+                                            </TextBlock.Text>
+                                        </TextBlock>
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
+                        </Grid>
+                        <Grid>
+                            <Label x:Name="lblCamInfo" Content="-" Foreground="LightGray" HorizontalContentAlignment="Center"/>
+                        </Grid>
+                    </StackPanel>
 
-                        <Grid Margin="10,0,10,0" Grid.Row="1" Grid.Column="0">
+                    <!--<Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <Rectangle Grid.Row="0" Grid.Column="0" Style="{StaticResource ImgBtnBGStyle}" />
+        <Rectangle Grid.Row="0" Grid.Column="1" Style="{StaticResource ImgBtnBGStyle}" />
+        
+        <RadioButton x:Name="rbCam1" Grid.Row="0" Grid.Column="0" Content="Cam. 1" Style="{StaticResource BasicRadioStyle}" GroupName="Cams" IsChecked="True"/>
+        <RadioButton x:Name="rbCam2" Grid.Row="0" Grid.Column="1" Content="Cam. 2" Style="{StaticResource BasicRadioStyle}" GroupName="Cams"/>
+        <RadioButton x:Name="rbCam3" Grid.Row="0" Grid.Column="2" Content="Cam. 3" Style="{StaticResource BasicRadioStyle}" GroupName="Cams"/>
+
+        <Label x:Name="lblInfoCam1" Grid.Row="0" Grid.Column="0" Content="Info" Foreground="LightGray" Margin="-3,12,0,0"/>
+        <Label x:Name="lblInfoCam2" Grid.Row="0" Grid.Column="1" Content="Info" Foreground="LightGray" Margin="-3,12,0,0"/>
+        <Label x:Name="lblInfoCam3" Grid.Row="0" Grid.Column="2" Content="Info" Foreground="LightGray" Margin="-3,12,0,0"/>-->
+                </Grid>
+
+                <Grid x:Name="grdPTZF" HorizontalAlignment="Left" VerticalAlignment="Top" Height="auto" Width="auto" Margin="20,110,0,0">
+                    <StackPanel Orientation="Vertical">
+                        <Grid Width="170" Height="170">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="*"/>
                                 <RowDefinition Height="*"/>
@@ -747,114 +437,472 @@
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <Rectangle Grid.Row="0" Grid.Column="0" Style="{StaticResource ImgBtnBGStyle}" />
+                            <Rectangle Grid.Row="0" Grid.Column="1" Style="{StaticResource ImgBtnBGStyle}" />
+                            <Rectangle Grid.Row="0" Grid.Column="2" Style="{StaticResource ImgBtnBGStyle}" />
+                            <Rectangle Grid.Row="1" Grid.Column="0" Style="{StaticResource ImgBtnBGStyle}" />
+                            <Rectangle Grid.Row="1" Grid.Column="1" Style="{StaticResource ImgBtnBGStyle}" />
+                            <Rectangle Grid.Row="1" Grid.Column="2" Style="{StaticResource ImgBtnBGStyle}" />
+                            <Rectangle Grid.Row="2" Grid.Column="0" Style="{StaticResource ImgBtnBGStyle}" />
+                            <Rectangle Grid.Row="2" Grid.Column="1" Style="{StaticResource ImgBtnBGStyle}" />
+                            <Rectangle Grid.Row="2" Grid.Column="2" Style="{StaticResource ImgBtnBGStyle}" />
+
+                            <Button x:Name="btnPanLeftTiltUp" Grid.Row="0" Grid.Column="0" Style="{StaticResource ImageButtonStyle}" Margin="5" PreviewMouseDown="PTZFOControl_PreviewMouseDownUp" PreviewMouseUp="PTZFOControl_PreviewMouseDownUp">
+                                <Button.Background>
+                                    <ImageBrush ImageSource="/Resources/Images/up-left-arrow-white.png" Viewport="0.1,0.1,0.8,0.8" Opacity="0.64"/>
+                                </Button.Background>
+                            </Button>
+                            <Button x:Name="btnTiltUp" Grid.Row="0" Grid.Column="1" Style="{StaticResource ImageButtonStyle}" Margin="5" PreviewMouseDown="PTZFOControl_PreviewMouseDownUp" PreviewMouseUp="PTZFOControl_PreviewMouseDownUp">
+                                <Button.Background>
+                                    <ImageBrush ImageSource="/Resources/Images/up-arrow-white.png" Viewport="0.1,0.1,0.8,0.8" Opacity="0.64"/>
+                                </Button.Background>
+                            </Button>
+                            <Button x:Name="btnPanRightTiltUp" Grid.Row="0" Grid.Column="2" Style="{StaticResource ImageButtonStyle}" Margin="5" PreviewMouseDown="PTZFOControl_PreviewMouseDownUp" PreviewMouseUp="PTZFOControl_PreviewMouseDownUp">
+                                <Button.Background>
+                                    <ImageBrush ImageSource="/Resources/Images/up-right-arrow-white.png" Viewport="0.1,0.1,0.8,0.8" Opacity="0.64"/>
+                                </Button.Background>
+                            </Button>
+
+                            <Button x:Name="btnPanLeft" Grid.Row="1" Grid.Column="0" Style="{StaticResource ImageButtonStyle}" Margin="5" PreviewMouseDown="PTZFOControl_PreviewMouseDownUp" PreviewMouseUp="PTZFOControl_PreviewMouseDownUp">
+                                <Button.Background>
+                                    <ImageBrush ImageSource="/Resources/Images/left-arrow-white.png" Viewport="0.1,0.1,0.8,0.8" Opacity="0.64"/>
+                                </Button.Background>
+                            </Button>
+                            <Button x:Name="btnGoHome" Grid.Row="1" Grid.Column="1" Style="{StaticResource ImageButtonStyle}" Margin="5" PreviewMouseDown="PTZFOControl_PreviewMouseDownUp" PreviewMouseUp="PTZFOControl_PreviewMouseDownUp">
+                                <Button.Background>
+                                    <ImageBrush ImageSource="/Resources/Images/home2-white.png" Viewport="0.1,0.1,0.8,0.8" Opacity="0.64"/>
+                                </Button.Background>
+                            </Button>
+                            <Button x:Name="btnPanRight" Grid.Row="1" Grid.Column="2" Style="{StaticResource ImageButtonStyle}" Margin="5" PreviewMouseDown="PTZFOControl_PreviewMouseDownUp" PreviewMouseUp="PTZFOControl_PreviewMouseDownUp">
+                                <Button.Background>
+                                    <ImageBrush ImageSource="/Resources/Images/right-arrow-white.png" Viewport="0.1,0.1,0.8,0.8" Opacity="0.64"/>
+                                </Button.Background>
+                            </Button>
+
+                            <Button x:Name="btnPanLeftTiltDown" Grid.Row="2" Grid.Column="0" Style="{StaticResource ImageButtonStyle}" Margin="5" PreviewMouseDown="PTZFOControl_PreviewMouseDownUp" PreviewMouseUp="PTZFOControl_PreviewMouseDownUp">
+                                <Button.Background>
+                                    <ImageBrush ImageSource="/Resources/Images/down-left-arrow-white.png" Viewport="0.1,0.1,0.8,0.8" Opacity="0.64"/>
+                                </Button.Background>
+                            </Button>
+                            <Button x:Name="btnTiltDown" Grid.Row="2" Grid.Column="1" Style="{StaticResource ImageButtonStyle}" Margin="5" PreviewMouseDown="PTZFOControl_PreviewMouseDownUp" PreviewMouseUp="PTZFOControl_PreviewMouseDownUp">
+                                <Button.Background>
+                                    <ImageBrush ImageSource="/Resources/Images/down-arrow-white.png" Viewport="0.1,0.1,0.8,0.8" Opacity="0.64"/>
+                                </Button.Background>
+                            </Button>
+                            <Button x:Name="btnPanRightTiltDown" Grid.Row="2" Grid.Column="2" Style="{StaticResource ImageButtonStyle}" Margin="5" PreviewMouseDown="PTZFOControl_PreviewMouseDownUp" PreviewMouseUp="PTZFOControl_PreviewMouseDownUp">
+                                <Button.Background>
+                                    <ImageBrush ImageSource="/Resources/Images/down-right-arrow-white.png" Viewport="0.1,0.1,0.8,0.8" Opacity="0.64"/>
+                                </Button.Background>
+                            </Button>
+                        </Grid>
+
+                        <Grid Width="170" Height="55" Margin="0,6,0,6">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
 
-                            <Button x:Name="btnPreset1" Grid.Row="0" Grid.Column="0" Style="{StaticResource ImageButtonStyle}" Content="1" PreviewMouseDown="CallPreset_PreviewMouseDown"/>
-                            <Button x:Name="btnPreset2" Grid.Row="0" Grid.Column="1" Style="{StaticResource ImageButtonStyle}" Content="2" PreviewMouseDown="CallPreset_PreviewMouseDown"/>
-                            <Button x:Name="btnPreset3" Grid.Row="0" Grid.Column="2" Style="{StaticResource ImageButtonStyle}" Content="3" PreviewMouseDown="CallPreset_PreviewMouseDown"/>
-                            <Button x:Name="btnPreset4" Grid.Row="0" Grid.Column="3" Style="{StaticResource ImageButtonStyle}" Content="4" PreviewMouseDown="CallPreset_PreviewMouseDown"/>
-                            <Button x:Name="btnPreset5" Grid.Row="0" Grid.Column="4" Style="{StaticResource ImageButtonStyle}" Content="5" PreviewMouseDown="CallPreset_PreviewMouseDown"/>
+                            <Rectangle Grid.Row="0" Grid.Column="0" Style="{StaticResource ImgBtnBGStyle}" />
+                            <Rectangle Grid.Row="0" Grid.Column="1" Style="{StaticResource ImgBtnBGStyle}" />
 
-                            <Button x:Name="btnPreset6" Grid.Row="1" Grid.Column="0" Style="{StaticResource ImageButtonStyle}" Content="6" PreviewMouseDown="CallPreset_PreviewMouseDown"/>
-                            <Button x:Name="btnPreset7" Grid.Row="1" Grid.Column="1" Style="{StaticResource ImageButtonStyle}" Content="7" PreviewMouseDown="CallPreset_PreviewMouseDown"/>
-                            <Button x:Name="btnPreset8" Grid.Row="1" Grid.Column="2" Style="{StaticResource ImageButtonStyle}" Content="8" PreviewMouseDown="CallPreset_PreviewMouseDown"/>
-                            <Button x:Name="btnPreset9" Grid.Row="1" Grid.Column="3" Style="{StaticResource ImageButtonStyle}" Content="9" PreviewMouseDown="CallPreset_PreviewMouseDown"/>
-                            <Button x:Name="btnPreset10" Grid.Row="1" Grid.Column="4" Style="{StaticResource ImageButtonStyle}" Content="10" PreviewMouseDown="CallPreset_PreviewMouseDown"/>
-
-                            <Button x:Name="btnPreset11" Grid.Row="2" Grid.Column="0" Style="{StaticResource ImageButtonStyle}" Content="11" PreviewMouseDown="CallPreset_PreviewMouseDown"/>
-                            <Button x:Name="btnPreset12" Grid.Row="2" Grid.Column="1" Style="{StaticResource ImageButtonStyle}" Content="12" PreviewMouseDown="CallPreset_PreviewMouseDown"/>
-                            <Button x:Name="btnPreset13" Grid.Row="2" Grid.Column="2" Style="{StaticResource ImageButtonStyle}" Content="13" PreviewMouseDown="CallPreset_PreviewMouseDown"/>
-                            <Button x:Name="btnPreset14" Grid.Row="2" Grid.Column="3" Style="{StaticResource ImageButtonStyle}" Content="14" PreviewMouseDown="CallPreset_PreviewMouseDown"/>
-                            <Button x:Name="btnPreset15" Grid.Row="2" Grid.Column="4" Style="{StaticResource ImageButtonStyle}" Content="15" PreviewMouseDown="CallPreset_PreviewMouseDown"/>
+                            <Button x:Name="btnZoomIn" Grid.Row="0" Grid.Column="0" Style="{StaticResource ImageButtonStyle}" Margin="5" PreviewMouseDown="PTZFOControl_PreviewMouseDownUp" PreviewMouseUp="PTZFOControl_PreviewMouseDownUp">
+                                <Button.Background>
+                                    <ImageBrush ImageSource="/Resources/Images/zoom-in-white.png" Stretch="Uniform" Viewport="0.1,0.1,0.8,0.8" Opacity="0.64"/>
+                                </Button.Background>
+                            </Button>
+                            <Button x:Name="btnZoomOut" Grid.Row="0" Grid.Column="1" Style="{StaticResource ImageButtonStyle}" Margin="5" PreviewMouseDown="PTZFOControl_PreviewMouseDownUp" PreviewMouseUp="PTZFOControl_PreviewMouseDownUp">
+                                <Button.Background>
+                                    <ImageBrush ImageSource="/Resources/Images/zoom-out-white.png" Stretch="Uniform" Viewport="0.1,0.1,0.8,0.8" Opacity="0.64"/>
+                                </Button.Background>
+                            </Button>
                         </Grid>
 
-                        <Grid Grid.Row="2" Grid.Column="0" Margin="0,5,0,5" HorizontalAlignment="Center">
-                            <StackPanel Orientation="Horizontal">
-                                <CheckBox x:Name="chkTakeSnapshots" Margin="5,0,17,1" IsChecked="True" Checked="chkTakeSnapshots_CheckChanged" Unchecked="chkTakeSnapshots_CheckChanged">
-                                    <TextBlock Text="Use snapshots" Margin="0,-2,0,0"/>
-                                </CheckBox>
-                                <Label Content="Set or call other presets (16 - 254):" Margin="10,0,10,0"/>
-                                <materialDesign:NumericUpDown x:Name="numOtherPreset" Margin="5,0,5,0" Minimum="16" Value="16" Maximum="254" MaxWidth="100" BorderThickness="0,0,0,0"/>
-                                <Button x:Name="btnCallOtherPreset" Content="Call" Width="50" Margin="10,0,10,0" Style="{StaticResource CustomButtonStyle}" PreviewMouseDown="btnCallOtherPreset_PreviewMouseDown"/>
-                            </StackPanel>
+                        <Grid Width="170" Height="55" Margin="0,0,0,6">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <Rectangle Grid.Row="0" Grid.Column="0" Style="{StaticResource ImgBtnBGStyle}" />
+                            <Rectangle Grid.Row="0" Grid.Column="1" Style="{StaticResource ImgBtnBGStyle}" />
+                            <Rectangle Grid.Row="0" Grid.Column="2" Style="{StaticResource ImgBtnBGStyle}" />
+
+                            <Button x:Name="btnFocusIn" Grid.Row="0" Grid.Column="0" Style="{StaticResource ImageButtonStyle}" Margin="5" PreviewMouseDown="PTZFOControl_PreviewMouseDownUp" PreviewMouseUp="PTZFOControl_PreviewMouseDownUp">
+                                <Button.Background>
+                                    <ImageBrush ImageSource="/Resources/Images/focus-in-white.png" Stretch="Uniform" Viewport="0.1,0.1,0.8,0.8" Opacity="0.64"/>
+                                </Button.Background>
+                            </Button>
+                            <Button x:Name="btnFocusOut" Grid.Row="0" Grid.Column="1" Style="{StaticResource ImageButtonStyle}" Margin="5" PreviewMouseDown="PTZFOControl_PreviewMouseDownUp" PreviewMouseUp="PTZFOControl_PreviewMouseDownUp">
+                                <Button.Background>
+                                    <ImageBrush ImageSource="/Resources/Images/focus-out-white.png" Stretch="Uniform" Viewport="0.1,0.1,0.8,0.8" Opacity="0.64"/>
+                                </Button.Background>
+                            </Button>
+                            <Button x:Name="btnActivateAutoFocus" Grid.Row="0" Grid.Column="2" Style="{StaticResource ImageButtonStyle}" Margin="5" PreviewMouseDown="PTZFOControl_PreviewMouseDownUp" PreviewMouseUp="PTZFOControl_PreviewMouseDownUp">
+                                <Button.Background>
+                                    <ImageBrush ImageSource="/Resources/Images/focus-auto-white.png" Stretch="Uniform" Viewport="0.1,0.1,0.8,0.8" Opacity="0.64"/>
+                                </Button.Background>
+                            </Button>
                         </Grid>
-                    </Grid>
-                </Border>
-            </TabItem>
-            <TabItem Header="Image settings">
-                <Border BorderBrush="#FF404040" BorderThickness="1,1,1,1">
-                    <Grid Margin="10"/>
-                </Border>
-            </TabItem>
-        </TabControl>
+
+                        <Grid Width="170" Height="55">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <Rectangle Grid.Row="0" Grid.Column="0" Style="{StaticResource ImgBtnBGStyle}" />
+                            <Rectangle Grid.Row="0" Grid.Column="1" Style="{StaticResource ImgBtnBGStyle}" />
+                            <Rectangle Grid.Row="0" Grid.Column="2" Style="{StaticResource ImgBtnBGStyle}" />
+
+                            <!--<CheckBox x:Name="chkOSD" Content="OSD" IsChecked="True" Style="{StaticResource MaterialDesignFilterChipPrimaryOutlineCheckBox}" Checked="" Unchecked=""/>-->
+
+                            <!--<ToggleButton Content="OSD" IsChecked="False" Style="{StaticResource MaterialDesignFlatPrimaryToggleButton}"/>-->
+
+                            <!--<ToggleButton
+                      Style="{StaticResource MaterialDesignActionToggleButton}"
+                      ToolTip="MaterialDesignActionToggleButton" IsChecked="False" Margin="0,0,0,0"
+                     >
+                    <Image
+                        Source="/Resources/Images/OSD-white.png" />
+                </ToggleButton>-->
+
+                            <!--<ToggleButton
+                    Width="46px"
+                    Height="46px"
+                    Style="{StaticResource MaterialDesignActionToggleButton}"
+                    ToolTip="MaterialDesignActionToggleButton" IsChecked="False">
+                    <Image Source="/Resources/Images/OSD-white.png" Stretch="Uniform" />
+                </ToggleButton>-->
+
+                            <!--<ToggleButton IsChecked="False" Style="{StaticResource ToggleButtonStyle}">
+                    <Image Source="/Resources/Images/OSD-white.png"/>
+                </ToggleButton>-->
+
+                            <!--<ToggleButton IsChecked="False" Style="{StaticResource ToggleButtonStyle}"/>-->
+
+                            <!--MaterialDesignFlatPrimaryToggleButton-->
+                            <!--<ToggleButton IsChecked="False" Margin="5" Style="{StaticResource ToggleButtonStyle}" Content="OSD">
+                    -->
+                            <!--<Image Source="/Resources/Images/OSD-white.png"/>-->
+                            <!--
+                </ToggleButton>-->
+
+                            <controls:ImageToggleButton x:Name="itbOSD" Grid.Row="0" Grid.Column="0"
+                    IsChecked="False"
+                    Style="{StaticResource ToggleButtonStyle}"
+                    Content="OSD"
+                    UncheckedImageSource="/Resources/Images/empty.png"
+                    CheckedImageSource="/Resources/Images/check-white.png"
+                    ImageOpacity="0.46" 
+                    Checked="itbOSD_CheckedChanged"
+                    Unchecked="itbOSD_CheckedChanged"
+                    Margin="5"/>
 
 
-        <!--<Grid x:Name="grdSpeeds1" HorizontalAlignment="Left" Height="auto" Margin="50,410,0,0" VerticalAlignment="Top" Width="170">
-            <StackPanel Orientation="Vertical">
-                <Label x:Name="lblPanSpeed1" Content="Pan speed (8):"/>
-                <Slider x:Name="sldPanSpeed1" SmallChange="1" Minimum="1" Maximum="24" Value="8" ValueChanged="sldPanSpeed_ValueChanged"/>
-                <Label x:Name="lblTiltSpeed1" Content="Tilt speed (8):"/>
-                <Slider x:Name="sldTiltSpeed1" SmallChange="1" Minimum="1" Maximum="20" Value="8" ValueChanged="sldTiltSpeed_ValueChanged"/>
-                <Label x:Name="lblZoomSpeed1" Content="Zoom speed (3):"/>
-                <Slider x:Name="sldZoomSpeed1" SmallChange="1" Minimum="1" Maximum="7" Value="3" ValueChanged="sldZoomSpeed_ValueChanged"/>
-                <Label x:Name="lblFocusSpeed1" Content="Focus speed (3):"/>
-                <Slider x:Name="sldFocusSpeed1" SmallChange="1" Minimum="1" Maximum="7" Value="3" ValueChanged="sldFocusSpeed_ValueChanged"/>
-            </StackPanel>
-        </Grid>-->
+                            <Button x:Name="btnOsdEnter" Grid.Row="0" Grid.Column="1" Style="{StaticResource ImageButtonStyle}" Margin="5" PreviewMouseDown="OsdEnterBack_PreviewMouseDown" Opacity="0.26">
+                                <Button.Background>
+                                    <ImageBrush ImageSource="/Resources/Images/enter-white.png" Stretch="Uniform" Viewport="0.1,0.1,0.8,0.8" Opacity="0.64"/>
+                                </Button.Background>
+                            </Button>
 
+                            <Button x:Name="btnOsdBack" Grid.Row="0" Grid.Column="2" Style="{StaticResource ImageButtonStyle}" Margin="5" PreviewMouseDown="OsdEnterBack_PreviewMouseDown" Opacity="0.26">
+                                <Button.Background>
+                                    <ImageBrush ImageSource="/Resources/Images/back-white.png" Stretch="Uniform" Viewport="0.1,0.1,0.8,0.8" Opacity="0.64"/>
+                                </Button.Background>
+                            </Button>
 
-        <Grid x:Name="grdSpeeds" HorizontalAlignment="Left" Height="auto" Margin="264,598,0,0" VerticalAlignment="Top" Width="726">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="*"/>
-            </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
+                        </Grid>
+                    </StackPanel>
+                </Grid>
 
-            <StackPanel Orientation="Vertical" Grid.Row="0" Grid.Column="0">
-                <Label x:Name="lblPanSpeed" Content="Pan speed (8):" HorizontalAlignment="Center"/>
-                <Slider x:Name="sldPanSpeed" SmallChange="1" Minimum="1" Maximum="24" Value="8" ValueChanged="sldPanSpeed_ValueChanged" Margin="6,0,6,0"/>
-            </StackPanel>
+                <!--<Grid HorizontalAlignment="Left" VerticalAlignment="Top" Height="170" Width="170" Margin="120,46,0,0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
 
-            <StackPanel Orientation="Vertical" Grid.Row="0" Grid.Column="1">
-                <Label x:Name="lblTiltSpeed" Content="Tilt speed (8):" HorizontalAlignment="Center"/>
-                <Slider x:Name="sldTiltSpeed" SmallChange="1" Minimum="1" Maximum="20" Value="8" ValueChanged="sldTiltSpeed_ValueChanged" Margin="6,0,6,0"/>
-            </StackPanel>
+        <Rectangle Grid.Row="0" Grid.Column="0" Style="{StaticResource ImgBtnBGStyle}" />
+        <Rectangle Grid.Row="0" Grid.Column="1" Style="{StaticResource ImgBtnBGStyle}" />
+        <Rectangle Grid.Row="0" Grid.Column="2" Style="{StaticResource ImgBtnBGStyle}" />
+        <Rectangle Grid.Row="1" Grid.Column="0" Style="{StaticResource ImgBtnBGStyle}" />
+        <Rectangle Grid.Row="1" Grid.Column="1" Style="{StaticResource ImgBtnBGStyle}" />
+        <Rectangle Grid.Row="1" Grid.Column="2" Style="{StaticResource ImgBtnBGStyle}" />
+        <Rectangle Grid.Row="2" Grid.Column="0" Style="{StaticResource ImgBtnBGStyle}" />
+        <Rectangle Grid.Row="2" Grid.Column="1" Style="{StaticResource ImgBtnBGStyle}" />
+        <Rectangle Grid.Row="2" Grid.Column="2" Style="{StaticResource ImgBtnBGStyle}" />
 
-            <StackPanel Orientation="Vertical" Grid.Row="0" Grid.Column="2">
-                <Label x:Name="lblZoomSpeed" Content="Zoom speed (3):" HorizontalAlignment="Center"/>
-                <Slider x:Name="sldZoomSpeed" SmallChange="1" Minimum="1" Maximum="7" Value="3" ValueChanged="sldZoomSpeed_ValueChanged" Margin="6,0,6,0"/>
-            </StackPanel>
+        <Button x:Name="btnPanLeftTiltUp" Grid.Row="0" Grid.Column="0" Style="{StaticResource ImageButtonStyle}" Margin="5" PreviewMouseDown="PTZFControl_PreviewMouseDownUp" PreviewMouseUp="PTZFControl_PreviewMouseDownUp">
+            <Button.Background>
+                <ImageBrush ImageSource="/Resources/Images/up-left-arrow-white.png" Viewport="0.1,0.1,0.8,0.8" Opacity="0.64"/>
+            </Button.Background>
+        </Button>
+        <Button x:Name="btnTiltUp" Grid.Row="0" Grid.Column="1" Style="{StaticResource ImageButtonStyle}" Margin="5" PreviewMouseDown="PTZFControl_PreviewMouseDownUp" PreviewMouseUp="PTZFControl_PreviewMouseDownUp">
+            <Button.Background>
+                <ImageBrush ImageSource="/Resources/Images/up-arrow-white.png" Viewport="0.1,0.1,0.8,0.8" Opacity="0.64"/>
+            </Button.Background>
+        </Button>
+        <Button x:Name="btnPanRightTiltUp" Grid.Row="0" Grid.Column="2" Style="{StaticResource ImageButtonStyle}" Margin="5" PreviewMouseDown="PTZFControl_PreviewMouseDownUp" PreviewMouseUp="PTZFControl_PreviewMouseDownUp">
+            <Button.Background>
+                <ImageBrush ImageSource="/Resources/Images/up-right-arrow-white.png" Viewport="0.1,0.1,0.8,0.8" Opacity="0.64"/>
+            </Button.Background>
+        </Button>
 
-            <StackPanel Orientation="Vertical" Grid.Row="0" Grid.Column="3">
-                <Label x:Name="lblFocusSpeed" Content="Focus speed (3):" HorizontalAlignment="Center"/>
-                <Slider x:Name="sldFocusSpeed" SmallChange="1" Minimum="1" Maximum="7" Value="3" ValueChanged="sldFocusSpeed_ValueChanged" Margin="6,0,6,0"/>
-            </StackPanel>
-        </Grid>
+        <Button x:Name="btnPanLeft" Grid.Row="1" Grid.Column="0" Style="{StaticResource ImageButtonStyle}" Margin="5" PreviewMouseDown="PTZFControl_PreviewMouseDownUp" PreviewMouseUp="PTZFControl_PreviewMouseDownUp">
+            <Button.Background>
+                <ImageBrush ImageSource="/Resources/Images/left-arrow-white.png" Viewport="0.1,0.1,0.8,0.8" Opacity="0.64"/>
+            </Button.Background>
+        </Button>
+        <Button x:Name="btnGoHome" Grid.Row="1" Grid.Column="1" Style="{StaticResource ImageButtonStyle}" Margin="5" PreviewMouseDown="PTZFControl_PreviewMouseDownUp" PreviewMouseUp="PTZFControl_PreviewMouseDownUp">
+            <Button.Background>
+                <ImageBrush ImageSource="/Resources/Images/home2-white.png" Viewport="0.1,0.1,0.8,0.8" Opacity="0.64"/>
+            </Button.Background>
+        </Button>
+        <Button x:Name="btnPanRight" Grid.Row="1" Grid.Column="2" Style="{StaticResource ImageButtonStyle}" Margin="5" PreviewMouseDown="PTZFControl_PreviewMouseDownUp" PreviewMouseUp="PTZFControl_PreviewMouseDownUp">
+            <Button.Background>
+                <ImageBrush ImageSource="/Resources/Images/right-arrow-white.png" Viewport="0.1,0.1,0.8,0.8" Opacity="0.64"/>
+            </Button.Background>
+        </Button>
 
-
-
-
-        <materialDesign:PopupBox Content="PopupBox" StaysOpen="False" PopupUniformCornerRadius="10" Cursor="Hand" PlacementMode="LeftAndAlignTopEdges" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Width="50" Height="50" Margin="921,30,0,0" VerticalAlignment="Top">
-            <materialDesign:PopupBox.ToggleContent>
-                <materialDesign:PackIcon Kind="MenuOpen" Foreground="White" Height="46" Width="46"/>
-            </materialDesign:PopupBox.ToggleContent>
-            <StackPanel Orientation="Vertical">
-                <CheckBox x:Name="chkSlimMode" Content="Slim mode" IsChecked="False" Style="{StaticResource MaterialDesignFilterChipPrimaryOutlineCheckBox}" Margin="6" Checked="ToggleSlimMode" Unchecked="ToggleSlimMode" HorizontalAlignment="Center"/>
-                <Separator/>
-                <Button x:Name="btnSettings" Content="Settings" PreviewMouseDown="btnSettings_Click" HorizontalContentAlignment="Center"/>
-                <Button x:Name="btnResetPtzfSpeeds" Content="Reset PTZF speeds" PreviewMouseDown="btnResetPtzfSpeeds_PreviewMouseDown" HorizontalContentAlignment="Center"/>
-                <Separator/>
-                <Button x:Name="btnExit" Content="Exit" PreviewMouseDown="btnExit_PreviewMouseDown" HorizontalContentAlignment="Center"/>
-            </StackPanel>
-        </materialDesign:PopupBox>
-
-
+        <Button x:Name="btnPanLeftTiltDown" Grid.Row="2" Grid.Column="0" Style="{StaticResource ImageButtonStyle}" Margin="5" PreviewMouseDown="PTZFControl_PreviewMouseDownUp" PreviewMouseUp="PTZFControl_PreviewMouseDownUp">
+            <Button.Background>
+                <ImageBrush ImageSource="/Resources/Images/down-left-arrow-white.png" Viewport="0.1,0.1,0.8,0.8" Opacity="0.64"/>
+            </Button.Background>
+        </Button>
+        <Button x:Name="btnTiltDown" Grid.Row="2" Grid.Column="1" Style="{StaticResource ImageButtonStyle}" Margin="5" PreviewMouseDown="PTZFControl_PreviewMouseDownUp" PreviewMouseUp="PTZFControl_PreviewMouseDownUp">
+            <Button.Background>
+                <ImageBrush ImageSource="/Resources/Images/down-arrow-white.png" Viewport="0.1,0.1,0.8,0.8" Opacity="0.64"/>
+            </Button.Background>
+        </Button>
+        <Button x:Name="btnPanRightTiltDown" Grid.Row="2" Grid.Column="2" Style="{StaticResource ImageButtonStyle}" Margin="5" PreviewMouseDown="PTZFControl_PreviewMouseDownUp" PreviewMouseUp="PTZFControl_PreviewMouseDownUp">
+            <Button.Background>
+                <ImageBrush ImageSource="/Resources/Images/down-right-arrow-white.png" Viewport="0.1,0.1,0.8,0.8" Opacity="0.64"/>
+            </Button.Background>
+        </Button>
     </Grid>
+
+    <Grid HorizontalAlignment="Left" VerticalAlignment="Top" Width="170" Height="55" Margin="120,221,0,0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <Rectangle Grid.Row="0" Grid.Column="0" Style="{StaticResource ImgBtnBGStyle}" />
+        <Rectangle Grid.Row="0" Grid.Column="1" Style="{StaticResource ImgBtnBGStyle}" />
+        <Rectangle Grid.Row="0" Grid.Column="2" Style="{StaticResource ImgBtnBGStyle}" />
+
+        <Button x:Name="btnFocusIn" Grid.Row="0" Grid.Column="0" Style="{StaticResource ImageButtonStyle}" Margin="5" PreviewMouseDown="PTZFControl_PreviewMouseDownUp" PreviewMouseUp="PTZFControl_PreviewMouseDownUp">
+            <Button.Background>
+                <ImageBrush ImageSource="/Resources/Images/focus-in-white.png" Stretch="Uniform" Viewport="0.1,0.1,0.8,0.8" Opacity="0.64"/>
+            </Button.Background>
+        </Button>
+        <Button x:Name="btnFocusOut" Grid.Row="0" Grid.Column="1" Style="{StaticResource ImageButtonStyle}" Margin="5" PreviewMouseDown="PTZFControl_PreviewMouseDownUp" PreviewMouseUp="PTZFControl_PreviewMouseDownUp">
+            <Button.Background>
+                <ImageBrush ImageSource="/Resources/Images/focus-out-white.png" Stretch="Uniform" Viewport="0.1,0.1,0.8,0.8" Opacity="0.64"/>
+            </Button.Background>
+        </Button>
+        <Button x:Name="btnActivateAutoFocus" Grid.Row="0" Grid.Column="2" Style="{StaticResource ImageButtonStyle}" Margin="5" PreviewMouseDown="PTZFControl_PreviewMouseDownUp" PreviewMouseUp="PTZFControl_PreviewMouseDownUp">
+            <Button.Background>
+                <ImageBrush ImageSource="/Resources/Images/focus-auto-white.png" Stretch="Uniform" Viewport="0.1,0.1,0.8,0.8" Opacity="0.64"/>
+            </Button.Background>
+        </Button>
+    </Grid>
+
+    <Grid HorizontalAlignment="Left" VerticalAlignment="Top" Width="170" Height="55" Margin="120,281,0,0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <Rectangle Grid.Row="0" Grid.Column="0" Style="{StaticResource ImgBtnBGStyle}" />
+        <Rectangle Grid.Row="0" Grid.Column="1" Style="{StaticResource ImgBtnBGStyle}" />
+
+        <Button x:Name="btnZoomIn" Grid.Row="0" Grid.Column="0" Style="{StaticResource ImageButtonStyle}" Margin="5" PreviewMouseDown="PTZFControl_PreviewMouseDownUp" PreviewMouseUp="PTZFControl_PreviewMouseDownUp">
+            <Button.Background>
+                <ImageBrush ImageSource="/Resources/Images/zoom-in-white.png" Stretch="Uniform" Viewport="0.1,0.1,0.8,0.8" Opacity="0.64"/>
+            </Button.Background>
+        </Button>
+        <Button x:Name="btnZoomOut" Grid.Row="0" Grid.Column="1" Style="{StaticResource ImageButtonStyle}" Margin="5" PreviewMouseDown="PTZFControl_PreviewMouseDownUp" PreviewMouseUp="PTZFControl_PreviewMouseDownUp">
+            <Button.Background>
+                <ImageBrush ImageSource="/Resources/Images/zoom-out-white.png" Stretch="Uniform" Viewport="0.1,0.1,0.8,0.8" Opacity="0.64"/>
+            </Button.Background>
+        </Button>
+    </Grid>-->
+
+                <TabControl HorizontalAlignment="Left" Height="366" Margin="220,30,0,0" VerticalAlignment="Top" Width="726" BorderThickness="1,1,1,1" BorderBrush="#FFACACAC">
+                    <TabItem x:Name="tabPresets" Header="Presets (calling)">
+                        <Border BorderBrush="#FF404040" BorderThickness="1,1,1,1">
+                            <Grid x:Name="grdPresetsMain">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="auto"/>
+                                    <RowDefinition Height="8*"/>
+                                    <RowDefinition Height="auto"/>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <Grid Margin="0,0,0,0">
+                                    <Label Content="Left click = call preset.   Ctrl + left click = set preset.   Right click = view image.   Middle click = clear image." HorizontalContentAlignment="Center" Foreground="LightGray"/>
+                                </Grid>
+
+                                <Grid Margin="10,0,10,0" Grid.Row="1" Grid.Column="0">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="*"/>
+                                        <RowDefinition Height="*"/>
+                                        <RowDefinition Height="*"/>
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <Button x:Name="btnPreset1" Grid.Row="0" Grid.Column="0" Style="{StaticResource ImageButtonStyle}" Content="1" PreviewMouseDown="CallPreset_PreviewMouseDown"/>
+                                    <Button x:Name="btnPreset2" Grid.Row="0" Grid.Column="1" Style="{StaticResource ImageButtonStyle}" Content="2" PreviewMouseDown="CallPreset_PreviewMouseDown"/>
+                                    <Button x:Name="btnPreset3" Grid.Row="0" Grid.Column="2" Style="{StaticResource ImageButtonStyle}" Content="3" PreviewMouseDown="CallPreset_PreviewMouseDown"/>
+                                    <Button x:Name="btnPreset4" Grid.Row="0" Grid.Column="3" Style="{StaticResource ImageButtonStyle}" Content="4" PreviewMouseDown="CallPreset_PreviewMouseDown"/>
+                                    <Button x:Name="btnPreset5" Grid.Row="0" Grid.Column="4" Style="{StaticResource ImageButtonStyle}" Content="5" PreviewMouseDown="CallPreset_PreviewMouseDown"/>
+
+                                    <Button x:Name="btnPreset6" Grid.Row="1" Grid.Column="0" Style="{StaticResource ImageButtonStyle}" Content="6" PreviewMouseDown="CallPreset_PreviewMouseDown"/>
+                                    <Button x:Name="btnPreset7" Grid.Row="1" Grid.Column="1" Style="{StaticResource ImageButtonStyle}" Content="7" PreviewMouseDown="CallPreset_PreviewMouseDown"/>
+                                    <Button x:Name="btnPreset8" Grid.Row="1" Grid.Column="2" Style="{StaticResource ImageButtonStyle}" Content="8" PreviewMouseDown="CallPreset_PreviewMouseDown"/>
+                                    <Button x:Name="btnPreset9" Grid.Row="1" Grid.Column="3" Style="{StaticResource ImageButtonStyle}" Content="9" PreviewMouseDown="CallPreset_PreviewMouseDown"/>
+                                    <Button x:Name="btnPreset10" Grid.Row="1" Grid.Column="4" Style="{StaticResource ImageButtonStyle}" Content="10" PreviewMouseDown="CallPreset_PreviewMouseDown"/>
+
+                                    <Button x:Name="btnPreset11" Grid.Row="2" Grid.Column="0" Style="{StaticResource ImageButtonStyle}" Content="11" PreviewMouseDown="CallPreset_PreviewMouseDown"/>
+                                    <Button x:Name="btnPreset12" Grid.Row="2" Grid.Column="1" Style="{StaticResource ImageButtonStyle}" Content="12" PreviewMouseDown="CallPreset_PreviewMouseDown"/>
+                                    <Button x:Name="btnPreset13" Grid.Row="2" Grid.Column="2" Style="{StaticResource ImageButtonStyle}" Content="13" PreviewMouseDown="CallPreset_PreviewMouseDown"/>
+                                    <Button x:Name="btnPreset14" Grid.Row="2" Grid.Column="3" Style="{StaticResource ImageButtonStyle}" Content="14" PreviewMouseDown="CallPreset_PreviewMouseDown"/>
+                                    <Button x:Name="btnPreset15" Grid.Row="2" Grid.Column="4" Style="{StaticResource ImageButtonStyle}" Content="15" PreviewMouseDown="CallPreset_PreviewMouseDown"/>
+                                </Grid>
+
+                                <Grid Grid.Row="2" Grid.Column="0" Margin="0,5,0,5" HorizontalAlignment="Center">
+                                    <StackPanel Orientation="Horizontal">
+                                        <CheckBox x:Name="chkTakeSnapshots" Margin="5,0,17,1" IsChecked="True" Checked="chkTakeSnapshots_CheckChanged" Unchecked="chkTakeSnapshots_CheckChanged">
+                                            <TextBlock Text="Use snapshots" Margin="0,-2,0,0"/>
+                                        </CheckBox>
+                                        <Label Content="Set or call other presets (16 - 254):" Margin="10,0,10,0"/>
+                                        <materialDesign:NumericUpDown x:Name="numOtherPreset" Margin="5,0,5,0" Minimum="16" Value="16" Maximum="254" MaxWidth="100" BorderThickness="0,0,0,0"/>
+                                        <Button x:Name="btnCallOtherPreset" Content="Call" Width="50" Margin="10,0,10,0" Style="{StaticResource CustomButtonStyle}" PreviewMouseDown="btnCallOtherPreset_PreviewMouseDown" MouseEnter="btnCallOtherPreset_MouseEnter"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Grid>
+                        </Border>
+                    </TabItem>
+                    <TabItem Header="Image settings">
+                        <Border BorderBrush="#FF404040" BorderThickness="1,1,1,1">
+                            <Grid Margin="10"/>
+                        </Border>
+                    </TabItem>
+                </TabControl>
+
+
+                <!--<Grid x:Name="grdSpeeds1" HorizontalAlignment="Left" Height="auto" Margin="50,410,0,0" VerticalAlignment="Top" Width="170">
+        <StackPanel Orientation="Vertical">
+            <Label x:Name="lblPanSpeed1" Content="Pan speed (8):"/>
+            <Slider x:Name="sldPanSpeed1" SmallChange="1" Minimum="1" Maximum="24" Value="8" ValueChanged="sldPanSpeed_ValueChanged"/>
+            <Label x:Name="lblTiltSpeed1" Content="Tilt speed (8):"/>
+            <Slider x:Name="sldTiltSpeed1" SmallChange="1" Minimum="1" Maximum="20" Value="8" ValueChanged="sldTiltSpeed_ValueChanged"/>
+            <Label x:Name="lblZoomSpeed1" Content="Zoom speed (3):"/>
+            <Slider x:Name="sldZoomSpeed1" SmallChange="1" Minimum="1" Maximum="7" Value="3" ValueChanged="sldZoomSpeed_ValueChanged"/>
+            <Label x:Name="lblFocusSpeed1" Content="Focus speed (3):"/>
+            <Slider x:Name="sldFocusSpeed1" SmallChange="1" Minimum="1" Maximum="7" Value="3" ValueChanged="sldFocusSpeed_ValueChanged"/>
+        </StackPanel>
+    </Grid>-->
+
+
+                <Grid x:Name="grdSpeeds" HorizontalAlignment="Left" Height="auto" Margin="220,410,0,0" VerticalAlignment="Top" Width="726">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Orientation="Vertical" Grid.Row="0" Grid.Column="0">
+                        <Label x:Name="lblPanSpeed" Content="Pan speed (8):" HorizontalAlignment="Center"/>
+                        <Slider x:Name="sldPanSpeed" SmallChange="1" Minimum="1" Maximum="24" Value="8" ValueChanged="sldPanSpeed_ValueChanged" Margin="6,0,6,0"/>
+                    </StackPanel>
+
+                    <StackPanel Orientation="Vertical" Grid.Row="0" Grid.Column="1">
+                        <Label x:Name="lblTiltSpeed" Content="Tilt speed (8):" HorizontalAlignment="Center"/>
+                        <Slider x:Name="sldTiltSpeed" SmallChange="1" Minimum="1" Maximum="20" Value="8" ValueChanged="sldTiltSpeed_ValueChanged" Margin="6,0,6,0"/>
+                    </StackPanel>
+
+                    <StackPanel Orientation="Vertical" Grid.Row="0" Grid.Column="2">
+                        <Label x:Name="lblZoomSpeed" Content="Zoom speed (3):" HorizontalAlignment="Center"/>
+                        <Slider x:Name="sldZoomSpeed" SmallChange="1" Minimum="1" Maximum="7" Value="3" ValueChanged="sldZoomSpeed_ValueChanged" Margin="6,0,6,0"/>
+                    </StackPanel>
+
+                    <StackPanel Orientation="Vertical" Grid.Row="0" Grid.Column="3">
+                        <Label x:Name="lblFocusSpeed" Content="Focus speed (3):" HorizontalAlignment="Center"/>
+                        <Slider x:Name="sldFocusSpeed" SmallChange="1" Minimum="1" Maximum="7" Value="3" ValueChanged="sldFocusSpeed_ValueChanged" Margin="6,0,6,0"/>
+                    </StackPanel>
+                </Grid>
+
+
+
+
+                <materialDesign:PopupBox x:Name="puMenu" Content="PopupBox" StaysOpen="False" PopupUniformCornerRadius="10" Cursor="Hand" PlacementMode="LeftAndAlignTopEdges" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Width="50" Height="50" Margin="906,12,0,0" VerticalAlignment="Top">
+                    <materialDesign:PopupBox.ToggleContent>
+                        <materialDesign:PackIcon Kind="MenuOpen" Foreground="White" Height="46" Width="46"/>
+                    </materialDesign:PopupBox.ToggleContent>
+                    <StackPanel Orientation="Vertical">
+                        <CheckBox x:Name="chkShowUILogs" Content="Show logs" IsChecked="True" Style="{StaticResource MaterialDesignFilterChipPrimaryOutlineCheckBox}" Margin="6" Checked="ToggleUILogs" Unchecked="ToggleUILogs" HorizontalAlignment="Center"/>
+
+                        <StackPanel Orientation="Vertical" Grid.Row="0" Grid.Column="1">
+                            <Label x:Name="lblOpacity" Content="Opacity (100%):" HorizontalAlignment="Center"/>
+                            <Slider x:Name="sldOpacity" Minimum="0.2" Maximum="1" Value="1" ValueChanged="sldOpacity_ValueChanged" Margin="6,0,6,0" TickFrequency="0.05" SmallChange="0.05" LargeChange="0.05" IsSnapToTickEnabled="True"/>
+                        </StackPanel>
+
+                        <Separator/>
+
+                        <Button x:Name="btnSettings" Content="Settings" PreviewMouseDown="btnSettings_Click" HorizontalContentAlignment="Center"/>
+
+                        <Button x:Name="btnResetPtzfSpeeds" Content="Reset PTZF speeds" PreviewMouseDown="btnResetPtzfSpeeds_PreviewMouseDown" HorizontalContentAlignment="Center"/>
+
+                        <Separator/>
+
+                        <Button x:Name="btnExit" Content="Exit" PreviewMouseDown="btnExit_PreviewMouseDown" HorizontalContentAlignment="Center"/>
+                    </StackPanel>
+                </materialDesign:PopupBox>
+
+
+            </Grid>
+
+
+        </DockPanel>
+    </Border>
 
 </Window>

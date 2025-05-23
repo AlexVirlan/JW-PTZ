@@ -9,6 +9,11 @@ using System.Threading.Tasks;
 
 namespace JWptz.Entities
 {
+    public enum WindowType
+    {
+        Settings, Sync
+    }
+
     public enum ViewType
     {
         Main, Settings

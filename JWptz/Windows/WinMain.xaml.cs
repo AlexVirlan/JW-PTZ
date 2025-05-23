@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -13,12 +14,15 @@ using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
+using System.Windows.Media.Effects;
 using System.Windows.Media.Imaging;
 using System.Windows.Media.Media3D;
 using JWptz.Controls;
 using JWptz.Entities;
 using JWptz.Services;
 using JWptz.Utilities;
+using MaterialDesignThemes.Wpf;
 
 namespace JWptz.Windows
 {
@@ -29,11 +33,13 @@ namespace JWptz.Windows
         private bool _internalChange = false;
         public PTZCamera? _camera = null;
         private KeyboardHook? _keyboardHook;
+        private BlurEffect _blurEffect = new BlurEffect();
         #endregion
 
         public WinMain()
         {
             _loading = true;
+            this.Opacity = 0;
             InitializeComponent();
             HookCtrl();
         }
@@ -46,25 +52,26 @@ namespace JWptz.Windows
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            SetView(ViewType.Main);
+            //SetView(ViewType.Main);
 
             FunctionResponse frLoadSet = AppSettings.Load();
             ApplySettingsToUI();
             UpdateCamInfo();
             LoadPresetCacheImage();
 
+            AnimateOpacity(from: 0, to: Settings.Opacity);
             AddUILog(UILogType.Info, "App started. Welcome! :)");
             _loading = false;
         }
 
         public void SetView(ViewType viewType)
         {
-            grdMain.Visibility = grdSettings.Visibility = Visibility.Hidden;
-            switch (viewType)
-            {
-                case ViewType.Main: grdMain.Visibility = Visibility.Visible; break;
-                case ViewType.Settings: grdSettings.Visibility = Visibility.Visible; break;
-            }
+            //grdMain.Visibility = grdSettings.Visibility = Visibility.Hidden;
+            //switch (viewType)
+            //{
+            //    case ViewType.Main: grdMain.Visibility = Visibility.Visible; break;
+            //    case ViewType.Settings: grdSettings.Visibility = Visibility.Visible; break;
+            //}
         }
 
         public void ApplySettingsToUI()
@@ -79,6 +86,9 @@ namespace JWptz.Windows
             sldTiltSpeed.Value = Settings.PTZFSpeeds.TiltSpeed;
             sldZoomSpeed.Value = Settings.PTZFSpeeds.ZoomSpeed;
             sldFocusSpeed.Value = Settings.PTZFSpeeds.FocusSpeed;
+
+            chkShowUILogs.IsChecked = Settings.UILogsSettings.Visible;
+            sldOpacity.Value = Settings.Opacity;
         }
 
         private void OnCtrlPressed(object? sender, KeyboardHookEventArgs e)
@@ -110,7 +120,6 @@ namespace JWptz.Windows
         {
             if (_camera is null) { return; }
             string dataCachePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data", "Cache");
-            //if (!Directory.Exists(dataCachePath)) { return; }
 
             string imgPath = string.Empty;
             for (int i = 1; i <= 15; i++)
@@ -137,12 +146,12 @@ namespace JWptz.Windows
 
         private void btnBackToMain_Click(object sender, RoutedEventArgs e)
         {
-            SetView(ViewType.Main);
+            //SetView(ViewType.Main);
         }
 
         private void btnSettings_Click(object sender, RoutedEventArgs e)
         {
-            SetView(ViewType.Settings);
+            ShowWindow(WindowType.Settings);
         }
 
         private void AddUILog(UILogType logType, string? text = null, PTZCommand? command = null, APIBaseResponse? response = null,
@@ -388,6 +397,7 @@ namespace JWptz.Windows
                 itbOSD.IsChecked = _camera?.OsdMode ?? false;
                 UpdateCamInfo();
                 LoadPresetCacheImage();
+                SetPTZFOButtonsOpacity();
             }
             catch (Exception ex) { ShowMessage(ex.Message, MessageBoxImage.Error); }
             finally { _internalChange = false; }
@@ -456,11 +466,20 @@ namespace JWptz.Windows
             lblFocusSpeed.Content = $"Focus speed ({value}):";
         }
 
-        private void ToggleSlimMode(object sender, RoutedEventArgs e)
+        private void ToggleUILogs(object sender, RoutedEventArgs e)
         {
-            // settings
-            // update form size
-
+            if (_loading) { return; }
+            Settings.UILogsSettings.Visible = chkShowUILogs.IsChecked();
+            if (Settings.UILogsSettings.Visible)
+            {
+                grdLogs.Visibility = Visibility.Visible;
+                this.Height += 190;
+            }
+            else
+            {
+                grdLogs.Visibility = Visibility.Collapsed;
+                this.Height -= 190;
+            }
         }
 
         private void btnExit_PreviewMouseDown(object sender, MouseButtonEventArgs e)
@@ -555,6 +574,121 @@ namespace JWptz.Windows
             _camera.OsdMode = itbOSD.IsChecked ?? false;
             itb.Tag = _camera.OsdMode ? "OsdOn" : "OsdOff";
             PTZFOControl_PreviewMouseDownUp(itb, null);
+
+            SetPTZFOButtonsOpacity();
+        }
+
+        private void SetPTZFOButtonsOpacity()
+        {
+            bool osdMode = _camera is not null && _camera.OsdMode;
+
+            btnOsdEnter.Opacity = btnOsdBack.Opacity = (osdMode ? 1 : 0.26);
+            btnPanLeftTiltUp.Opacity = btnPanRightTiltUp.Opacity = btnGoHome.Opacity = btnPanLeftTiltDown.Opacity =
+                btnPanRightTiltDown.Opacity = btnZoomIn.Opacity = btnZoomOut.Opacity = btnFocusIn.Opacity =
+                btnFocusOut.Opacity = btnActivateAutoFocus.Opacity = (osdMode ? 0.26 : 1);
+        }
+
+        private void btnCallOtherPreset_MouseEnter(object sender, MouseEventArgs e)
+        {
+            btnCallOtherPreset.Focus();
+        }
+
+        private void sldOpacity_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            if (_loading) { return; }
+            double sldVal = Math.Round(e.NewValue, 2);
+            this.Opacity = Settings.Opacity = sldVal;
+            lblOpacity.Content = $"Opacity ({Math.Round(sldVal * 100, 0)}%):";
+        }
+
+        private void TitleBar_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ClickCount == 2) { ToggleWindowState(); }
+            else { this.DragMove(); }
+        }
+
+        private void MinimizeButton_Click(object sender, RoutedEventArgs e)
+        {
+            this.WindowState = WindowState.Minimized;
+        }
+
+        private void MaximizeRestoreButton_Click(object sender, RoutedEventArgs e)
+        {
+            ToggleWindowState();
+        }
+
+        private void CloseButton_Click(object sender, RoutedEventArgs e)
+        {
+            Application.Current.Shutdown();
+        }
+
+        private void ToggleWindowState()
+        {
+            //this.WindowState = (this.WindowState == WindowState.Maximized) ? WindowState.Normal : WindowState.Maximized;
+            chkShowUILogs.Toggle();
+        }
+
+        private dynamic? ShowWindow(WindowType windowType)
+        {
+            dynamic? result = null;
+            try
+            {
+                if (Settings.Opacity > 0.64) { AnimateOpacity(from: Settings.Opacity, to: 0.64); }
+                AnimateBlur(true);
+
+                switch (windowType)
+                {
+                    case WindowType.Settings:
+                        WinSettings winSet = new WinSettings();
+                        winSet.Owner = this;
+                        winSet.ShowDialog();
+                        result = winSet.Data;
+                        break;
+
+                    case WindowType.Sync:
+
+                        break;
+                }
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                ShowMessage(ex.Message, MessageBoxImage.Error);
+                return null;
+            }
+            finally
+            {
+                if (Settings.Opacity > 0.64) { AnimateOpacity(from: 0.64, to: Settings.Opacity); }
+                AnimateBlur(false);
+            }
+        }
+
+        private void AnimateOpacity(double from, double to)
+        {
+            DoubleAnimation opacityAnimation = new DoubleAnimation
+            {
+                From = from,
+                To = to,
+                Duration = TimeSpan.FromSeconds(1),
+                FillBehavior = FillBehavior.Stop
+            };
+            opacityAnimation.Completed += (s, e) => { this.Opacity = to; };
+            this.BeginAnimation(Window.OpacityProperty, opacityAnimation);
+        }
+
+        private void AnimateBlur(bool enabled)
+        {
+            this.Effect = _blurEffect;
+            DoubleAnimation blurAnimation = new DoubleAnimation
+            {
+                From = (enabled ? 0 : 10),
+                To = (enabled ? 10 : 0),
+                Duration = new Duration(TimeSpan.FromSeconds(1)),
+                FillBehavior = FillBehavior.Stop
+            };
+            blurAnimation.Completed += (s, e) => { this._blurEffect.Radius = (double)blurAnimation.To; };
+            _blurEffect.BeginAnimation(BlurEffect.RadiusProperty, blurAnimation);
         }
     }
 }

@@ -59,6 +59,7 @@ namespace JWptz.Utilities
         public static int CommandTimeout { get; set; } = 5000;
         public static bool SnapshotOnSetPreset { get; set; } = true;
         public static bool ButtonsWaitForResponse { get; set; } = false;
+        public static double Opacity { get; set; } = 1;
         public static PTZFSpeeds PTZFSpeeds { get; set; } = new();
         public static ImageSettings ImageSettings { get; set; } = new();
         public static UILogsSettings UILogsSettings { get; set; } = new();
@@ -66,11 +67,12 @@ namespace JWptz.Utilities
 
     public class UILogsSettings
     {
-        public bool ShowTimestamp { get; set; } = true;
+        public bool Visible { get; set; } = true;
         public bool AutoScroll { get; set; } = true;
+        public bool ShowTimestamp { get; set; } = true;
         public bool IncludeParams { get; set; } = true;
-        public bool ShowFullEndpoint { get; set; } = false;
         public bool VerboseErrors { get; set; } = false;
+        public bool ShowFullEndpoint { get; set; } = false;
     }
 
     [Serializable]
@@ -88,6 +90,9 @@ namespace JWptz.Utilities
 
         [JsonProperty("ButtonsWaitForResponse")]
         public bool buttonsWaitForResponse { get { return ButtonsWaitForResponse; } set { ButtonsWaitForResponse = value; } }
+
+        [JsonProperty("Opacity")]
+        public double opacity { get { return Opacity; } set { Opacity = value; } }
 
         [JsonProperty("PTZFSpeeds")]
         public PTZFSpeeds ptzfSpeeds { get { return PTZFSpeeds; } set { PTZFSpeeds = value; } }

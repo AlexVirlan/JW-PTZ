@@ -69,6 +69,12 @@ namespace JWptz.Utilities
             return checkBox?.IsChecked is null ? false : (bool)checkBox.IsChecked;
         }
 
+        public static void Toggle(this CheckBox checkbox)
+        {
+            bool? currentValue = checkbox.IsChecked;
+            checkbox.IsChecked = !(currentValue == true);
+        }
+
         public static string ToLowerString(this LogType logType) => logType.ToString().ToLower();
         public static string ToLowerString(this ProtocolType protocolType) => protocolType.ToString().ToLower();
         #endregion
