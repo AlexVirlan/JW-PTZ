@@ -2,7 +2,7 @@
 using System.Data;
 using System.Windows;
 
-namespace JWptz;
+namespace JWPTZ;
 
 /// <summary>
 /// Interaction logic for App.xaml

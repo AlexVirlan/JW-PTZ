@@ -3,10 +3,10 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:wins="clr-namespace:JWptz.Windows"
-        xmlns:utils="clr-namespace:JWptz.Utilities"
-        xmlns:controls="clr-namespace:JWptz.Controls"
-        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" x:Class="JWptz.Windows.WinMain"
+        xmlns:wins="clr-namespace:JWPTZ.Windows"
+        xmlns:utils="clr-namespace:JWPTZ.Utilities"
+        xmlns:controls="clr-namespace:JWPTZ.Controls"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" x:Class="JWPTZ.Windows.WinMain"
         mc:Ignorable="d"
         Title="JW PTZ - AvA.Soft #FF1A1A1A" Height="690" Width="970" d:Height="690" d:Width="970" Background="#FF1A1A1A" Foreground="White" WindowStartupLocation="CenterScreen"
         ResizeMode="CanMinimize" Loaded="Window_Loaded" Closing="Window_Closing" WindowStyle="None" AllowsTransparency="True" Opacity="1">
@@ -601,15 +601,15 @@
                 </ToggleButton>-->
 
                             <controls:ImageToggleButton x:Name="itbOSD" Grid.Row="0" Grid.Column="0"
-                    IsChecked="False"
-                    Style="{StaticResource ToggleButtonStyle}"
-                    Content="OSD"
-                    UncheckedImageSource="/Resources/Images/empty.png"
-                    CheckedImageSource="/Resources/Images/check-white.png"
-                    ImageOpacity="0.46" 
-                    Checked="itbOSD_CheckedChanged"
-                    Unchecked="itbOSD_CheckedChanged"
-                    Margin="5"/>
+                                IsChecked="False"
+                                Style="{StaticResource ToggleButtonStyle}"
+                                Content="OSD"
+                                UncheckedImageSource="/Resources/Images/empty.png"
+                                CheckedImageSource="/Resources/Images/check-white.png"
+                                ImageOpacity="0.46" 
+                                Checked="itbOSD_CheckedChanged"
+                                Unchecked="itbOSD_CheckedChanged"
+                                Margin="5"/>
 
 
                             <Button x:Name="btnOsdEnter" Grid.Row="0" Grid.Column="1" Style="{StaticResource ImageButtonStyle}" Margin="5" PreviewMouseDown="OsdEnterBack_PreviewMouseDown" Opacity="0.26">

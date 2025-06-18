@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace JWptz.Entities
+namespace JWPTZ.Entities
 {
     public enum WindowType
     {

@@ -7,9 +7,9 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using static JWptz.Services.KeyboardHook;
+using static JWPTZ.Services.KeyboardHook;
 
-namespace JWptz.Services
+namespace JWPTZ.Services
 {
     public class KeyboardHookEventArgs : HandledEventArgs
     {

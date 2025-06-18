@@ -6,6 +6,12 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
+    <Title>JW-PTZ</Title>
+    <Authors>Alex Vîrlan</Authors>
+    <Copyright>$(Authors)</Copyright>
+    <PackageProjectUrl>https://github.com/AlexVirlan/JW-PTZ</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/AlexVirlan/JW-PTZ</RepositoryUrl>
+    <RootNamespace>$(MSBuildProjectName.Replace(" ", "").Replace("-", ""))</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

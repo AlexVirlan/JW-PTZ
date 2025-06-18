@@ -9,7 +9,7 @@ using System.Windows.Controls.Primitives;
 using System.Globalization;
 using System.Windows.Data;
 
-namespace JWptz.Controls
+namespace JWPTZ.Controls
 {
     public class ImageToggleButton : ToggleButton
     {

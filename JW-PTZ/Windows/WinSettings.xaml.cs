@@ -12,7 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
-namespace JWptz.Windows
+namespace JWPTZ.Windows
 {
     /// <summary>
     /// Interaction logic for WinSettings.xaml

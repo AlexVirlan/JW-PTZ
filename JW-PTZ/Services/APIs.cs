@@ -1,5 +1,5 @@
-﻿using JWptz.Entities;
-using JWptz.Utilities;
+﻿using JWPTZ.Entities;
+using JWPTZ.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -11,7 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
 
-namespace JWptz.Services
+namespace JWPTZ.Services
 {
     public static class APIs
     {

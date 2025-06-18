@@ -18,13 +18,13 @@ using System.Windows.Media.Animation;
 using System.Windows.Media.Effects;
 using System.Windows.Media.Imaging;
 using System.Windows.Media.Media3D;
-using JWptz.Controls;
-using JWptz.Entities;
-using JWptz.Services;
-using JWptz.Utilities;
+using JWPTZ.Controls;
+using JWPTZ.Entities;
+using JWPTZ.Services;
+using JWPTZ.Utilities;
 using MaterialDesignThemes.Wpf;
 
-namespace JWptz.Windows
+namespace JWPTZ.Windows
 {
     public partial class WinMain : Window
     {

@@ -1,4 +1,4 @@
-﻿using JWptz.Entities;
+﻿using JWPTZ.Entities;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Documents;
 
-namespace JWptz.Utilities
+namespace JWPTZ.Utilities
 {
     public class SettingsNotifier : Freezable, INotifyPropertyChanged
     {

@@ -1,4 +1,4 @@
-﻿using JWptz.Entities;
+﻿using JWPTZ.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +10,7 @@ using System.Windows;
 using System.Windows.Media;
 using System.IO;
 
-namespace JWptz.Utilities
+namespace JWPTZ.Utilities
 {
     public static class Extensions
     {

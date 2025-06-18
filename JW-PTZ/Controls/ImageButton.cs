@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 
-namespace JWptz.Controls
+namespace JWPTZ.Controls
 {
     public class ImageButton : Button
     {

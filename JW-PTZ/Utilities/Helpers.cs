@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Drawing;
 using System.Runtime.CompilerServices;
-using JWptz.Entities;
+using JWPTZ.Entities;
 using Newtonsoft.Json;
 using System.Windows;
 using Color = System.Windows.Media.Color;
@@ -17,7 +17,7 @@ using System.Collections.Specialized;
 using System.Web;
 using System.Windows.Media.Imaging;
 
-namespace JWptz.Utilities
+namespace JWPTZ.Utilities
 {
     public class Helpers
     {
