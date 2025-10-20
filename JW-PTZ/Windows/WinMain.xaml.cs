@@ -54,7 +54,7 @@ namespace JWPTZ.Windows
         {
             //SetView(ViewType.Main);
 
-            FunctionResponse frLoadSet = AppSettings.Load();
+            MethodResponse fmrLoadSet = AppSettings.Load();
             ApplySettingsToUI();
             UpdateCamInfo();
             LoadPresetCacheImage();
@@ -293,7 +293,7 @@ namespace JWPTZ.Windows
             }
             finally
             {
-                presetButton.IsEnabled = true;
+                if (presetButton is not null) { presetButton.IsEnabled = true; }
             }
         }
 
@@ -534,6 +534,7 @@ namespace JWPTZ.Windows
             sldTiltSpeed.Value = 8;
             sldZoomSpeed.Value = 3;
             sldFocusSpeed.Value = 3;
+            CloseMenuPopup();
         }
 
         private void OsdEnterBack_PreviewMouseDown(object sender, MouseButtonEventArgs e)
@@ -689,6 +690,58 @@ namespace JWPTZ.Windows
             };
             blurAnimation.Completed += (s, e) => { this._blurEffect.Radius = (double)blurAnimation.To; };
             _blurEffect.BeginAnimation(BlurEffect.RadiusProperty, blurAnimation);
+        }
+
+        private void CloseMenuPopup()
+        {
+            puMenu.IsPopupOpen = false;
+        }
+
+        private void puTools_MouseEnter(object sender, MouseEventArgs e)
+        {
+            puTools.IsPopupOpen = true;
+        }
+
+        private void puTools_MouseLeave(object sender, MouseEventArgs e)
+        {
+            //if (puTools != null)
+            //{
+            //    Point position = e.GetPosition(puTools);
+            //    HitTestResult hitTest = VisualTreeHelper.HitTest(puTools, position);
+            //    if (hitTest == null) { puTools.IsPopupOpen = false; }
+            //}
+        }
+
+        private void puToolsPanel_MouseLeave(object sender, MouseEventArgs e)
+        {
+            //puTools.IsPopupOpen = false;
+            if (puTools is not null)
+            {
+                Point position = e.GetPosition(puTools);
+                HitTestResult hitTest = VisualTreeHelper.HitTest(puTools, position);
+                if (hitTest == null) { puTools.IsPopupOpen = false; }
+            }
+        }
+
+        private void btnTools_PreviewMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            e.Handled = true;
+        }
+
+        private void btnTools_MouseLeave(object sender, MouseEventArgs e)
+        {
+            if (puToolsStackPanel is not null)
+            {
+                Point position = e.GetPosition(puToolsStackPanel);
+                position.X -= 10;
+                HitTestResult hitTest = VisualTreeHelper.HitTest(puToolsStackPanel, position);
+                if (hitTest == null) { puTools.IsPopupOpen = false; }
+            }
+        }
+
+        private void btnFullPresets_PreviewMouseDown(object sender, MouseButtonEventArgs e)
+        {
+
         }
     }
 }

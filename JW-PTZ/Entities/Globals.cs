@@ -8,13 +8,13 @@ namespace JWPTZ.Entities
 {
     public static class Globals
     {
-        public static string GreenHex = "#FF00FF00";
-        public static string RedHex = "#FFFF0000";
-        public static string DarkRedHex = "#FFAA0000";
-        public static string LightRedHex = "#FFF65A5A";
-        public static string GrayHex = "#FF404040";
-        public static string Gray17Hex = "#FF111111";
-        public static string Gray26Hex = "#FF1A1A1A";
-        public static string Gray200Hex = "#FFC8C8C8";
+        public static readonly string GreenHex = "#FF00FF00";
+        public static readonly string RedHex = "#FFFF0000";
+        public static readonly string DarkRedHex = "#FFAA0000";
+        public static readonly string LightRedHex = "#FFF65A5A";
+        public static readonly string GrayHex = "#FF404040";
+        public static readonly string Gray17Hex = "#FF111111";
+        public static readonly string Gray26Hex = "#FF1A1A1A";
+        public static readonly string Gray200Hex = "#FFC8C8C8";
     }
 }

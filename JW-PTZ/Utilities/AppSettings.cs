@@ -105,7 +105,7 @@ namespace JWPTZ.Utilities
         #endregion
 
         #region Methods
-        public static FunctionResponse Save(string fileName = "App.set", bool inAppData = false)
+        public static MethodResponse Save(string fileName = "App.set", bool inAppData = false)
         {
             try
             {
@@ -114,38 +114,39 @@ namespace JWPTZ.Utilities
                 if (!exists)
                 {
                     string? folders = Path.GetDirectoryName(path);
-                    Directory.CreateDirectory(folders);
+                    if (folders.INOE())
+                    { return MethodResponse.UnsuccessfulWithMessage("Can't get the path for the settings file."); }
                 }
 
                 string settingsData = JsonConvert.SerializeObject(new AppSettings(), Formatting.Indented);
                 File.WriteAllText(path, settingsData);
-                return new FunctionResponse(error: false, message: "Settings saved successfully.");
+                return MethodResponse.SuccessfulWithMessage("Settings saved successfully.");
             }
             catch (Exception ex)
             {
-                return new FunctionResponse(ex);
+                return new MethodResponse(ex);
             }
         }
 
-        public static FunctionResponse Load(string fileName = "App.set", bool fromAppData = false)
+        public static MethodResponse Load(string fileName = "App.set", bool fromAppData = false)
         {
             try
             {
                 (bool exists, string path) = GetSetFilePath(fileName, fromAppData);
                 if (!exists)
                 {
-                    return new FunctionResponse(error: true, message: $"The settings file ({path}) is missing.");
+                    return MethodResponse.UnsuccessfulWithMessage($"The settings file ({path}) is missing.");
                 }
 
                 string settingsData = File.ReadAllText(path);
                 JsonConvert.DeserializeObject<AppSettings>(settingsData,
                     new JsonSerializerSettings { ObjectCreationHandling = ObjectCreationHandling.Replace });
 
-                return new FunctionResponse(error: false, message: "Settings loaded successfully.");
+                return MethodResponse.SuccessfulWithMessage("Settings loaded successfully.");
             }
             catch (Exception ex)
             {
-                return new FunctionResponse(ex);
+                return new MethodResponse(ex);
             }
         }
 
