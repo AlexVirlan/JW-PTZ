@@ -1,4 +1,9 @@
-﻿using System;
+﻿using JWPTZ.Controls;
+using JWPTZ.Entities;
+using JWPTZ.Services;
+using JWPTZ.Utilities;
+using MaterialDesignThemes.Wpf;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -10,6 +15,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
@@ -18,11 +24,6 @@ using System.Windows.Media.Animation;
 using System.Windows.Media.Effects;
 using System.Windows.Media.Imaging;
 using System.Windows.Media.Media3D;
-using JWPTZ.Controls;
-using JWPTZ.Entities;
-using JWPTZ.Services;
-using JWPTZ.Utilities;
-using MaterialDesignThemes.Wpf;
 
 namespace JWPTZ.Windows
 {
@@ -54,12 +55,12 @@ namespace JWPTZ.Windows
         {
             //SetView(ViewType.Main);
 
-            MethodResponse fmrLoadSet = AppSettings.Load();
+            MethodResponse fmrLoadSet = SettingsManager.Load();
             ApplySettingsToUI();
             UpdateCamInfo();
             LoadPresetCacheImage();
 
-            AnimateOpacity(from: 0, to: Settings.Opacity);
+            AnimateOpacity(from: 0, to: Settings.AppSettings.Opacity);
             AddUILog(UILogType.Info, "App started. Welcome! :)");
             _loading = false;
         }
@@ -88,7 +89,7 @@ namespace JWPTZ.Windows
             sldFocusSpeed.Value = Settings.PTZFSpeeds.FocusSpeed;
 
             chkShowUILogs.IsChecked = Settings.UILogsSettings.Visible;
-            sldOpacity.Value = Settings.Opacity;
+            sldOpacity.Value = Settings.AppSettings.Opacity;
         }
 
         private void OnCtrlPressed(object? sender, KeyboardHookEventArgs e)
@@ -178,7 +179,7 @@ namespace JWPTZ.Windows
                     else { rtbLogs.AppendFormattedText($"> ", brush: Helpers.GetBrushFromHex(Globals.RedHex)); }
 
                     rtbLogs.AppendFormattedText($"Camera: ", brush: Helpers.GetBrushFromHex(Globals.Gray200Hex));
-                    rtbLogs.AppendFormattedText($"{command.Camera.Id} - {command.Camera.Name} ", bold: true);
+                    rtbLogs.AppendFormattedText($"{command.Camera.Id}. {command.Camera.Name} ", bold: true);
                     string camPath = uiLS.ShowFullEndpoint ? response.Endpoint : command.Camera.IP;
                     rtbLogs.AppendFormattedText($"({camPath}). Command: ", brush: Helpers.GetBrushFromHex(Globals.Gray200Hex));
                     rtbLogs.AppendFormattedText($"{command.CommandType}", bold: true);
@@ -243,7 +244,7 @@ namespace JWPTZ.Windows
                 { throw new Exception("Could not parse the preset button value."); }
                 #endregion
 
-                if (Settings.ButtonsWaitForResponse) { presetButton.IsEnabled = false; }
+                if (Settings.AppSettings.ButtonsWaitForResponse) { presetButton.IsEnabled = false; }
                 bool isCtrlPressed = (Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control;
                 if (e.ChangedButton == MouseButton.Left)
                 {
@@ -260,7 +261,7 @@ namespace JWPTZ.Windows
                         APIBaseResponse presRes = await APIs.SendCommand(cmd);
                         AddUILog(UILogType.Command, null, cmd, presRes);
 
-                        if (presRes.Successful && Settings.SnapshotOnSetPreset)
+                        if (presRes.Successful && Settings.AppSettings.SnapshotOnSetPreset)
                         {
                             APIImageResponse imgRes = await APIs.GetSnapshot(_camera);
                             if (imgRes.Successful)
@@ -327,7 +328,7 @@ namespace JWPTZ.Windows
                 }
                 #endregion
 
-                if (Settings.ButtonsWaitForResponse) { button.IsEnabled = false; }
+                if (Settings.AppSettings.ButtonsWaitForResponse) { button.IsEnabled = false; }
                 CommandType cmdType;
 
                 if (_camera.OsdMode)
@@ -429,12 +430,12 @@ namespace JWPTZ.Windows
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             UpdateSettingsFromUI();
-            AppSettings.Save();
+            SettingsManager.Save();
         }
 
         private void UpdateSettingsFromUI()
         {
-            Settings.CommandTimeout = 2500;
+            Settings.AppSettings.CommandTimeout = 2500;
 
         }
 
@@ -525,7 +526,7 @@ namespace JWPTZ.Windows
         private void chkTakeSnapshots_CheckChanged(object sender, RoutedEventArgs e)
         {
             if (_loading) { return; }
-            Settings.SnapshotOnSetPreset = chkTakeSnapshots.IsChecked();
+            Settings.AppSettings.SnapshotOnSetPreset = chkTakeSnapshots.IsChecked();
         }
 
         private void btnResetPtzfSpeeds_PreviewMouseDown(object sender, MouseButtonEventArgs e)
@@ -598,7 +599,7 @@ namespace JWPTZ.Windows
         {
             if (_loading) { return; }
             double sldVal = Math.Round(e.NewValue, 2);
-            this.Opacity = Settings.Opacity = sldVal;
+            this.Opacity = Settings.AppSettings.Opacity = sldVal;
             lblOpacity.Content = $"Opacity ({Math.Round(sldVal * 100, 0)}%):";
         }
 
@@ -634,7 +635,7 @@ namespace JWPTZ.Windows
             dynamic? result = null;
             try
             {
-                if (Settings.Opacity > 0.64) { AnimateOpacity(from: Settings.Opacity, to: 0.64); }
+                if (Settings.AppSettings.Opacity > 0.64) { AnimateOpacity(from: Settings.AppSettings.Opacity, to: 0.64); }
                 AnimateBlur(true);
 
                 switch (windowType)
@@ -660,7 +661,7 @@ namespace JWPTZ.Windows
             }
             finally
             {
-                if (Settings.Opacity > 0.64) { AnimateOpacity(from: 0.64, to: Settings.Opacity); }
+                if (Settings.AppSettings.Opacity > 0.64) { AnimateOpacity(from: 0.64, to: Settings.AppSettings.Opacity); }
                 AnimateBlur(false);
             }
         }
@@ -741,6 +742,12 @@ namespace JWPTZ.Windows
 
         private void btnFullPresets_PreviewMouseDown(object sender, MouseButtonEventArgs e)
         {
+
+        }
+
+        private void btnMenu_Click(object sender, RoutedEventArgs e)
+        {
+            //puMenu.IsPopupOpen = true;
 
         }
     }

@@ -31,16 +31,17 @@
             <Setter Property="BorderBrush" Value="#FF404040"/>
             <Setter Property="Foreground" Value="White"/>
             <Setter Property="BorderThickness" Value="1.5"/>
+            <Setter Property="Padding" Value="1,1,1,1"/>
             <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type Button}">
                         <Border x:Name="border"
-                                Background="{TemplateBinding Background}"
-                                BorderBrush="{TemplateBinding BorderBrush}"
-                                BorderThickness="{TemplateBinding BorderThickness}"
-                                CornerRadius="6">
-                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" Margin="1"/>
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="6">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" Margin="{TemplateBinding Padding}"/>
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
@@ -174,10 +175,11 @@
                     </Grid.ColumnDefinitions>
 
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Grid.Column="0">
+                        <!--<Button x:Name="btnMenu" Content="Menu" Width="50" Style="{StaticResource CustomButtonStyle}" Click="btnMenu_Click"/>-->
                         <TextBlock Text="JW PTZ - AvA.Soft" Foreground="White" VerticalAlignment="Center" Margin="10,0,0,0" />
                     </StackPanel>
 
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Grid.Column="1">
+                    <StackPanel x:Name="lblBarInfo" Orientation="Horizontal" HorizontalAlignment="Center" Grid.Column="1">
                         <TextBlock Text=":)" Foreground="White" VerticalAlignment="Center"/>
                     </StackPanel>
 
@@ -244,7 +246,7 @@
                                     <DataTemplate>
                                         <TextBlock>
                                             <TextBlock.Text>
-                                                <MultiBinding StringFormat="{}{0} - {1}">
+                                                <MultiBinding StringFormat="{}{0}. {1}">
                                                     <Binding Path="Id"/>
                                                     <Binding Path="Name"/>
                                                 </MultiBinding>

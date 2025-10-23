@@ -31,7 +31,7 @@ namespace JWPTZ.Services
 
                 using HttpClient client = new HttpClient();
                 SetAuthorization(client, ptzCommand.Camera);
-                client.Timeout = TimeSpan.FromMilliseconds(Settings.CommandTimeout);
+                client.Timeout = TimeSpan.FromMilliseconds(Settings.AppSettings.CommandTimeout);
                 endpoint = GetCameraEndpoint(ptzCommand);
 
                 HttpResponseMessage response = await client.GetAsync(endpoint);
@@ -64,7 +64,7 @@ namespace JWPTZ.Services
             {
                 using HttpClient client = new HttpClient();
                 SetAuthorization(client, ptzCamera);
-                client.Timeout = TimeSpan.FromMilliseconds(Settings.CommandTimeout);
+                client.Timeout = TimeSpan.FromMilliseconds(Settings.AppSettings.CommandTimeout);
                 endpoint = GetSnapshotEndpoint(ptzCamera);
 
                 HttpResponseMessage response = await client.GetAsync(endpoint);

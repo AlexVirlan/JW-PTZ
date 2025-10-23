@@ -34,6 +34,7 @@ namespace JWPTZ.Utilities
 
     public class Settings
     {
+        #region Properties
         #region Cameras
         private static ObservableCollection<PTZCamera> _cameras = new ObservableCollection<PTZCamera>();
         public static ObservableCollection<PTZCamera> Cameras
@@ -56,13 +57,44 @@ namespace JWPTZ.Utilities
         }
         #endregion
 
-        public static int CommandTimeout { get; set; } = 5000;
-        public static bool SnapshotOnSetPreset { get; set; } = true;
-        public static bool ButtonsWaitForResponse { get; set; } = false;
-        public static double Opacity { get; set; } = 1;
+        public static AppSettings AppSettings { get; set; } = new();
         public static PTZFSpeeds PTZFSpeeds { get; set; } = new();
         public static ImageSettings ImageSettings { get; set; } = new();
         public static UILogsSettings UILogsSettings { get; set; } = new();
+        #endregion
+
+        #region Methods
+        public static void ReindexCameras()
+        {
+            for (int i = 0; i < Cameras.Count; i++)
+            {
+                Cameras[i].Id = i + 1;
+            }
+        }
+
+        public static List<PTZCamera>? GetCamerasWithDuplicateIds()
+        {
+            HashSet<int> duplicateIds = Cameras
+                .GroupBy(cam => cam.Id)
+                .Where(grp => grp.Count() > 1)
+                .Select(grp => grp.Key)
+                .ToHashSet();
+
+            List<PTZCamera> camerasWDI = Cameras
+                .Where(cam => duplicateIds.Contains(cam.Id))
+                .ToList();
+
+            return camerasWDI.Count == 0 ? null : camerasWDI;
+        }
+        #endregion
+    }
+
+    public class AppSettings
+    {
+        public int CommandTimeout { get; set; } = 3000;
+        public bool SnapshotOnSetPreset { get; set; } = true;
+        public bool ButtonsWaitForResponse { get; set; } = false;
+        public double Opacity { get; set; } = 1;
     }
 
     public class UILogsSettings
@@ -76,23 +108,14 @@ namespace JWPTZ.Utilities
     }
 
     [Serializable]
-    public class AppSettings : Settings
+    public class SettingsManager : Settings
     {
         #region Properties
         [JsonProperty("Cameras")]
         public ObservableCollection<PTZCamera> cameras { get { return Cameras; } set { Cameras = value; } }
 
-        [JsonProperty("CommandTimeout")]
-        public int commandTimeout { get { return CommandTimeout; } set { CommandTimeout = value; } }
-
-        [JsonProperty("SnapshotOnSetPreset")]
-        public bool snapshotOnSetPreset { get { return SnapshotOnSetPreset; } set { SnapshotOnSetPreset = value; } }
-
-        [JsonProperty("ButtonsWaitForResponse")]
-        public bool buttonsWaitForResponse { get { return ButtonsWaitForResponse; } set { ButtonsWaitForResponse = value; } }
-
-        [JsonProperty("Opacity")]
-        public double opacity { get { return Opacity; } set { Opacity = value; } }
+        [JsonProperty("AppSettings")]
+        public AppSettings appSettings { get { return AppSettings; } set { AppSettings = value; } }
 
         [JsonProperty("PTZFSpeeds")]
         public PTZFSpeeds ptzfSpeeds { get { return PTZFSpeeds; } set { PTZFSpeeds = value; } }
@@ -118,7 +141,7 @@ namespace JWPTZ.Utilities
                     { return MethodResponse.UnsuccessfulWithMessage("Can't get the path for the settings file."); }
                 }
 
-                string settingsData = JsonConvert.SerializeObject(new AppSettings(), Formatting.Indented);
+                string settingsData = JsonConvert.SerializeObject(new SettingsManager(), Formatting.Indented);
                 File.WriteAllText(path, settingsData);
                 return MethodResponse.SuccessfulWithMessage("Settings saved successfully.");
             }
@@ -139,7 +162,7 @@ namespace JWPTZ.Utilities
                 }
 
                 string settingsData = File.ReadAllText(path);
-                JsonConvert.DeserializeObject<AppSettings>(settingsData,
+                JsonConvert.DeserializeObject<SettingsManager>(settingsData,
                     new JsonSerializerSettings { ObjectCreationHandling = ObjectCreationHandling.Replace });
 
                 return MethodResponse.SuccessfulWithMessage("Settings loaded successfully.");
