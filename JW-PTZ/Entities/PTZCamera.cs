@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace JWPTZ.Entities
 {
 
-    public class PTZCamera : INotifyPropertyChanged
+    public class PTZCamera : INotifyPropertyChanged, ICloneable
     {
         #region Private properties
         private int _id = 0;
@@ -100,35 +100,28 @@ namespace JWPTZ.Entities
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
         #endregion
+
+        #region ICloneable implementation
+        public object Clone()
+        {
+            return new PTZCamera
+            {
+                Id = this.Id,
+                IP = this.IP,
+                Name = this.Name,
+                UseAuth = this.UseAuth,
+                Username = this.Username,
+                Password = this.Password,
+                LockPresets = this.LockPresets,
+                OsdMode = this.OsdMode,
+                ProtocolType = this.ProtocolType
+            };
+        }
+
+        public PTZCamera DeepCopy()
+        {
+            return (PTZCamera)this.Clone();
+        }
+        #endregion
     }
-
-
-    //public class PTZCamera
-    //{
-    //    #region Properties
-    //    public int Id { get; set; } = 0;
-    //    public string IP { get; set; } = string.Empty;
-    //    public string Name { get; set; } = string.Empty;
-    //    public bool UseAuth { get; set; } = false;
-    //    public string Username { get; set; } = string.Empty;
-    //    public string Password { get; set; } = string.Empty;
-    //    public bool LockPresets { get; set; } = false;
-
-    //    [JsonIgnore]
-    //    public bool OsdMode { get; set; } = false;
-
-    //    [JsonConverter(typeof(StringEnumConverter))]
-    //    public ProtocolType ProtocolType { get; set; } = ProtocolType.HTTP;
-    //    #endregion
-
-    //    #region Constructors
-    //    public PTZCamera() { }
-
-    //    public PTZCamera(string ip, string name)
-    //    {
-    //        IP = ip;
-    //        Name = name;
-    //    }
-    //    #endregion
-    //}
 }

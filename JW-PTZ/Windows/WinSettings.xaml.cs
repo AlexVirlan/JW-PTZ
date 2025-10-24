@@ -2,6 +2,8 @@
 using JWPTZ.Utilities;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
@@ -20,6 +22,30 @@ using static System.Net.Mime.MediaTypeNames;
 
 namespace JWPTZ.Windows
 {
+    public class BackupSettingsNotifier : Freezable, INotifyPropertyChanged
+    {
+        protected override Freezable CreateInstanceCore() => new BackupSettingsNotifier();
+
+        private ObservableCollection<PTZCamera> _cameras;
+
+        public BackupSettingsNotifier()
+        {
+            _cameras = new ObservableCollection<PTZCamera>();
+        }
+
+        public ObservableCollection<PTZCamera> Cameras
+        {
+            get => _cameras;
+            set { _cameras = value; OnPropertyChanged(nameof(Cameras)); }
+        }
+
+        public event PropertyChangedEventHandler? PropertyChanged;
+        private void OnPropertyChanged(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+    }
+
     public partial class WinSettings : Window
     {
         #region Variables
@@ -28,13 +54,27 @@ namespace JWPTZ.Windows
         private bool _loading = false;
         private readonly string _NL = Environment.NewLine;
         private PTZCamera? _selectedCamera = null;
+        private BackupSettingsNotifier _backupSettingsNotifier = new();
+        private Window? _ownerWindow = null;
         #endregion
 
-        public WinSettings()
+        public WinSettings(Window? ownerWindow)
         {
             _loading = true;
+
+            _ownerWindow = ownerWindow;
             InitializeComponent();
-            Settings.CamerasChanged += (s, e) => OnCamerasChanged();
+
+            _backupSettingsNotifier.Cameras = CreateDeepCopy(Settings.Cameras);
+            this.DataContext = _backupSettingsNotifier;
+        }
+
+        private ObservableCollection<PTZCamera> CreateDeepCopy(ObservableCollection<PTZCamera> source)
+        {
+            ObservableCollection<PTZCamera> copy = [];
+            foreach (PTZCamera camera in source)
+            { copy.Add(camera.DeepCopy()); }
+            return copy;
         }
 
         private void OnCamerasChanged()
@@ -85,6 +125,8 @@ namespace JWPTZ.Windows
         private void chkAutoSave_CheckedChanged(object sender, RoutedEventArgs e)
         {
             btnSave.SetEnabled(!chkAutoSave.IsChecked());
+            Settings.App.AutoSaveCamsSettings = chkAutoSave.IsChecked();
+
         }
 
         private void txtCamIp_TextChanged(object sender, TextChangedEventArgs e)
@@ -93,7 +135,7 @@ namespace JWPTZ.Windows
 
             txtCamIp.Foreground = Helpers.IsValidIPv4(txtCamIp.Text.Trim()) ? Globals.GreenText : Globals.RedText;
 
-            Settings.Cameras[lstCameras.SelectedIndex].IP = txtCamIp.Text.Trim();
+            _selectedCamera.IP = txtCamIp.Text.Trim();
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -121,7 +163,7 @@ namespace JWPTZ.Windows
 
         private void btnAddCam_Click(object sender, RoutedEventArgs e)
         {
-            Settings.Cameras.Add(new PTZCamera() { Name = "xXxXx", IP = "123.456" });
+            _backupSettingsNotifier.Cameras.Add(new PTZCamera() { Name = "xXxXx", IP = "123.456" });
         }
 
         private void brnDuplicateCam_Click(object sender, RoutedEventArgs e)
@@ -249,7 +291,97 @@ namespace JWPTZ.Windows
         {
             if (_loading || _selectedCamera is null) { return; }
             //_selectedCamera.Name = txtCamName.Text.Trim();
-            Settings.Cameras[lstCameras.SelectedIndex].Name = txtCamName.Text.Trim();
+            _selectedCamera.Name = txtCamName.Text.Trim();
+        }
+
+        private void btnRevert_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                this.IsEnabled = false;
+                MessageBoxResult result = AskUser("Are you sure you want to revert all camera settings (for all cameras) to the last saved state?");
+                if (result == MessageBoxResult.Yes)
+                {
+                    _backupSettingsNotifier.Cameras.Clear();
+                    _backupSettingsNotifier.Cameras = CreateDeepCopy(Settings.Cameras);
+                }
+            }
+            catch (Exception ex)
+            { ShowMessage($"Error reverting camera settings.{_NL}{ex.Message}", MessageBoxImage.Error); }
+            finally
+            { this.IsEnabled = true; }
+        }
+
+        private void btnSave_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                this.IsEnabled = false;
+                SaveCamerasSettings();
+                //SaveCamerasSettings_V2();
+            }
+            catch (Exception ex)
+            { ShowMessage($"Error saving camera settings.{_NL}{ex.Message}", MessageBoxImage.Error); }
+            finally
+            { this.IsEnabled = true; }
+        }
+
+        private void Window_Closing(object sender, CancelEventArgs e)
+        {
+            if (Settings.App.AutoSaveCamsSettings) { SaveCamerasSettings(); }
+
+        }
+
+        private void SaveCamerasSettings()
+        {
+            Settings.Cameras.Clear();
+            foreach (PTZCamera camera in _backupSettingsNotifier.Cameras)
+            { Settings.Cameras.Add(camera.DeepCopy()); }
+            SettingsManager.Save();
+            (_ownerWindow as WinMain)?.RestoreLastSelectedCamera();
+        }
+
+        public void SaveCamerasSettings_V2()
+        {
+            var backupCamerasById = _backupSettingsNotifier.Cameras.ToDictionary(c => c.Id);
+            var originalCamerasById = Settings.Cameras.ToDictionary(c => c.Id);
+
+            for (int i = Settings.Cameras.Count - 1; i >= 0; i--)
+            {
+                if (!backupCamerasById.ContainsKey(Settings.Cameras[i].Id))
+                {
+                    Settings.Cameras.RemoveAt(i);
+                }
+            }
+
+            for (int i = 0; i < _backupSettingsNotifier.Cameras.Count; i++)
+            {
+                var backupCamera = _backupSettingsNotifier.Cameras[i];
+
+                if (originalCamerasById.TryGetValue(backupCamera.Id, out var originalCamera))
+                {
+                    originalCamera.IP = backupCamera.IP;
+                    originalCamera.Name = backupCamera.Name;
+                    originalCamera.UseAuth = backupCamera.UseAuth;
+                    originalCamera.Username = backupCamera.Username;
+                    originalCamera.Password = backupCamera.Password;
+                    originalCamera.LockPresets = backupCamera.LockPresets;
+                    originalCamera.OsdMode = backupCamera.OsdMode;
+                    originalCamera.ProtocolType = backupCamera.ProtocolType;
+
+                    int currentIndex = Settings.Cameras.IndexOf(originalCamera);
+                    if (currentIndex != i)
+                    {
+                        Settings.Cameras.Move(currentIndex, i);
+                    }
+                }
+                else
+                {
+                    Settings.Cameras.Insert(i, (PTZCamera)backupCamera.Clone());
+                }
+            }
+
+            SettingsManager.Save();
         }
     }
 }

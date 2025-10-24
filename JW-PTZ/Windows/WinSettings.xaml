@@ -6,12 +6,14 @@
     xmlns:local="clr-namespace:JWPTZ.Windows"
     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
     xmlns:utils="clr-namespace:JWPTZ.Utilities"
-    xmlns:controls="clr-namespace:JWPTZ.Controls"
+    d:DataContext="{d:DesignInstance Type=local:BackupSettingsNotifier}"
     mc:Ignorable="d"
-    Title="JW PTZ - Settings" Height="540" Width="640" WindowStartupLocation="CenterOwner" ResizeMode="NoResize" ShowInTaskbar="False" Loaded="Window_Loaded">
+    Title="JW PTZ - Settings" Height="540" Width="640" WindowStartupLocation="CenterOwner" ResizeMode="NoResize" ShowInTaskbar="False" Loaded="Window_Loaded" Closing="Window_Closing">
+    
     <Window.Resources>
-        <utils:SettingsNotifier x:Key="SettingsNotifier"/>
-
+        <!--<utils:BackupSettingsNotifier x:Key="BackupSettingsNotifier"/>-->
+        <!--, Source={StaticResource BackupSettingsNotifier}-->
+        
         <Style x:Key="CustomButtonStyle" TargetType="{x:Type Button}">
             <Setter Property="Background" Value="#FF111111"/>
             <Setter Property="BorderBrush" Value="#FF404040"/>
@@ -70,7 +72,7 @@
                             <StackPanel Orientation="Vertical">
                                 <Label x:Name="lblCamsTitle" Content="Cameras (0):" Foreground="White"/>
                                 <ListBox x:Name="lstCameras" Background="#FF2A2A2A" Foreground="White" BorderBrush="#FF606060" BorderThickness="1" Height="406"
-                                         ItemsSource="{Binding Cameras, Source={StaticResource SettingsNotifier}}" SelectedIndex="0" SelectionChanged="lstCameras_SelectionChanged">
+                                         ItemsSource="{Binding Cameras}" SelectedIndex="0" SelectionChanged="lstCameras_SelectionChanged">
                                     <ListBox.ItemTemplate>
                                         <DataTemplate>
                                             <TextBlock>
@@ -250,10 +252,9 @@
                                             <!--<ColumnDefinition Width="*"/>-->
                                         </Grid.ColumnDefinitions>
 
-                                        <Button Grid.Row="1" Grid.Column="0" x:Name="btnRevert" Content="Revert" Margin="6,4,6,4" Padding="12,1,12,1" Style="{StaticResource CustomButtonStyle}"/>
-                                        <!--<Button Grid.Row="1" Grid.Column="1" x:Name="btnCancel" Content="Cancel" Margin="6,4,6,4" Style="{StaticResource CustomButtonStyle}"/>-->
-                                        <Button Grid.Row="1" Grid.Column="1" x:Name="btnSave" Content="Save" Margin="6,4,6,4" Style="{StaticResource CustomButtonStyle}"/>
-                                        <Button Grid.Row="1" Grid.Column="2" x:Name="btnClose" Content="Close" Margin="6,4,6,4" Padding="12,1,12,1" Style="{StaticResource CustomButtonStyle}" Click="btnClose_Click"/>
+                                        <Button Grid.Row="1" Grid.Column="0" x:Name="btnRevert" Content="Revert" Margin="6,4,6,4" Padding="12,1,12,1" Style="{StaticResource CustomButtonStyle}" Click="btnRevert_Click" ToolTip="Reverts all changes for all cameras"/>
+                                        <Button Grid.Row="1" Grid.Column="1" x:Name="btnSave" Content="Save" Margin="6,4,6,4" Style="{StaticResource CustomButtonStyle}" Click="btnSave_Click" ToolTip="Saves all changes for all cameras"/>
+                                        <Button Grid.Row="1" Grid.Column="2" x:Name="btnClose" Content="Close" Margin="6,4,6,4" Padding="12,1,12,1" Style="{StaticResource CustomButtonStyle}" Click="btnClose_Click" ToolTip="Closes the settings window"/>
                                     </Grid>
                                 </StackPanel>
                             </Grid>

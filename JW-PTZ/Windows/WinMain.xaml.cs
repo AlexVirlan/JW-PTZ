@@ -6,6 +6,7 @@ using MaterialDesignThemes.Wpf;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
@@ -32,6 +33,7 @@ namespace JWPTZ.Windows
         #region Variables
         private bool _loading = false;
         private bool _internalChange = false;
+        private int? _lastSelectedCameraId = null;
         public PTZCamera? _camera = null;
         private KeyboardHook? _keyboardHook;
         private BlurEffect _blurEffect = new BlurEffect();
@@ -62,7 +64,15 @@ namespace JWPTZ.Windows
 
             AnimateOpacity(from: 0, to: Settings.App.Opacity);
             AddUILog(UILogType.Info, "App started. Welcome! :)");
+
+            //Settings.Cameras.CollectionChanged += CamerasOnCollectionChanged;
+
             _loading = false;
+        }
+
+        private void CamerasOnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+        {
+
         }
 
         private void SetView(ViewType viewType)
@@ -396,6 +406,7 @@ namespace JWPTZ.Windows
                 }
 
                 _camera = cmbCameras.SelectedItem as PTZCamera;
+                _lastSelectedCameraId = _camera?.Id ?? null;
                 if (_camera is not null) { _camera.PropertyChanged += Camera_PropertyChanged; }
                 itbOSD.IsChecked = _camera?.OsdMode ?? false;
                 UpdateCamInfoLabel();
@@ -653,7 +664,7 @@ namespace JWPTZ.Windows
                 switch (windowType)
                 {
                     case WindowType.Settings:
-                        WinSettings winSet = new WinSettings();
+                        WinSettings winSet = new(ownerWindow: this);
                         winSet.Owner = this;
                         winSet.ShowDialog();
                         result = winSet.Data;
@@ -761,6 +772,24 @@ namespace JWPTZ.Windows
         {
             //puMenu.IsPopupOpen = true;
 
+        }
+
+        public void RestoreLastSelectedCamera()
+        {
+            if (_lastSelectedCameraId is not null)
+            {
+                PTZCamera? lastCam = Settings.Cameras.FirstOrDefault(cam => cam.Id == _lastSelectedCameraId);
+                if (lastCam is not null) { cmbCameras.SelectedItem = lastCam; }
+            }
+
+            //if (Settings.Cameras.Count > 0 &&
+            //    cmbCameras.SelectedItem is null &&
+            //    _lastSelectedCameraId is not null)
+            //{
+            //    PTZCamera? camera = Settings.Cameras.FirstOrDefault(c => c.Id == _lastSelectedCameraId);
+            //    int cameraIndex = camera is not null ? Settings.Cameras.IndexOf(camera) : -1;
+            //    cmbCameras.SelectedIndex = cameraIndex > -1 ? cameraIndex : 0;
+            //}
         }
     }
 }
