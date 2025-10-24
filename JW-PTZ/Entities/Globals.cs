@@ -1,8 +1,10 @@
-﻿using System;
+﻿using JWPTZ.Utilities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Media;
 
 namespace JWPTZ.Entities
 {
@@ -16,5 +18,8 @@ namespace JWPTZ.Entities
         public static readonly string Gray17Hex = "#FF111111";
         public static readonly string Gray26Hex = "#FF1A1A1A";
         public static readonly string Gray200Hex = "#FFC8C8C8";
+
+        public static readonly SolidColorBrush RedText = Helpers.GetBrush(255, 170, 170);
+        public static readonly SolidColorBrush GreenText = Helpers.GetBrush(170, 255, 170);
     }
 }

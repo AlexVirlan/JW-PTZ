@@ -57,15 +57,15 @@ namespace JWPTZ.Windows
 
             MethodResponse fmrLoadSet = SettingsManager.Load();
             ApplySettingsToUI();
-            UpdateCamInfo();
+            UpdateCamInfoLabel();
             LoadPresetCacheImage();
 
-            AnimateOpacity(from: 0, to: Settings.AppSettings.Opacity);
+            AnimateOpacity(from: 0, to: Settings.App.Opacity);
             AddUILog(UILogType.Info, "App started. Welcome! :)");
             _loading = false;
         }
 
-        public void SetView(ViewType viewType)
+        private void SetView(ViewType viewType)
         {
             //grdMain.Visibility = grdSettings.Visibility = Visibility.Hidden;
             //switch (viewType)
@@ -75,21 +75,21 @@ namespace JWPTZ.Windows
             //}
         }
 
-        public void ApplySettingsToUI()
+        private void ApplySettingsToUI()
         {
-            chkShowTimeStamp.IsChecked = Settings.UILogsSettings.ShowTimestamp;
-            chkAutoScrollUiLogs.IsChecked = Settings.UILogsSettings.AutoScroll;
-            chkIncludeParamsToUiLogs.IsChecked = Settings.UILogsSettings.IncludeParams;
-            chkShowFullEndpointToUiLogs.IsChecked = Settings.UILogsSettings.ShowFullEndpoint;
-            chkVerboseErrUiLogs.IsChecked = Settings.UILogsSettings.VerboseErrors;
+            chkShowTimeStamp.IsChecked = Settings.UILogs.ShowTimestamp;
+            chkAutoScrollUiLogs.IsChecked = Settings.UILogs.AutoScroll;
+            chkIncludeParamsToUiLogs.IsChecked = Settings.UILogs.IncludeParams;
+            chkShowFullEndpointToUiLogs.IsChecked = Settings.UILogs.ShowFullEndpoint;
+            chkVerboseErrUiLogs.IsChecked = Settings.UILogs.VerboseErrors;
 
-            sldPanSpeed.Value = Settings.PTZFSpeeds.PanSpeed;
-            sldTiltSpeed.Value = Settings.PTZFSpeeds.TiltSpeed;
-            sldZoomSpeed.Value = Settings.PTZFSpeeds.ZoomSpeed;
-            sldFocusSpeed.Value = Settings.PTZFSpeeds.FocusSpeed;
+            sldPanSpeed.Value = Settings.PTZF.PanSpeed;
+            sldTiltSpeed.Value = Settings.PTZF.TiltSpeed;
+            sldZoomSpeed.Value = Settings.PTZF.ZoomSpeed;
+            sldFocusSpeed.Value = Settings.PTZF.FocusSpeed;
 
-            chkShowUILogs.IsChecked = Settings.UILogsSettings.Visible;
-            sldOpacity.Value = Settings.AppSettings.Opacity;
+            chkShowUILogs.IsChecked = Settings.UILogs.Visible;
+            sldOpacity.Value = Settings.App.Opacity;
         }
 
         private void OnCtrlPressed(object? sender, KeyboardHookEventArgs e)
@@ -119,7 +119,7 @@ namespace JWPTZ.Windows
 
         private void LoadPresetCacheImage()
         {
-            if (_camera is null) { return; }
+            //if (_camera is null) { return; }
             string dataCachePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data", "Cache");
 
             string imgPath = string.Empty;
@@ -128,8 +128,8 @@ namespace JWPTZ.Windows
                 Button? presetButton = this.FindName($"btnPreset{i}") as Button;
                 if (presetButton is not null)
                 {
-                    imgPath = Path.Combine(dataCachePath, $"Cam{_camera.Id}-Preset{i}.jpg");
-                    if (File.Exists(imgPath))
+                    imgPath = Path.Combine(dataCachePath, $"Cam{_camera?.Id}-Preset{i}.jpg");
+                    if (_camera is not null && File.Exists(imgPath))
                     {
                         BitmapImage bitmap = new BitmapImage();
                         bitmap.BeginInit();
@@ -160,7 +160,7 @@ namespace JWPTZ.Windows
         {
             if (logType == UILogType.Info && text.INOE()) { return; }
             if (logType == UILogType.Command && (command is null || response is null)) { return; }
-            if (uiLS is null) { uiLS = Settings.UILogsSettings; }
+            if (uiLS is null) { uiLS = Settings.UILogs; }
 
             if (uiLS.ShowTimestamp)
             {
@@ -207,17 +207,17 @@ namespace JWPTZ.Windows
 
         private void rtbLogs_TextChanged(object sender, TextChangedEventArgs e)
         {
-            if (Settings.UILogsSettings.AutoScroll) { rtbLogs.ScrollToEnd(); }
+            if (Settings.UILogs.AutoScroll) { rtbLogs.ScrollToEnd(); }
         }
 
         private void UpdateUILogsSettings(object sender, RoutedEventArgs e)
         {
             if (_loading) { return; }
-            Settings.UILogsSettings.ShowTimestamp = chkShowTimeStamp.IsChecked();
-            Settings.UILogsSettings.AutoScroll = chkAutoScrollUiLogs.IsChecked();
-            Settings.UILogsSettings.IncludeParams = chkIncludeParamsToUiLogs.IsChecked();
-            Settings.UILogsSettings.ShowFullEndpoint = chkShowFullEndpointToUiLogs.IsChecked();
-            Settings.UILogsSettings.VerboseErrors = chkVerboseErrUiLogs.IsChecked();
+            Settings.UILogs.ShowTimestamp = chkShowTimeStamp.IsChecked();
+            Settings.UILogs.AutoScroll = chkAutoScrollUiLogs.IsChecked();
+            Settings.UILogs.IncludeParams = chkIncludeParamsToUiLogs.IsChecked();
+            Settings.UILogs.ShowFullEndpoint = chkShowFullEndpointToUiLogs.IsChecked();
+            Settings.UILogs.VerboseErrors = chkVerboseErrUiLogs.IsChecked();
         }
 
         private void lblClearUiLogs_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -244,7 +244,7 @@ namespace JWPTZ.Windows
                 { throw new Exception("Could not parse the preset button value."); }
                 #endregion
 
-                if (Settings.AppSettings.ButtonsWaitForResponse) { presetButton.IsEnabled = false; }
+                if (Settings.App.ButtonsWaitForResponse) { presetButton.IsEnabled = false; }
                 bool isCtrlPressed = (Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control;
                 if (e.ChangedButton == MouseButton.Left)
                 {
@@ -261,7 +261,7 @@ namespace JWPTZ.Windows
                         APIBaseResponse presRes = await APIs.SendCommand(cmd);
                         AddUILog(UILogType.Command, null, cmd, presRes);
 
-                        if (presRes.Successful && Settings.AppSettings.SnapshotOnSetPreset)
+                        if (presRes.Successful && Settings.App.SnapshotOnSetPreset)
                         {
                             APIImageResponse imgRes = await APIs.GetSnapshot(_camera);
                             if (imgRes.Successful)
@@ -328,7 +328,7 @@ namespace JWPTZ.Windows
                 }
                 #endregion
 
-                if (Settings.AppSettings.ButtonsWaitForResponse) { button.IsEnabled = false; }
+                if (Settings.App.ButtonsWaitForResponse) { button.IsEnabled = false; }
                 CommandType cmdType;
 
                 if (_camera.OsdMode)
@@ -361,8 +361,8 @@ namespace JWPTZ.Windows
                 {
                     Preset = 0,
                     Camera = _camera,
-                    PTZFSpeeds = Settings.PTZFSpeeds,
-                    ImageSettings = Settings.ImageSettings,
+                    PTZFSpeeds = Settings.PTZF,
+                    ImageSettings = Settings.Image,
                     CommandType = cmdType
                 };
 
@@ -384,6 +384,7 @@ namespace JWPTZ.Windows
             try
             {
                 _internalChange = true;
+                if (_camera is not null) { _camera.PropertyChanged -= Camera_PropertyChanged; }
 
                 if (cmbCameras.SelectedItem is null)
                 {
@@ -395,8 +396,9 @@ namespace JWPTZ.Windows
                 }
 
                 _camera = cmbCameras.SelectedItem as PTZCamera;
+                if (_camera is not null) { _camera.PropertyChanged += Camera_PropertyChanged; }
                 itbOSD.IsChecked = _camera?.OsdMode ?? false;
-                UpdateCamInfo();
+                UpdateCamInfoLabel();
                 LoadPresetCacheImage();
                 SetPTZFOButtonsOpacity();
             }
@@ -404,7 +406,17 @@ namespace JWPTZ.Windows
             finally { _internalChange = false; }
         }
 
-        public void UpdateCamInfo()
+        private void Camera_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(PTZCamera.IP) ||
+                e.PropertyName == nameof(PTZCamera.ProtocolType) ||
+                e.PropertyName == nameof(PTZCamera.UseAuth))
+            {
+                UpdateCamInfoLabel();
+            }
+        }
+
+        private void UpdateCamInfoLabel()
         {
             if (lblCamInfo is null) { return; }
 
@@ -422,7 +434,7 @@ namespace JWPTZ.Windows
             lblCamInfo.Content = result;
         }
 
-        public void ShowMessage(string text, MessageBoxImage mbi = MessageBoxImage.Information)
+        private void ShowMessage(string text, MessageBoxImage mbi = MessageBoxImage.Information)
         {
             MessageBox.Show(this, text, "JW PTZ - AvA.Soft", MessageBoxButton.OK, mbi);
         }
@@ -435,43 +447,43 @@ namespace JWPTZ.Windows
 
         private void UpdateSettingsFromUI()
         {
-            Settings.AppSettings.CommandTimeout = 2500;
+            Settings.App.CommandTimeout = 2500;
 
         }
 
         private void sldPanSpeed_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             int value = (int)e.NewValue;
-            Settings.PTZFSpeeds.PanSpeed = value;
+            Settings.PTZF.PanSpeed = value;
             lblPanSpeed.Content = $"Pan speed ({value}):";
         }
 
         private void sldTiltSpeed_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             int value = (int)e.NewValue;
-            Settings.PTZFSpeeds.TiltSpeed = value;
+            Settings.PTZF.TiltSpeed = value;
             lblTiltSpeed.Content = $"Tilt speed ({value}):";
         }
 
         private void sldZoomSpeed_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             int value = (int)e.NewValue;
-            Settings.PTZFSpeeds.ZoomSpeed = value;
+            Settings.PTZF.ZoomSpeed = value;
             lblZoomSpeed.Content = $"Zoom speed ({value}):";
         }
 
         private void sldFocusSpeed_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             int value = (int)e.NewValue;
-            Settings.PTZFSpeeds.FocusSpeed = value;
+            Settings.PTZF.FocusSpeed = value;
             lblFocusSpeed.Content = $"Focus speed ({value}):";
         }
 
         private void ToggleUILogs(object sender, RoutedEventArgs e)
         {
             if (_loading) { return; }
-            Settings.UILogsSettings.Visible = chkShowUILogs.IsChecked();
-            if (Settings.UILogsSettings.Visible)
+            Settings.UILogs.Visible = chkShowUILogs.IsChecked();
+            if (Settings.UILogs.Visible)
             {
                 grdLogs.Visibility = Visibility.Visible;
                 this.Height += 190;
@@ -526,7 +538,7 @@ namespace JWPTZ.Windows
         private void chkTakeSnapshots_CheckChanged(object sender, RoutedEventArgs e)
         {
             if (_loading) { return; }
-            Settings.AppSettings.SnapshotOnSetPreset = chkTakeSnapshots.IsChecked();
+            Settings.App.SnapshotOnSetPreset = chkTakeSnapshots.IsChecked();
         }
 
         private void btnResetPtzfSpeeds_PreviewMouseDown(object sender, MouseButtonEventArgs e)
@@ -599,7 +611,7 @@ namespace JWPTZ.Windows
         {
             if (_loading) { return; }
             double sldVal = Math.Round(e.NewValue, 2);
-            this.Opacity = Settings.AppSettings.Opacity = sldVal;
+            this.Opacity = Settings.App.Opacity = sldVal;
             lblOpacity.Content = $"Opacity ({Math.Round(sldVal * 100, 0)}%):";
         }
 
@@ -635,7 +647,7 @@ namespace JWPTZ.Windows
             dynamic? result = null;
             try
             {
-                if (Settings.AppSettings.Opacity > 0.64) { AnimateOpacity(from: Settings.AppSettings.Opacity, to: 0.64); }
+                if (Settings.App.Opacity > 0.64) { AnimateOpacity(from: Settings.App.Opacity, to: 0.64); }
                 AnimateBlur(true);
 
                 switch (windowType)
@@ -661,7 +673,7 @@ namespace JWPTZ.Windows
             }
             finally
             {
-                if (Settings.AppSettings.Opacity > 0.64) { AnimateOpacity(from: 0.64, to: Settings.AppSettings.Opacity); }
+                if (Settings.App.Opacity > 0.64) { AnimateOpacity(from: 0.64, to: Settings.App.Opacity); }
                 AnimateBlur(false);
             }
         }

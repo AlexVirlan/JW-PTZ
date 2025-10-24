@@ -1,21 +1,22 @@
-﻿using System;
+﻿using JWPTZ.Entities;
+using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.Runtime.CompilerServices;
+using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
-using System.Drawing;
-using System.Runtime.CompilerServices;
-using JWPTZ.Entities;
-using Newtonsoft.Json;
+using System.Web;
 using System.Windows;
+using System.Windows.Media.Imaging;
 using Color = System.Windows.Media.Color;
 using ColorConverter = System.Windows.Media.ColorConverter;
 using SolidColorBrush = System.Windows.Media.SolidColorBrush;
-using System.Security.Policy;
-using System.Collections.Specialized;
-using System.Web;
-using System.Windows.Media.Imaging;
 
 namespace JWPTZ.Utilities
 {
@@ -148,6 +149,29 @@ namespace JWPTZ.Utilities
             string dataCachePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data", "Cache");
             Directory.CreateDirectory(dataCachePath);
             return Path.Combine(dataCachePath, $"Cam{cameraId}-Preset{presetId}.jpg");
+        }
+
+        public static (bool IsValid, string InvalidParams) CheckIfNullOrEmpty(params (string name, string value)[] @params)
+        {
+            List<string> invalidParams = [];
+            foreach ((string name, string value) in @params)
+            {
+                if (value.INOE()) { invalidParams.Add($"• {name}"); }
+            }
+            return (invalidParams.Count == 0, string.Join(_NL, invalidParams));
+        }
+
+        public static bool IsValidIPv4(string ipAddress)
+        {
+            if (string.IsNullOrWhiteSpace(ipAddress)) { return false; }
+            if (IPAddress.TryParse(ipAddress, out IPAddress? address))
+            { return address?.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork; }
+            return false;
+        }
+
+        public static SolidColorBrush GetBrush(byte red, byte green, byte blue)
+        {
+            return new SolidColorBrush(Color.FromRgb(red, green, blue));
         }
     }
 }

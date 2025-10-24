@@ -6,8 +6,9 @@
     xmlns:local="clr-namespace:JWPTZ.Windows"
     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
     xmlns:utils="clr-namespace:JWPTZ.Utilities"
+    xmlns:controls="clr-namespace:JWPTZ.Controls"
     mc:Ignorable="d"
-    Title="JW PTZ - Settings" Height="540" Width="640" WindowStartupLocation="CenterOwner" ResizeMode="NoResize" ShowInTaskbar="False">
+    Title="JW PTZ - Settings" Height="540" Width="640" WindowStartupLocation="CenterOwner" ResizeMode="NoResize" ShowInTaskbar="False" Loaded="Window_Loaded">
     <Window.Resources>
         <utils:SettingsNotifier x:Key="SettingsNotifier"/>
 
@@ -48,9 +49,9 @@
             </Setter>
         </Style>
     </Window.Resources>
-    
+
     <Grid Background="#FF1A1A1A">
-        
+
         <TabControl BorderThickness="1,1,1,1" BorderBrush="#FFACACAC" Margin="6">
 
             <TabItem x:Name="tabCameras" Header="Cameras">
@@ -67,7 +68,7 @@
 
                         <Grid Grid.Row="0" Grid.Column="0" Margin="6,0,6,0">
                             <StackPanel Orientation="Vertical">
-                                <Label x:Name="lblCamsTitle" Content="Cameras list (0):" Foreground="White"/>
+                                <Label x:Name="lblCamsTitle" Content="Cameras (0):" Foreground="White"/>
                                 <ListBox x:Name="lstCameras" Background="#FF2A2A2A" Foreground="White" BorderBrush="#FF606060" BorderThickness="1" Height="406"
                                          ItemsSource="{Binding Cameras, Source={StaticResource SettingsNotifier}}" SelectedIndex="0" SelectionChanged="lstCameras_SelectionChanged">
                                     <ListBox.ItemTemplate>
@@ -84,7 +85,7 @@
                                     </ListBox.ItemTemplate>
                                 </ListBox>
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                    
+
                                 </StackPanel>
                             </StackPanel>
                         </Grid>
@@ -115,13 +116,13 @@
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
 
-                                <Button Grid.Row="0" Grid.Column="0" x:Name="btnAddCam" Content="Add new" Margin="6,4,6,4" Style="{StaticResource CustomButtonStyle}" PreviewMouseDown="btnAddCam_PreviewMouseDown"/>
-                                <Button Grid.Row="1" Grid.Column="0" x:Name="brnDuplicateCam" Content="Duplicate" Margin="6,4,6,4" Style="{StaticResource CustomButtonStyle}" PreviewMouseDown="brnDuplicateCam_PreviewMouseDown"/>
-                                <Button Grid.Row="0" Grid.Column="1" x:Name="btnMoveCamUp" Content="Move up" Margin="6,4,6,4" Style="{StaticResource CustomButtonStyle}" PreviewMouseDown="btnMoveCamUp_PreviewMouseDown"/>
-                                <Button Grid.Row="1" Grid.Column="1" x:Name="btnMoveCamDown" Content="Move down" Margin="6,4,6,4" Style="{StaticResource CustomButtonStyle}" PreviewMouseDown="btnMoveCamDown_PreviewMouseDown"/>
-                                <Button Grid.Row="0" Grid.Column="2" x:Name="btnDeleteCam" Content="Delete" Margin="6,4,6,4" Style="{StaticResource CustomButtonStyle}" PreviewMouseDown="btnDeleteCam_PreviewMouseDown"/>
-                                <Button Grid.Row="1" Grid.Column="2" x:Name="btnDeleteAllCam" Content="Delete all" Margin="6,4,6,4" Style="{StaticResource CustomButtonStyle}" PreviewMouseDown="btnDeleteAllCam_PreviewMouseDown"/>
-                                
+                                <Button Grid.Row="0" Grid.Column="0" x:Name="btnAddCam" Content="Add new" Margin="6,4,6,4" Style="{StaticResource CustomButtonStyle}" Click="btnAddCam_Click"/>
+                                <Button Grid.Row="1" Grid.Column="0" x:Name="brnDuplicateCam" Content="Duplicate" Margin="6,4,6,4" Style="{StaticResource CustomButtonStyle}" Click="brnDuplicateCam_Click"/>
+                                <Button Grid.Row="0" Grid.Column="1" x:Name="btnMoveCamUp" Content="Move up" Margin="6,4,6,4" Style="{StaticResource CustomButtonStyle}" Click="btnMoveCamUp_Click"/>
+                                <Button Grid.Row="1" Grid.Column="1" x:Name="btnMoveCamDown" Content="Move down" Margin="6,4,6,4" Style="{StaticResource CustomButtonStyle}" Click="btnMoveCamDown_Click"/>
+                                <Button Grid.Row="0" Grid.Column="2" x:Name="btnDeleteCam" Content="Delete" Margin="6,4,6,4" Style="{StaticResource CustomButtonStyle}" Click="btnDeleteCam_Click"/>
+                                <Button Grid.Row="1" Grid.Column="2" x:Name="btnDeleteAllCam" Content="Delete all" Margin="6,4,6,4" Style="{StaticResource CustomButtonStyle}" Click="btnDeleteAllCam_Click"/>
+
                             </Grid>
 
                             <Grid Grid.Row="1" Grid.Column="0" Margin="6,6,6,6">
@@ -136,25 +137,25 @@
                                             <ColumnDefinition Width="Auto"/>
                                         </Grid.ColumnDefinitions>
                                         <Label Grid.Column="0" Content="Camera name:" Foreground="White"/>
-                                        <Label x:Name="lblCamId" Grid.Column="1" Content="Camera ID: 0" Foreground="Gray"/>
+                                        <Label x:Name="lblCamId" Grid.Column="1" Content="Camera ID: -" Foreground="Gray"/>
                                         <Label x:Name="lblCamIdInfo" Grid.Column="2" Content="(learn more)" Foreground="Gray" Margin="-4.6,0,0,0" Cursor="Hand" PreviewMouseDown="lblCamIdInfo_PreviewMouseDown"/>
                                     </Grid>
-                                    <TextBox x:Name="txtCamName" Width="Auto" Height="26" Background="#FF2A2A2A" Foreground="White" BorderBrush="#FF606060" BorderThickness="1" Margin="4,0,4,0" />
+                                    <TextBox x:Name="txtCamName" Width="Auto" Height="26" Background="#FF2A2A2A" Foreground="White" BorderBrush="#FF606060" BorderThickness="1" Margin="4,0,4,0" TextAlignment="Center" TextChanged="txtCamName_TextChanged"/>
                                 </StackPanel>
                             </Grid>
 
                             <Grid Grid.Row="2" Grid.Column="0" Margin="6,6,6,6">
                                 <StackPanel Orientation="Vertical">
-                                    <Label Content="Camera IP:" Foreground="White"/>
+                                    <Label Content="Camera IP (or hostname):" Foreground="White"/>
                                     <Grid Margin="4,0,4,0">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="*"/>
                                             <ColumnDefinition Width="Auto"/>
                                             <ColumnDefinition Width="Auto"/>
                                         </Grid.ColumnDefinitions>
-                                        <TextBox x:Name="txtCamIp" Grid.Column="0" Height="26" Background="#FF2A2A2A" Foreground="White" BorderBrush="#FF606060" BorderThickness="1" Margin="0,0,0,0"/>
-                                        <Button Grid.Row="1" Grid.Column="1" x:Name="btnPingCamIp" Content="Ping IP" Margin="6,0,6,0" Style="{StaticResource CustomButtonStyle}" PreviewMouseDown="btnPingCamIp_PreviewMouseDown"/>
-                                        <Button Grid.Row="1" Grid.Column="2" x:Name="btnOpenCamIp" Content="Open" Style="{StaticResource CustomButtonStyle}" PreviewMouseDown="btnOpenCamIp_PreviewMouseDown"/>
+                                        <TextBox x:Name="txtCamIp" Grid.Column="0" Height="26" Background="#FF2A2A2A" Foreground="White" BorderBrush="#FF606060" BorderThickness="1" Margin="0,0,0,0" TextAlignment="Center" TextChanged="txtCamIp_TextChanged"/>
+                                        <Button Grid.Row="1" Grid.Column="1" x:Name="btnPingCamIp" Content="Ping" Margin="6,0,6,0" Style="{StaticResource CustomButtonStyle}" Click="btnPingCamIp_Click" ToolTip="Ping the camera (timeout: 3s)"/>
+                                        <Button Grid.Row="1" Grid.Column="2" x:Name="btnOpenCamIp" Content="Open" Style="{StaticResource CustomButtonStyle}" Click="btnOpenCamIp_Click" ToolTip="Open the IP/hostname in the default browser"/>
                                     </Grid>
                                 </StackPanel>
                             </Grid>
@@ -180,15 +181,16 @@
 
                                         <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Vertical">
                                             <Label Content="Username:" Foreground="White"/>
-                                            <TextBox x:Name="txtAuthUser" Width="Auto" Height="26" Background="#FF2A2A2A" Foreground="White" BorderBrush="#FF606060" BorderThickness="1" Margin="4,0,4,0" />
+                                            <TextBox x:Name="txtAuthUser" Width="Auto" Height="26" Background="#FF2A2A2A" Foreground="White" BorderBrush="#FF606060" BorderThickness="1" Margin="4,0,4,0" TextAlignment="Center" IsEnabled="False"/>
                                         </StackPanel>
 
                                         <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Vertical">
                                             <Grid>
                                                 <Label Content="Password:" Foreground="White" HorizontalAlignment="Left"/>
-                                                <Label x:Name="lblShowAuthPass" Content="Show" Foreground="White" HorizontalAlignment="Right" Cursor="Hand" PreviewMouseDown="lblShowAuthPass_PreviewMouseDown"/>
+                                                <Label x:Name="lblShowAuthPass" Content="Show" Foreground="White" HorizontalAlignment="Right" Cursor="Hand" Margin="0,0,2,0" PreviewMouseDown="lblShowAuthPass_PreviewMouseDownUp" PreviewMouseUp="lblShowAuthPass_PreviewMouseDownUp"/>
                                             </Grid>
-                                            <TextBox x:Name="txtAuthPass" Width="Auto" Height="26" Background="#FF2A2A2A" Foreground="White" BorderBrush="#FF606060" BorderThickness="1" Margin="4,0,4,0" />
+                                            <PasswordBox x:Name="pwbAuthPass" Width="Auto" Height="26" Background="#FF2A2A2A" Foreground="White" BorderBrush="#FF606060" BorderThickness="1" Margin="4,0,4,0" HorizontalContentAlignment="Center" IsEnabled="False"/>
+                                            <TextBox x:Name="txtAuthPass" Width="Auto" Height="26" Background="#FF2A2A2A" Foreground="White" BorderBrush="#FF606060" BorderThickness="1" Margin="4,0,4,0" Visibility="Collapsed" TextAlignment="Center" IsEnabled="False"/>
                                         </StackPanel>
                                     </Grid>
 
@@ -207,7 +209,7 @@
                                 </Grid.ColumnDefinitions>
 
                                 <Label Grid.Row="0" Grid.Column="0" Content="Protocol:" Foreground="White"/>
-                                <ComboBox Grid.Row="1" Grid.Column="0" x:Name="cmbProtocol" Width="Auto" Height="26" Background="#FF2A2A2A" Foreground="White" BorderBrush="#FF606060" BorderThickness="1" Margin="4,0,4,0" >
+                                <ComboBox Grid.Row="1" Grid.Column="0" x:Name="cmbProtocol" Width="Auto" Height="26" Background="#FF2A2A2A" Foreground="White" BorderBrush="#FF606060" BorderThickness="1" Margin="4,0,4,0" HorizontalContentAlignment="Center">
                                     <ComboBoxItem Content="HTTP"/>
                                     <ComboBoxItem Content="HTTPS"/>
                                 </ComboBox>
@@ -223,7 +225,7 @@
                                     <Border BorderBrush="Gray" 
                                         BorderThickness="0,0.6,0,0" 
                                         Height="1" Margin="0,0,0,6"/>
-                                    
+
                                     <Grid Margin="6,0,6,2">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="Auto"/>
@@ -231,7 +233,7 @@
                                         </Grid.ColumnDefinitions>
 
                                         <CheckBox x:Name="chkAutoSave" Grid.Column="0" IsChecked="False" Checked="chkAutoSave_CheckedChanged" Unchecked="chkAutoSave_CheckedChanged">
-                                            <TextBlock Text="Auto save every modification" Margin="0,-2,0,0" Foreground="White"/>
+                                            <TextBlock Text="Auto save cameras modifications" Margin="0,-2,0,0" Foreground="White"/>
                                         </CheckBox>
 
                                         <Label x:Name="lblAutoSaveInfo" Grid.Column="1" Content="(learn more)" Foreground="Gray" Cursor="Hand" PreviewMouseDown="lblAutoSaveInfo_PreviewMouseDown"/>
@@ -242,21 +244,21 @@
                                             <RowDefinition Height="*"/>
                                         </Grid.RowDefinitions>
                                         <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
                                             <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <!--<ColumnDefinition Width="*"/>-->
                                         </Grid.ColumnDefinitions>
 
-                                        <Button Grid.Row="1" Grid.Column="0" x:Name="btnRevert" Content="Revert" Margin="6,4,6,4" Style="{StaticResource CustomButtonStyle}"/>
-                                        <Button Grid.Row="1" Grid.Column="1" x:Name="btnCancel" Content="Cancel" Margin="6,4,6,4" Style="{StaticResource CustomButtonStyle}"/>
-                                        <Button Grid.Row="1" Grid.Column="2" x:Name="btnSave" Content="Save" Margin="6,4,6,4" Style="{StaticResource CustomButtonStyle}"/>
-                                        <Button Grid.Row="1" Grid.Column="3" x:Name="btnClose" Content="Close" Margin="6,4,6,4" Style="{StaticResource CustomButtonStyle}"/>
+                                        <Button Grid.Row="1" Grid.Column="0" x:Name="btnRevert" Content="Revert" Margin="6,4,6,4" Padding="12,1,12,1" Style="{StaticResource CustomButtonStyle}"/>
+                                        <!--<Button Grid.Row="1" Grid.Column="1" x:Name="btnCancel" Content="Cancel" Margin="6,4,6,4" Style="{StaticResource CustomButtonStyle}"/>-->
+                                        <Button Grid.Row="1" Grid.Column="1" x:Name="btnSave" Content="Save" Margin="6,4,6,4" Style="{StaticResource CustomButtonStyle}"/>
+                                        <Button Grid.Row="1" Grid.Column="2" x:Name="btnClose" Content="Close" Margin="6,4,6,4" Padding="12,1,12,1" Style="{StaticResource CustomButtonStyle}" Click="btnClose_Click"/>
                                     </Grid>
                                 </StackPanel>
                             </Grid>
-                            
-                            
+
+
                         </Grid>
 
                     </Grid>

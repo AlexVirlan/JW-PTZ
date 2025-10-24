@@ -36,6 +36,15 @@ namespace JWPTZ.Utilities
         {
             return @params.Any(param => str.Contains(param, StringComparison.OrdinalIgnoreCase));
         }
+
+        public static string Repeat(this string str, int count = 2)
+        {
+            if (string.IsNullOrEmpty(str) || count <= 0) { return string.Empty; }
+            if (count == 1) { return str; }
+            StringBuilder sb = new StringBuilder(str.Length * count);
+            for (int i = 0; i < count; i++) { sb.Append(str); }
+            return sb.ToString();
+        }
         #endregion
 
         #region RichTextBox
@@ -77,6 +86,12 @@ namespace JWPTZ.Utilities
 
         public static string ToLowerString(this LogType logType) => logType.ToString().ToLower();
         public static string ToLowerString(this ProtocolType protocolType) => protocolType.ToString().ToLower();
+
+        public static void SetEnabled(this Button button, bool enabled)
+        {
+            button.IsEnabled = enabled;
+            button.Opacity = enabled ? 1.0 : 0.5;
+        }
         #endregion
     }
 }

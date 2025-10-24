@@ -40,14 +40,7 @@ namespace JWPTZ.Utilities
         public static ObservableCollection<PTZCamera> Cameras
         {
             get => _cameras;
-            set
-            {
-                if (_cameras != value)
-                {
-                    _cameras = value;
-                    OnCamerasChanged();
-                }
-            }
+            set { if (_cameras != value) { _cameras = value; OnCamerasChanged(); } }
         }
 
         public static event EventHandler? CamerasChanged;
@@ -57,10 +50,10 @@ namespace JWPTZ.Utilities
         }
         #endregion
 
-        public static AppSettings AppSettings { get; set; } = new();
-        public static PTZFSpeeds PTZFSpeeds { get; set; } = new();
-        public static ImageSettings ImageSettings { get; set; } = new();
-        public static UILogsSettings UILogsSettings { get; set; } = new();
+        public static AppSettings App { get; set; } = new();
+        public static PTZFSpeeds PTZF { get; set; } = new();
+        public static ImageSettings Image { get; set; } = new();
+        public static UILogsSettings UILogs { get; set; } = new();
         #endregion
 
         #region Methods
@@ -94,6 +87,7 @@ namespace JWPTZ.Utilities
         public int CommandTimeout { get; set; } = 3000;
         public bool SnapshotOnSetPreset { get; set; } = true;
         public bool ButtonsWaitForResponse { get; set; } = false;
+        public bool AutoSaveCamsSettings { get; set; } = false;
         public double Opacity { get; set; } = 1;
     }
 
@@ -115,16 +109,16 @@ namespace JWPTZ.Utilities
         public ObservableCollection<PTZCamera> cameras { get { return Cameras; } set { Cameras = value; } }
 
         [JsonProperty("AppSettings")]
-        public AppSettings appSettings { get { return AppSettings; } set { AppSettings = value; } }
+        public AppSettings appSettings { get { return App; } set { App = value; } }
 
         [JsonProperty("PTZFSpeeds")]
-        public PTZFSpeeds ptzfSpeeds { get { return PTZFSpeeds; } set { PTZFSpeeds = value; } }
+        public PTZFSpeeds ptzfSpeeds { get { return PTZF; } set { PTZF = value; } }
 
         [JsonProperty("ImageSettings")]
-        public ImageSettings imageSettings { get { return ImageSettings; } set { ImageSettings = value; } }
+        public ImageSettings imageSettings { get { return Image; } set { Image = value; } }
 
         [JsonProperty("UILogsSettings")]
-        public UILogsSettings uiLogsSettings { get { return UILogsSettings; } set { UILogsSettings = value; } }
+        public UILogsSettings uiLogsSettings { get { return UILogs; } set { UILogs = value; } }
         #endregion
 
         #region Methods
