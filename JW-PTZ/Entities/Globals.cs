@@ -19,6 +19,7 @@ namespace JWPTZ.Entities
         public static readonly string Gray26Hex = "#FF1A1A1A";
         public static readonly string Gray200Hex = "#FFC8C8C8";
 
+        public static readonly SolidColorBrush GrayText = Helpers.GetBrush(126, 126, 126);
         public static readonly SolidColorBrush RedText = Helpers.GetBrush(255, 170, 170);
         public static readonly SolidColorBrush GreenText = Helpers.GetBrush(170, 255, 170);
     }

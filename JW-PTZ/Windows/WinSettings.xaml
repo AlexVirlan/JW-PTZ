@@ -70,9 +70,8 @@
 
                         <Grid Grid.Row="0" Grid.Column="0" Margin="6,0,6,0">
                             <StackPanel Orientation="Vertical">
-                                <Label x:Name="lblCamsTitle" Content="Cameras (0):" Foreground="White"/>
-                                <ListBox x:Name="lstCameras" Background="#FF2A2A2A" Foreground="White" BorderBrush="#FF606060" BorderThickness="1" Height="406"
-                                         ItemsSource="{Binding Cameras}" SelectedIndex="0" SelectionChanged="lstCameras_SelectionChanged">
+                                <Label x:Name="lblCamsCount" Content="Cameras (0):" Foreground="White"/>
+                                <ListBox x:Name="lstCameras" Background="#FF2A2A2A" Foreground="White" BorderBrush="#FF606060" BorderThickness="1" Height="406" ItemsSource="{Binding Cameras}" SelectedIndex="0" SelectionChanged="lstCameras_SelectionChanged">
                                     <ListBox.ItemTemplate>
                                         <DataTemplate>
                                             <TextBlock>
@@ -86,9 +85,6 @@
                                         </DataTemplate>
                                     </ListBox.ItemTemplate>
                                 </ListBox>
-                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-
-                                </StackPanel>
                             </StackPanel>
                         </Grid>
 
@@ -140,7 +136,7 @@
                                         </Grid.ColumnDefinitions>
                                         <Label Grid.Column="0" Content="Camera name:" Foreground="White"/>
                                         <Label x:Name="lblCamId" Grid.Column="1" Content="Camera ID: -" Foreground="Gray"/>
-                                        <Label x:Name="lblCamIdInfo" Grid.Column="2" Content="(learn more)" Foreground="Gray" Margin="-4.6,0,0,0" Cursor="Hand" PreviewMouseDown="lblCamIdInfo_PreviewMouseDown"/>
+                                        <Label x:Name="lblCamIdInfo" Grid.Column="2" Content="(learn more)" Foreground="Gray" Margin="-4.6,0,0,0" Cursor="Hand" PreviewMouseDown="lblCamIdInfo_PreviewMouseDown" MouseEnter="LblClick_MouseEnter" MouseLeave="LblClick_MouseLeave"/>
                                     </Grid>
                                     <TextBox x:Name="txtCamName" Width="Auto" Height="26" Background="#FF2A2A2A" Foreground="White" BorderBrush="#FF606060" BorderThickness="1" Margin="4,0,4,0" TextAlignment="Center" TextChanged="txtCamName_TextChanged"/>
                                 </StackPanel>
@@ -183,7 +179,7 @@
 
                                         <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Vertical">
                                             <Label Content="Username:" Foreground="White"/>
-                                            <TextBox x:Name="txtAuthUser" Width="Auto" Height="26" Background="#FF2A2A2A" Foreground="White" BorderBrush="#FF606060" BorderThickness="1" Margin="4,0,4,0" TextAlignment="Center" IsEnabled="False"/>
+                                            <TextBox x:Name="txtAuthUser" Width="Auto" Height="26" Background="#FF2A2A2A" Foreground="White" BorderBrush="#FF606060" BorderThickness="1" Margin="4,0,4,0" TextAlignment="Center" IsEnabled="False" TextChanged="txtAuthUser_TextChanged"/>
                                         </StackPanel>
 
                                         <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Vertical">
@@ -191,7 +187,7 @@
                                                 <Label Content="Password:" Foreground="White" HorizontalAlignment="Left"/>
                                                 <Label x:Name="lblShowAuthPass" Content="Show" Foreground="White" HorizontalAlignment="Right" Cursor="Hand" Margin="0,0,2,0" PreviewMouseDown="lblShowAuthPass_PreviewMouseDownUp" PreviewMouseUp="lblShowAuthPass_PreviewMouseDownUp"/>
                                             </Grid>
-                                            <PasswordBox x:Name="pwbAuthPass" Width="Auto" Height="26" Background="#FF2A2A2A" Foreground="White" BorderBrush="#FF606060" BorderThickness="1" Margin="4,0,4,0" HorizontalContentAlignment="Center" IsEnabled="False"/>
+                                            <PasswordBox x:Name="pwbAuthPass" Width="Auto" Height="26" Background="#FF2A2A2A" Foreground="White" BorderBrush="#FF606060" BorderThickness="1" Margin="4,0,4,0" HorizontalContentAlignment="Center" IsEnabled="False" PasswordChanged="pwbAuthPass_PasswordChanged"/>
                                             <TextBox x:Name="txtAuthPass" Width="Auto" Height="26" Background="#FF2A2A2A" Foreground="White" BorderBrush="#FF606060" BorderThickness="1" Margin="4,0,4,0" Visibility="Collapsed" TextAlignment="Center" IsEnabled="False"/>
                                         </StackPanel>
                                     </Grid>
@@ -211,7 +207,7 @@
                                 </Grid.ColumnDefinitions>
 
                                 <Label Grid.Row="0" Grid.Column="0" Content="Protocol:" Foreground="White"/>
-                                <ComboBox Grid.Row="1" Grid.Column="0" x:Name="cmbProtocol" Width="Auto" Height="26" Background="#FF2A2A2A" Foreground="White" BorderBrush="#FF606060" BorderThickness="1" Margin="4,0,4,0" HorizontalContentAlignment="Center">
+                                <ComboBox Grid.Row="1" Grid.Column="0" x:Name="cmbProtocol" Width="Auto" Height="26" Background="#FF2A2A2A" Foreground="White" BorderBrush="#FF606060" BorderThickness="1" Margin="4,0,4,0" HorizontalContentAlignment="Center" SelectionChanged="cmbProtocol_SelectionChanged">
                                     <ComboBoxItem Content="HTTP"/>
                                     <ComboBoxItem Content="HTTPS"/>
                                 </ComboBox>
@@ -238,7 +234,7 @@
                                             <TextBlock Text="Auto save cameras modifications" Margin="0,-2,0,0" Foreground="White"/>
                                         </CheckBox>
 
-                                        <Label x:Name="lblAutoSaveInfo" Grid.Column="1" Content="(learn more)" Foreground="Gray" Cursor="Hand" PreviewMouseDown="lblAutoSaveInfo_PreviewMouseDown"/>
+                                        <Label x:Name="lblAutoSaveInfo" Grid.Column="1" Content="(learn more)" Foreground="Gray" Cursor="Hand" PreviewMouseDown="lblAutoSaveInfo_PreviewMouseDown" MouseEnter="LblClick_MouseEnter" MouseLeave="LblClick_MouseLeave"/>
                                     </Grid>
 
                                     <Grid Height="33">

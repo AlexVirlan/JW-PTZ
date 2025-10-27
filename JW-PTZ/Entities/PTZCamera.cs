@@ -85,6 +85,17 @@ namespace JWPTZ.Entities
         #region Constructors
         public PTZCamera() { }
 
+        public PTZCamera(int id)
+        {
+            _id = id;
+        }
+
+        public PTZCamera(int id, string name)
+        {
+            _id = id;
+            _name = name;
+        }
+
         public PTZCamera(string ip, string name)
         {
             _ip = ip;

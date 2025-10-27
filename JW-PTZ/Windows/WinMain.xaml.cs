@@ -497,12 +497,14 @@ namespace JWPTZ.Windows
             if (Settings.UILogs.Visible)
             {
                 grdLogs.Visibility = Visibility.Visible;
-                this.Height += 190;
+                this.Height += 190; // 690 + x
+                //this.Height = 880;
             }
             else
             {
                 grdLogs.Visibility = Visibility.Collapsed;
-                this.Height -= 190;
+                this.Height -= 190; // 690 + x
+                //this.Height = 690;
             }
         }
 
@@ -684,18 +686,18 @@ namespace JWPTZ.Windows
             }
             finally
             {
-                if (Settings.App.Opacity > 0.64) { AnimateOpacity(from: 0.64, to: Settings.App.Opacity); }
+                if (Settings.App.Opacity > 0.64) { AnimateOpacity(from: 0.64, to: Settings.App.Opacity, durationMs: 460); }
                 AnimateBlur(false);
             }
         }
 
-        private void AnimateOpacity(double from, double to)
+        private void AnimateOpacity(double from, double to, int durationMs = 1000)
         {
             DoubleAnimation opacityAnimation = new DoubleAnimation
             {
                 From = from,
                 To = to,
-                Duration = TimeSpan.FromSeconds(1),
+                Duration = TimeSpan.FromMilliseconds(durationMs),
                 FillBehavior = FillBehavior.Stop
             };
             opacityAnimation.Completed += (s, e) => { this.Opacity = to; };

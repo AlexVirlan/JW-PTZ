@@ -3,6 +3,7 @@ using JWPTZ.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
@@ -17,8 +18,8 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Media.Media3D;
 using System.Windows.Shapes;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace JWPTZ.Windows
 {
@@ -107,6 +108,8 @@ namespace JWPTZ.Windows
         private void chkUseAuthentication_CheckedChanged(object sender, RoutedEventArgs e)
         {
             txtAuthUser.IsEnabled = txtAuthPass.IsEnabled = pwbAuthPass.IsEnabled = chkUseAuthentication.IsChecked();
+            if (_loading || _selectedCamera is null) { return; }
+            _selectedCamera.UseAuth = chkUseAuthentication.IsChecked();
         }
 
         private void lblShowAuthPass_PreviewMouseDownUp(object sender, MouseButtonEventArgs e)
@@ -119,31 +122,35 @@ namespace JWPTZ.Windows
 
         private void chkLockPresets_CheckedChanged(object sender, RoutedEventArgs e)
         {
-
+            if (_loading || _selectedCamera is null) { return; }
+            _selectedCamera.LockPresets = chkLockPresets.IsChecked();
         }
 
         private void chkAutoSave_CheckedChanged(object sender, RoutedEventArgs e)
         {
             btnSave.SetEnabled(!chkAutoSave.IsChecked());
             Settings.App.AutoSaveCamsSettings = chkAutoSave.IsChecked();
-
         }
 
         private void txtCamIp_TextChanged(object sender, TextChangedEventArgs e)
         {
             if (_loading || _selectedCamera is null) { return; }
-
-            txtCamIp.Foreground = Helpers.IsValidIPv4(txtCamIp.Text.Trim()) ? Globals.GreenText : Globals.RedText;
-
             _selectedCamera.IP = txtCamIp.Text.Trim();
+            txtCamIp.Foreground = Helpers.IsValidIPv4(txtCamIp.Text.Trim()) ? Globals.GreenText : Globals.RedText;
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            _backupSettingsNotifier.Cameras.CollectionChanged += CamerasOnCollectionChanged;
             chkAutoSave.IsChecked = Settings.App.AutoSaveCamsSettings;
             _loading = false;
             LoadSelectedCameraDetails();
-            lblCamsTitle.Content = $"Cameras ({Settings.Cameras.Count}):";
+            UpdateCamerasCountLabel();
+        }
+
+        private void CamerasOnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+        {
+            UpdateCamerasCountLabel();
         }
 
         private void ShowMessage(string message, MessageBoxImage mbi = MessageBoxImage.Information)
@@ -163,22 +170,103 @@ namespace JWPTZ.Windows
 
         private void btnAddCam_Click(object sender, RoutedEventArgs e)
         {
-            _backupSettingsNotifier.Cameras.Add(new PTZCamera() { Name = "xXxXx", IP = "123.456" });
+            //_backupSettingsNotifier.Cameras.Add(new PTZCamera() { Name = "xXxXx", IP = "123.456" });
+
+            int newId = GetNextCamraId();
+            _backupSettingsNotifier.Cameras.Add(new PTZCamera(newId, $"New camera {newId}"));
+            lstCameras.SelectedIndex = lstCameras.Items.Count - 1;
         }
 
         private void brnDuplicateCam_Click(object sender, RoutedEventArgs e)
         {
+            #region Validations
+            if (lstCameras.Items.Count == 0)
+            {
+                ShowMessage("There are no cameras in the list.");
+                return;
+            }
 
+            if (_selectedCamera is null)
+            {
+                ShowMessage("Please select a camera first.");
+                return;
+            }
+            #endregion
+
+            PTZCamera clonedCamera = new()
+            {
+                Id = GetNextCamraId(),
+                IP = _selectedCamera.IP,
+                Name = $"{_selectedCamera.Name} (duplicate)",
+                UseAuth = _selectedCamera.UseAuth,
+                Username = _selectedCamera.Username,
+                Password = _selectedCamera.Password,
+                LockPresets = _selectedCamera.LockPresets,
+                OsdMode = false,
+                ProtocolType = _selectedCamera.ProtocolType
+            };
+            _backupSettingsNotifier.Cameras.Add(clonedCamera);
+            lstCameras.SelectedIndex = lstCameras.Items.Count - 1;
         }
 
         private void btnMoveCamUp_Click(object sender, RoutedEventArgs e)
         {
+            #region Validations
+            if (lstCameras.Items.Count == 0)
+            {
+                ShowMessage("There are no cameras in the list.");
+                return;
+            }
 
+            if (_selectedCamera is null)
+            {
+                ShowMessage("Please select a camera first.");
+                return;
+            }
+            #endregion
+
+            int index = _backupSettingsNotifier.Cameras.IndexOf(_selectedCamera);
+            if (index == 0) { return; }
+
+            if (index < 0)
+            {
+                ShowMessage("Error moving the selected camera.", MessageBoxImage.Error);
+                return;
+            }
+
+            _backupSettingsNotifier.Cameras.Move(index, index - 1);
+            lstCameras.SelectedIndex = index - 1;
+            ReindexCameras();
         }
 
         private void btnMoveCamDown_Click(object sender, RoutedEventArgs e)
         {
+            #region Validations
+            if (lstCameras.Items.Count == 0)
+            {
+                ShowMessage("There are no cameras in the list.");
+                return;
+            }
 
+            if (_selectedCamera is null)
+            {
+                ShowMessage("Please select a camera first.");
+                return;
+            }
+            #endregion
+
+            int index = _backupSettingsNotifier.Cameras.IndexOf(_selectedCamera);
+            if (index >= _backupSettingsNotifier.Cameras.Count - 1) { return; }
+
+            if (index < 0)
+            {
+                ShowMessage("Error moving the selected camera.", MessageBoxImage.Error);
+                return;
+            }
+
+            _backupSettingsNotifier.Cameras.Move(index, index + 1);
+            lstCameras.SelectedIndex = index + 1;
+            ReindexCameras();
         }
 
         private void btnDeleteCam_Click(object sender, RoutedEventArgs e)
@@ -198,7 +286,16 @@ namespace JWPTZ.Windows
             MessageBoxResult result = AskUser($"Are you sure you want to delete this camera:{_NL}Name: {_selectedCamera.Name}{_NL}IP: {_selectedCamera.IP}");
             if (result == MessageBoxResult.Yes)
             {
-
+                bool notLastCam = lstCameras.SelectedIndex < lstCameras.Items.Count - 1;
+                bool removed = _backupSettingsNotifier.Cameras.Remove(_selectedCamera);
+                if (removed)
+                {
+                    if (notLastCam) { ReindexCameras(); }
+                }
+                else
+                {
+                    ShowMessage("Error deleting the selected camera.", MessageBoxImage.Error);
+                }
             }
         }
 
@@ -210,16 +307,10 @@ namespace JWPTZ.Windows
                 return;
             }
 
-            if (_selectedCamera is null)
-            {
-                ShowMessage("Please select a camera first.");
-                return;
-            }
-
             MessageBoxResult result = AskUser($"Are you sure you want to delete all cameras?");
             if (result == MessageBoxResult.Yes)
             {
-
+                _backupSettingsNotifier.Cameras.Clear();
             }
         }
 
@@ -290,7 +381,6 @@ namespace JWPTZ.Windows
         private void txtCamName_TextChanged(object sender, TextChangedEventArgs e)
         {
             if (_loading || _selectedCamera is null) { return; }
-            //_selectedCamera.Name = txtCamName.Text.Trim();
             _selectedCamera.Name = txtCamName.Text.Trim();
         }
 
@@ -302,8 +392,11 @@ namespace JWPTZ.Windows
                 MessageBoxResult result = AskUser("Are you sure you want to revert all camera settings (for all cameras) to the last saved state?");
                 if (result == MessageBoxResult.Yes)
                 {
+                    _backupSettingsNotifier.Cameras.CollectionChanged -= CamerasOnCollectionChanged;
                     _backupSettingsNotifier.Cameras.Clear();
                     _backupSettingsNotifier.Cameras = CreateDeepCopy(Settings.Cameras);
+                    UpdateCamerasCountLabel();
+                    _backupSettingsNotifier.Cameras.CollectionChanged += CamerasOnCollectionChanged;
                 }
             }
             catch (Exception ex)
@@ -382,6 +475,57 @@ namespace JWPTZ.Windows
             }
 
             SettingsManager.Save();
+        }
+
+        private void txtAuthUser_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (_loading || _selectedCamera is null) { return; }
+            _selectedCamera.Username = txtAuthUser.Text.Trim();
+        }
+
+        private void pwbAuthPass_PasswordChanged(object sender, RoutedEventArgs e)
+        {
+            if (_loading || _selectedCamera is null) { return; }
+            _selectedCamera.Password = pwbAuthPass.Password;
+        }
+
+        private void cmbProtocol_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (_loading || _selectedCamera is null) { return; }
+            _selectedCamera.ProtocolType = cmbProtocol.SelectedIndex == 0 ? ProtocolType.HTTP : ProtocolType.HTTPS;
+        }
+
+        private int GetNextCamraId()
+        {
+            if (_backupSettingsNotifier.Cameras.Count == 0) { return 1; }
+            return _backupSettingsNotifier.Cameras.Max(cam => cam.Id) + 1;
+            //return _backupSettingsNotifier.Cameras.Count + 1;
+        }
+
+        private void ReindexCameras()
+        {
+            for (int i = 0; i < _backupSettingsNotifier.Cameras.Count; i++)
+            {
+                _backupSettingsNotifier.Cameras[i].Id = i + 1;
+            }
+        }
+
+        private void UpdateCamerasCountLabel()
+        {
+            if (_loading) { return; }
+            lblCamsCount.Content = $"Cameras ({_backupSettingsNotifier.Cameras.Count}):";
+        }
+
+        private void LblClick_MouseEnter(object sender, MouseEventArgs e)
+        {
+            Label? lbl = sender as Label;
+            if (lbl is not null) { lbl.Foreground = new SolidColorBrush(Colors.White); }
+        }
+
+        private void LblClick_MouseLeave(object sender, MouseEventArgs e)
+        {
+            Label? lbl = sender as Label;
+            if (lbl is not null) { lbl.Foreground = Globals.GrayText; }
         }
     }
 }
