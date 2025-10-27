@@ -118,6 +118,7 @@ namespace JWPTZ.Utilities
                 BitmapEncoder encoder = new JpegBitmapEncoder();
                 encoder.Frames.Add(BitmapFrame.Create(image));
                 encoder.Save(fileStream);
+                //fileStream.Flush(); // // to be tested for bug 2
             }
         }
 

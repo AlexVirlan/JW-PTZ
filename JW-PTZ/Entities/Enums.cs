@@ -51,4 +51,14 @@ namespace JWPTZ.Entities
     {
         Info, Command
     }
+
+    public enum ImportType
+    {
+        Append, Replace
+    }
+
+    public enum ExportType
+    {
+        Current, Saved
+    }
 }

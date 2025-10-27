@@ -1,14 +1,15 @@
 ﻿using JWPTZ.Entities;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
-using System.Windows;
 using System.Windows.Media;
-using System.IO;
 
 namespace JWPTZ.Utilities
 {
@@ -25,11 +26,11 @@ namespace JWPTZ.Utilities
             return (File.Exists(fullPath), fullPath);
         }
 
-        public static T ToEnum<T>(this string value, T defaultValue) where T : struct, Enum
+        public static T ToEnum<T>(this string str, T defaultValue) where T : struct, Enum
         {
-            if (string.IsNullOrEmpty(value)) { return defaultValue; }
+            if (string.IsNullOrEmpty(str)) { return defaultValue; }
             T result;
-            return Enum.TryParse(value, true, out result) ? result : defaultValue;
+            return Enum.TryParse(str, true, out result) ? result : defaultValue;
         }
 
         public static bool Contains(this string str, params string[] @params)
@@ -44,6 +45,19 @@ namespace JWPTZ.Utilities
             StringBuilder sb = new StringBuilder(str.Length * count);
             for (int i = 0; i < count; i++) { sb.Append(str); }
             return sb.ToString();
+        }
+
+        public static T? ToEnumOrNull<T>(this string str, bool ignoreCase = false) where T : struct, Enum
+        {
+            if (Enum.TryParse<T>(str, ignoreCase, out T result)) { return result; }
+            return null;
+        }
+
+        public static string ToSentenceCase(this string str)
+        {
+            if (string.IsNullOrWhiteSpace(str)) { return str; }
+            string result = Regex.Replace(str, "(?<!^)([A-Z])", " $1");
+            return char.ToUpper(result[0]) + result.Substring(1).ToLower();
         }
         #endregion
 

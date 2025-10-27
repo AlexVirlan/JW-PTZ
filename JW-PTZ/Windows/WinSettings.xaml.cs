@@ -1,11 +1,14 @@
 ﻿using JWPTZ.Entities;
 using JWPTZ.Utilities;
+using Microsoft.Win32;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.NetworkInformation;
@@ -146,6 +149,7 @@ namespace JWPTZ.Windows
             _loading = false;
             LoadSelectedCameraDetails();
             UpdateCamerasCountLabel();
+            mnuExpSaved.Header = $"Saved cameras ({Settings.Cameras.Count})";
         }
 
         private void CamerasOnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
@@ -432,6 +436,7 @@ namespace JWPTZ.Windows
             { Settings.Cameras.Add(camera.DeepCopy()); }
             SettingsManager.Save();
             (_ownerWindow as WinMain)?.RestoreLastSelectedCamera();
+            mnuExpSaved.Header = $"Saved cameras ({Settings.Cameras.Count})";
         }
 
         public void SaveCamerasSettings_V2()
@@ -514,6 +519,7 @@ namespace JWPTZ.Windows
         {
             if (_loading) { return; }
             lblCamsCount.Content = $"Cameras ({_backupSettingsNotifier.Cameras.Count}):";
+            mnuExpCurrent.Header = $"Current cameras ({_backupSettingsNotifier.Cameras.Count})";
         }
 
         private void LblClick_MouseEnter(object sender, MouseEventArgs e)
@@ -526,6 +532,117 @@ namespace JWPTZ.Windows
         {
             Label? lbl = sender as Label;
             if (lbl is not null) { lbl.Foreground = Globals.GrayText; }
+        }
+
+        private void lblImportExport_PreviewMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            Label? lbl = sender as Label;
+            if (lbl is not null && lbl.ContextMenu is not null)
+            {
+                lbl.ContextMenu.PlacementTarget = lbl;
+                lbl.ContextMenu.IsOpen = true;
+            }
+        }
+
+        private void ImportCamerasMenu_Click(object sender, RoutedEventArgs e)
+        {
+            MenuItem? menuItem = sender as MenuItem;
+            if (menuItem is not null && menuItem.Tag is not null)
+            {
+                ImportType? impType = menuItem.Tag.ToString()?.ToEnumOrNull<ImportType>();
+                if (impType is null) { return; }
+                ImportCameras(impType.Value);
+            }
+        }
+
+        private void ExportCamerasMenu_Click(object sender, RoutedEventArgs e)
+        {
+            MenuItem? menuItem = sender as MenuItem;
+            if (menuItem is not null && menuItem.Tag is not null)
+            {
+                ExportType? expType = menuItem.Tag.ToString()?.ToEnumOrNull<ExportType>();
+                if (expType is null) { return; }
+                ExportCameras(expType.Value);
+            }
+        }
+
+        private void ImportCameras(ImportType importType)
+        {
+            try
+            {
+                OpenFileDialog openFileDialog = new()
+                {
+                    Title = $"JW PTZ - Import cameras (mode: {importType.ToString().ToLower()})",
+                    InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
+                    Filter = "JW PTZ cameras (*.jwptzcam)|*.jwptzcam|JSON files (*.json)|*.json|Text files (*.txt)|*.txt"
+                };
+
+                if (openFileDialog.ShowDialog() == true)
+                {
+                    string fileContent = File.ReadAllText(openFileDialog.FileName);
+                    List<PTZCamera>? cameras = JsonConvert.DeserializeObject<List<PTZCamera>>(fileContent);
+
+                    if (cameras is null || cameras.Count == 0)
+                    {
+                        ShowMessage("No cameras found in the selected file.", MessageBoxImage.Warning);
+                        return;
+                    }
+
+                    if (importType == ImportType.Replace) { _backupSettingsNotifier.Cameras.Clear(); }
+                    foreach (PTZCamera camera in cameras)
+                    {
+                        camera.Id = GetNextCamraId();
+                        _backupSettingsNotifier.Cameras.Add(camera);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                ShowMessage($"Error importing cameras.{_NL}{ex.Message}", MessageBoxImage.Error);
+            }
+        }
+
+        private void ExportCameras(ExportType exportType)
+        {
+            try
+            {
+                #region Validations
+                if (exportType == ExportType.Current && _backupSettingsNotifier.Cameras.Count == 0)
+                {
+                    ShowMessage("There are no cameras to export in the current settings.", MessageBoxImage.Warning);
+                    return;
+                }
+
+                if (exportType == ExportType.Saved && Settings.Cameras.Count == 0)
+                {
+                    ShowMessage("There are no cameras to export in the saved settings.", MessageBoxImage.Warning);
+                    return;
+                }
+                #endregion
+
+                SaveFileDialog saveFileDialog = new()
+                {
+                    Title = $"JW PTZ - Export cameras (mode: {exportType.ToString().ToLower()})",
+                    InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
+                    Filter = "JW PTZ cameras (*.jwptzcam)|*.jwptzcam|JSON files (*.json)|*.json|Text files (*.txt)|*.txt",
+                    FileName = $"JW PTZ cameras ({DateTime.Now:dd.MM.yyyy}).jwptzcam",
+                    OverwritePrompt = true,
+                    AddExtension = true
+                };
+
+                if (saveFileDialog.ShowDialog() == true)
+                {
+                    List<PTZCamera> camerasToExport = exportType == ExportType.Current
+                        ? _backupSettingsNotifier.Cameras.ToList()
+                        : Settings.Cameras.ToList();
+                    string json = JsonConvert.SerializeObject(camerasToExport, Formatting.Indented);
+                    File.WriteAllText(saveFileDialog.FileName, json);
+                }
+            }
+            catch (Exception ex)
+            {
+                ShowMessage($"Error exporting cameras.{_NL}{ex.Message}", MessageBoxImage.Error);
+            }
         }
     }
 }

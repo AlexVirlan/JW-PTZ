@@ -9,11 +9,11 @@
     d:DataContext="{d:DesignInstance Type=local:BackupSettingsNotifier}"
     mc:Ignorable="d"
     Title="JW PTZ - Settings" Height="540" Width="640" WindowStartupLocation="CenterOwner" ResizeMode="NoResize" ShowInTaskbar="False" Loaded="Window_Loaded" Closing="Window_Closing">
-    
+
     <Window.Resources>
         <!--<utils:BackupSettingsNotifier x:Key="BackupSettingsNotifier"/>-->
         <!--, Source={StaticResource BackupSettingsNotifier}-->
-        
+
         <Style x:Key="CustomButtonStyle" TargetType="{x:Type Button}">
             <Setter Property="Background" Value="#FF111111"/>
             <Setter Property="BorderBrush" Value="#FF404040"/>
@@ -70,7 +70,23 @@
 
                         <Grid Grid.Row="0" Grid.Column="0" Margin="6,0,6,0">
                             <StackPanel Orientation="Vertical">
-                                <Label x:Name="lblCamsCount" Content="Cameras (0):" Foreground="White"/>
+                                <Grid>
+                                    <Label x:Name="lblCamsCount" Content="Cameras (0):" Foreground="White" HorizontalAlignment="Left"/>
+                                    <Label x:Name="lblImportExport" Content="Import / export" Foreground="#FF7E7E7E" Cursor="Hand" HorizontalAlignment="Right" MouseEnter="LblClick_MouseEnter" MouseLeave="LblClick_MouseLeave" PreviewMouseDown="lblImportExport_PreviewMouseDown">
+                                        <Label.ContextMenu>
+                                            <ContextMenu x:Name="mnuImportExport">
+                                                <MenuItem Header="Import">
+                                                    <MenuItem Header="Append" Tag="Append" Click="ImportCamerasMenu_Click"/>
+                                                    <MenuItem Header="Replace" Tag="Replace" Click="ImportCamerasMenu_Click"/>
+                                                </MenuItem>
+                                                <MenuItem Header="Export">
+                                                    <MenuItem x:Name="mnuExpCurrent" Header="Current cameras" Tag="Current" Click="ExportCamerasMenu_Click"/>
+                                                    <MenuItem x:Name="mnuExpSaved" Header="Saved cameras" Tag="Saved" Click="ExportCamerasMenu_Click"/>
+                                                </MenuItem>
+                                            </ContextMenu>
+                                        </Label.ContextMenu>
+                                    </Label>
+                                </Grid>
                                 <ListBox x:Name="lstCameras" Background="#FF2A2A2A" Foreground="White" BorderBrush="#FF606060" BorderThickness="1" Height="406" ItemsSource="{Binding Cameras}" SelectedIndex="0" SelectionChanged="lstCameras_SelectionChanged">
                                     <ListBox.ItemTemplate>
                                         <DataTemplate>
@@ -136,9 +152,9 @@
                                         </Grid.ColumnDefinitions>
                                         <Label Grid.Column="0" Content="Camera name:" Foreground="White"/>
                                         <Label x:Name="lblCamId" Grid.Column="1" Content="Camera ID: -" Foreground="Gray"/>
-                                        <Label x:Name="lblCamIdInfo" Grid.Column="2" Content="(learn more)" Foreground="Gray" Margin="-4.6,0,0,0" Cursor="Hand" PreviewMouseDown="lblCamIdInfo_PreviewMouseDown" MouseEnter="LblClick_MouseEnter" MouseLeave="LblClick_MouseLeave"/>
+                                        <Label x:Name="lblCamIdInfo" Grid.Column="2" Content="(learn more)" Foreground="#FF7E7E7E" Margin="-4.6,0,0,0" Cursor="Hand" PreviewMouseDown="lblCamIdInfo_PreviewMouseDown" MouseEnter="LblClick_MouseEnter" MouseLeave="LblClick_MouseLeave"/>
                                     </Grid>
-                                    <TextBox x:Name="txtCamName" Width="Auto" Height="26" Background="#FF2A2A2A" Foreground="White" BorderBrush="#FF606060" BorderThickness="1" Margin="4,0,4,0" TextAlignment="Center" TextChanged="txtCamName_TextChanged"/>
+                                    <TextBox x:Name="txtCamName" Width="Auto" Height="26" Background="#FF2A2A2A" Foreground="White" BorderBrush="#FF606060" BorderThickness="1" Margin="4,0,4,0" TextAlignment="Center" TextChanged="txtCamName_TextChanged" MaxLength="26"/>
                                 </StackPanel>
                             </Grid>
 
@@ -151,7 +167,7 @@
                                             <ColumnDefinition Width="Auto"/>
                                             <ColumnDefinition Width="Auto"/>
                                         </Grid.ColumnDefinitions>
-                                        <TextBox x:Name="txtCamIp" Grid.Column="0" Height="26" Background="#FF2A2A2A" Foreground="White" BorderBrush="#FF606060" BorderThickness="1" Margin="0,0,0,0" TextAlignment="Center" TextChanged="txtCamIp_TextChanged"/>
+                                        <TextBox x:Name="txtCamIp" Grid.Column="0" Height="26" Background="#FF2A2A2A" Foreground="White" BorderBrush="#FF606060" BorderThickness="1" Margin="0,0,0,0" TextAlignment="Center" TextChanged="txtCamIp_TextChanged" MaxLength="26"/>
                                         <Button Grid.Row="1" Grid.Column="1" x:Name="btnPingCamIp" Content="Ping" Margin="6,0,6,0" Style="{StaticResource CustomButtonStyle}" Click="btnPingCamIp_Click" ToolTip="Ping the camera (timeout: 3s)"/>
                                         <Button Grid.Row="1" Grid.Column="2" x:Name="btnOpenCamIp" Content="Open" Style="{StaticResource CustomButtonStyle}" Click="btnOpenCamIp_Click" ToolTip="Open the IP/hostname in the default browser"/>
                                     </Grid>
@@ -179,7 +195,7 @@
 
                                         <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Vertical">
                                             <Label Content="Username:" Foreground="White"/>
-                                            <TextBox x:Name="txtAuthUser" Width="Auto" Height="26" Background="#FF2A2A2A" Foreground="White" BorderBrush="#FF606060" BorderThickness="1" Margin="4,0,4,0" TextAlignment="Center" IsEnabled="False" TextChanged="txtAuthUser_TextChanged"/>
+                                            <TextBox x:Name="txtAuthUser" Width="Auto" Height="26" Background="#FF2A2A2A" Foreground="White" BorderBrush="#FF606060" BorderThickness="1" Margin="4,0,4,0" TextAlignment="Center" IsEnabled="False" TextChanged="txtAuthUser_TextChanged" MaxLength="26"/>
                                         </StackPanel>
 
                                         <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Vertical">
@@ -187,7 +203,7 @@
                                                 <Label Content="Password:" Foreground="White" HorizontalAlignment="Left"/>
                                                 <Label x:Name="lblShowAuthPass" Content="Show" Foreground="White" HorizontalAlignment="Right" Cursor="Hand" Margin="0,0,2,0" PreviewMouseDown="lblShowAuthPass_PreviewMouseDownUp" PreviewMouseUp="lblShowAuthPass_PreviewMouseDownUp"/>
                                             </Grid>
-                                            <PasswordBox x:Name="pwbAuthPass" Width="Auto" Height="26" Background="#FF2A2A2A" Foreground="White" BorderBrush="#FF606060" BorderThickness="1" Margin="4,0,4,0" HorizontalContentAlignment="Center" IsEnabled="False" PasswordChanged="pwbAuthPass_PasswordChanged"/>
+                                            <PasswordBox x:Name="pwbAuthPass" Width="Auto" Height="26" Background="#FF2A2A2A" Foreground="White" BorderBrush="#FF606060" BorderThickness="1" Margin="4,0,4,0" HorizontalContentAlignment="Center" IsEnabled="False" PasswordChanged="pwbAuthPass_PasswordChanged" MaxLength="26"/>
                                             <TextBox x:Name="txtAuthPass" Width="Auto" Height="26" Background="#FF2A2A2A" Foreground="White" BorderBrush="#FF606060" BorderThickness="1" Margin="4,0,4,0" Visibility="Collapsed" TextAlignment="Center" IsEnabled="False"/>
                                         </StackPanel>
                                     </Grid>
@@ -234,7 +250,7 @@
                                             <TextBlock Text="Auto save cameras modifications" Margin="0,-2,0,0" Foreground="White"/>
                                         </CheckBox>
 
-                                        <Label x:Name="lblAutoSaveInfo" Grid.Column="1" Content="(learn more)" Foreground="Gray" Cursor="Hand" PreviewMouseDown="lblAutoSaveInfo_PreviewMouseDown" MouseEnter="LblClick_MouseEnter" MouseLeave="LblClick_MouseLeave"/>
+                                        <Label x:Name="lblAutoSaveInfo" Grid.Column="1" Content="(learn more)" Foreground="#FF7E7E7E" Cursor="Hand" PreviewMouseDown="lblAutoSaveInfo_PreviewMouseDown" MouseEnter="LblClick_MouseEnter" MouseLeave="LblClick_MouseLeave"/>
                                     </Grid>
 
                                     <Grid Height="33">

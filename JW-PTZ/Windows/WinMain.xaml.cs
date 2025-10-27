@@ -144,7 +144,9 @@ namespace JWPTZ.Windows
                         BitmapImage bitmap = new BitmapImage();
                         bitmap.BeginInit();
                         bitmap.UriSource = new Uri(imgPath, UriKind.Absolute);
+                        //bitmap.CacheOption = BitmapCacheOption.OnLoad; // to be tested for bug 2
                         bitmap.EndInit();
+                        //bitmap.Freeze(); // to be tested for bug 2
                         presetButton.Background = new ImageBrush(bitmap);
                     }
                     else
