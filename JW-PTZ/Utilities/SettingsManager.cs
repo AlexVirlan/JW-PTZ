@@ -84,10 +84,13 @@ namespace JWPTZ.Utilities
 
     public class AppSettings
     {
-        public int CommandTimeout { get; set; } = 3000;
+        public int CommandTimeout { get; set; } = 2500;
         public bool SnapshotOnSetPreset { get; set; } = true;
         public bool ButtonsWaitForResponse { get; set; } = false;
         public bool AutoSaveCamsSettings { get; set; } = false;
+        public bool UseEffects { get; set; } = true;
+        public bool RememberLastUsedCamera { get; set; } = true;
+
         public double Opacity { get; set; } = 1;
     }
 

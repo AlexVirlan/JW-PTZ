@@ -179,8 +179,8 @@
                         <TextBlock Text="JW PTZ - AvA.Soft" Foreground="White" VerticalAlignment="Center" Margin="10,0,0,0" />
                     </StackPanel>
 
-                    <StackPanel x:Name="lblBarInfo" Orientation="Horizontal" HorizontalAlignment="Center" Grid.Column="1">
-                        <TextBlock Text=":)" Foreground="White" VerticalAlignment="Center"/>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Grid.Column="1">
+                        <TextBlock x:Name="lblBarInfo" Text="-" Foreground="White" VerticalAlignment="Center" FontSize="15" FontWeight="Bold" ToolTip="Current selected camera. If the UI logs are hidden, the color of the text indicates the response of the last sent command."/>
                     </StackPanel>
 
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Grid.Column="2">

@@ -154,7 +154,7 @@
                                         <Label x:Name="lblCamId" Grid.Column="1" Content="Camera ID: -" Foreground="Gray"/>
                                         <Label x:Name="lblCamIdInfo" Grid.Column="2" Content="(learn more)" Foreground="#FF7E7E7E" Margin="-4.6,0,0,0" Cursor="Hand" PreviewMouseDown="lblCamIdInfo_PreviewMouseDown" MouseEnter="LblClick_MouseEnter" MouseLeave="LblClick_MouseLeave"/>
                                     </Grid>
-                                    <TextBox x:Name="txtCamName" Width="Auto" Height="26" Background="#FF2A2A2A" Foreground="White" BorderBrush="#FF606060" BorderThickness="1" Margin="4,0,4,0" TextAlignment="Center" TextChanged="txtCamName_TextChanged" MaxLength="26"/>
+                                    <TextBox x:Name="txtCamName" Width="Auto" Height="26" Background="#FF2A2A2A" Foreground="White" BorderBrush="#FF606060" BorderThickness="1" Margin="4,0,4,0" TextAlignment="Center" TextChanged="txtCamName_TextChanged" MaxLength="46"/>
                                 </StackPanel>
                             </Grid>
 
@@ -167,7 +167,7 @@
                                             <ColumnDefinition Width="Auto"/>
                                             <ColumnDefinition Width="Auto"/>
                                         </Grid.ColumnDefinitions>
-                                        <TextBox x:Name="txtCamIp" Grid.Column="0" Height="26" Background="#FF2A2A2A" Foreground="White" BorderBrush="#FF606060" BorderThickness="1" Margin="0,0,0,0" TextAlignment="Center" TextChanged="txtCamIp_TextChanged" MaxLength="26"/>
+                                        <TextBox x:Name="txtCamIp" Grid.Column="0" Height="26" Background="#FF2A2A2A" Foreground="White" BorderBrush="#FF606060" BorderThickness="1" Margin="0,0,0,0" TextAlignment="Center" TextChanged="txtCamIp_TextChanged" MaxLength="33"/>
                                         <Button Grid.Row="1" Grid.Column="1" x:Name="btnPingCamIp" Content="Ping" Margin="6,0,6,0" Style="{StaticResource CustomButtonStyle}" Click="btnPingCamIp_Click" ToolTip="Ping the camera (timeout: 3s)"/>
                                         <Button Grid.Row="1" Grid.Column="2" x:Name="btnOpenCamIp" Content="Open" Style="{StaticResource CustomButtonStyle}" Click="btnOpenCamIp_Click" ToolTip="Open the IP/hostname in the default browser"/>
                                     </Grid>

@@ -215,6 +215,12 @@ namespace JWPTZ.Windows
                     }
                     break;
             }
+
+            if (response is not null)
+            {
+                SolidColorBrush brush = response.Successful ? Globals.GreenText : Globals.RedText;
+                UpdateTitleBarColor(brush);
+            }
         }
 
         private void rtbLogs_TextChanged(object sender, TextChangedEventArgs e)
@@ -404,6 +410,8 @@ namespace JWPTZ.Windows
                     itbOSD.IsChecked = false;
                     if (Settings.Cameras.Count == 0) { lblCamInfo.Content = "Go to settings to add cameras"; }
                     else { lblCamInfo.Content = "Please select a camera"; }
+                    UpdateCamInfoLabel();
+                    UpdateTitleBar();
                     return;
                 }
 
@@ -414,6 +422,7 @@ namespace JWPTZ.Windows
                 UpdateCamInfoLabel();
                 LoadPresetCacheImage();
                 SetPTZFOButtonsOpacity();
+                UpdateTitleBar();
             }
             catch (Exception ex) { ShowMessage(ex.Message, MessageBoxImage.Error); }
             finally { _internalChange = false; }
@@ -460,7 +469,7 @@ namespace JWPTZ.Windows
 
         private void UpdateSettingsFromUI()
         {
-            Settings.App.CommandTimeout = 2500;
+            //Settings.App.CommandTimeout = 2500;
 
         }
 
@@ -501,6 +510,7 @@ namespace JWPTZ.Windows
                 grdLogs.Visibility = Visibility.Visible;
                 this.Height += 190; // 690 + x
                 //this.Height = 880;
+                UpdateTitleBarColor();
             }
             else
             {
@@ -794,6 +804,28 @@ namespace JWPTZ.Windows
             //    int cameraIndex = camera is not null ? Settings.Cameras.IndexOf(camera) : -1;
             //    cmbCameras.SelectedIndex = cameraIndex > -1 ? cameraIndex : 0;
             //}
+        }
+
+        private void UpdateTitleBar(string? title = null)
+        {
+            if (_camera is not null)
+            {
+                if (title is null) { lblBarInfo.Text = $"{_camera.Id}. {_camera.Name}"; }
+                else { lblBarInfo.Text = title; }
+                this.Title = $"JW PTZ - {_camera.Id} - {_camera.Name}";
+            }
+            else
+            {
+                lblBarInfo.Text = string.Empty;
+                this.Title = $"JW PTZ - AvA.Soft";
+            }
+        }
+
+        private void UpdateTitleBarColor(SolidColorBrush? brush = null)
+        {
+            if (Settings.UILogs.Visible || brush is null) { lblBarInfo.Foreground = Brushes.White; }
+            else { lblBarInfo.Foreground = brush; }
+
         }
     }
 }
