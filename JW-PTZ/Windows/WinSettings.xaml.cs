@@ -91,7 +91,8 @@ namespace JWPTZ.Windows
             if (_loading) { return; }
             _loading = true;
             _selectedCamera = lstCameras.SelectedItem as PTZCamera;
-            lblCamId.Content = "Camera ID: " + (_selectedCamera is not null ? $"{_selectedCamera?.Id}" : "-");
+            //lblCamId.Content = "Camera ID: " + (_selectedCamera is not null ? $"{_selectedCamera?.Id}" : "-");
+            RefreshCameraIdLabel();
             txtCamName.Text = _selectedCamera?.Name ?? string.Empty;
             txtCamIp.Text = _selectedCamera?.IP ?? string.Empty;
             chkUseAuthentication.IsChecked = _selectedCamera?.UseAuth ?? false;
@@ -241,6 +242,7 @@ namespace JWPTZ.Windows
             _backupSettingsNotifier.Cameras.Move(index, index - 1);
             lstCameras.SelectedIndex = index - 1;
             ReindexCameras();
+            RefreshCameraIdLabel();
         }
 
         private void btnMoveCamDown_Click(object sender, RoutedEventArgs e)
@@ -271,6 +273,7 @@ namespace JWPTZ.Windows
             _backupSettingsNotifier.Cameras.Move(index, index + 1);
             lstCameras.SelectedIndex = index + 1;
             ReindexCameras();
+            RefreshCameraIdLabel();
         }
 
         private void btnDeleteCam_Click(object sender, RoutedEventArgs e)
@@ -643,6 +646,11 @@ namespace JWPTZ.Windows
             {
                 ShowMessage($"Error exporting cameras.{_NL}{ex.Message}", MessageBoxImage.Error);
             }
+        }
+
+        private void RefreshCameraIdLabel()
+        {
+            lblCamId.Content = "Camera ID: " + (_selectedCamera is not null ? $"{_selectedCamera?.Id}" : "-");
         }
     }
 }
