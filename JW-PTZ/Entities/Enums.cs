@@ -49,7 +49,7 @@ namespace JWPTZ.Entities
 
     public enum UILogType
     {
-        Info, Command
+        Info, Command, Warning, Error
     }
 
     public enum ImportType

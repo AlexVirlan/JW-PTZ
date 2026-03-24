@@ -12,6 +12,8 @@
     <PackageProjectUrl>https://github.com/AlexVirlan/JW-PTZ</PackageProjectUrl>
     <RepositoryUrl>https://github.com/AlexVirlan/JW-PTZ</RepositoryUrl>
     <RootNamespace>$(MSBuildProjectName.Replace(" ", "").Replace("-", ""))</RootNamespace>
+    <VersionPrefix>1.0.1</VersionPrefix>
+    <VersionSuffix>beta</VersionSuffix>
   </PropertyGroup>
 
   <ItemGroup>
@@ -110,6 +112,17 @@
     <Resource Include="Resources\Images\zoom-in.png" />
     <Resource Include="Resources\Images\zoom-out-white.png" />
     <Resource Include="Resources\Images\zoom-out.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute">
+      <_Parameter1>AppBuildDate</_Parameter1>
+      <_Parameter2>$([System.DateTime]::UtcNow.ToString("dd.MM.yyyy"))</_Parameter2>
+    </AssemblyAttribute>
+    <AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute">
+      <_Parameter1>AppBuildTime</_Parameter1>
+      <_Parameter2>$([System.DateTime]::UtcNow.ToString("HH:mm:ss"))</_Parameter2>
+    </AssemblyAttribute>
   </ItemGroup>
 
 </Project>

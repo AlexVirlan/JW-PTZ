@@ -34,6 +34,8 @@ namespace JWPTZ.Windows
         private bool _loading = false;
         private bool _internalChange = false;
         private int? _lastSelectedCameraId = null;
+        private string _NL = Environment.NewLine;
+        private string _appName = "JW PTZ - AvA.Soft";
         public PTZCamera? _camera = null;
         private KeyboardHook? _keyboardHook;
         private BlurEffect _blurEffect = new BlurEffect();
@@ -60,12 +62,14 @@ namespace JWPTZ.Windows
             MethodResponse fmrLoadSet = SettingsManager.Load();
             ApplySettingsToUI();
             UpdateCamInfoLabel();
-            LoadPresetCacheImage();
+            LoadCachedPresetImages();
 
             AnimateOpacity(from: 0, to: Settings.App.Opacity);
             AddUILog(UILogType.Info, "App started. Welcome! :)");
 
             //Settings.Cameras.CollectionChanged += CamerasOnCollectionChanged;
+
+            lblAppTitle.Text += $" - {Helpers.GetAppVersion()}";
 
             _loading = false;
         }
@@ -92,6 +96,7 @@ namespace JWPTZ.Windows
             chkIncludeParamsToUiLogs.IsChecked = Settings.UILogs.IncludeParams;
             chkShowFullEndpointToUiLogs.IsChecked = Settings.UILogs.ShowFullEndpoint;
             chkVerboseErrUiLogs.IsChecked = Settings.UILogs.VerboseErrors;
+            chkShowAppEx.IsChecked = Settings.UILogs.ShowAppExceptions;
 
             sldPanSpeed.Value = Settings.PTZF.PanSpeed;
             sldTiltSpeed.Value = Settings.PTZF.TiltSpeed;
@@ -100,6 +105,8 @@ namespace JWPTZ.Windows
 
             chkShowUILogs.IsChecked = Settings.UILogs.Visible;
             sldOpacity.Value = Settings.App.Opacity;
+
+            chkTakeSnapshots.IsChecked = Settings.App.SnapshotOnSetPreset;
         }
 
         private void OnCtrlPressed(object? sender, KeyboardHookEventArgs e)
@@ -127,7 +134,7 @@ namespace JWPTZ.Windows
             }
         }
 
-        private void LoadPresetCacheImage()
+        private void LoadCachedPresetImages()
         {
             //if (_camera is null) { return; }
             string dataCachePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data", "Cache");
@@ -141,13 +148,14 @@ namespace JWPTZ.Windows
                     imgPath = Path.Combine(dataCachePath, $"Cam{_camera?.Id}-Preset{i}.jpg");
                     if (_camera is not null && File.Exists(imgPath))
                     {
-                        BitmapImage bitmap = new BitmapImage();
-                        bitmap.BeginInit();
-                        bitmap.UriSource = new Uri(imgPath, UriKind.Absolute);
+                        //BitmapImage bitmap = new BitmapImage();
+                        //bitmap.BeginInit();
+                        //bitmap.UriSource = new Uri(imgPath, UriKind.Absolute);
                         //bitmap.CacheOption = BitmapCacheOption.OnLoad; // to be tested for bug 2
-                        bitmap.EndInit();
+                        //bitmap.EndInit();
                         //bitmap.Freeze(); // to be tested for bug 2
-                        presetButton.Background = new ImageBrush(bitmap);
+
+                        presetButton.Background = new ImageBrush(Helpers.GetImageFromFile(imgPath));
                     }
                     else
                     {
@@ -187,11 +195,11 @@ namespace JWPTZ.Windows
                     break;
 
                 case UILogType.Command:
-                    if (response.Successful) { rtbLogs.AppendFormattedText($"> ", brush: Helpers.GetBrushFromHex(Globals.GreenHex)); }
+                    if (response!.Successful) { rtbLogs.AppendFormattedText($"> ", brush: Helpers.GetBrushFromHex(Globals.GreenHex)); }
                     else { rtbLogs.AppendFormattedText($"> ", brush: Helpers.GetBrushFromHex(Globals.RedHex)); }
 
                     rtbLogs.AppendFormattedText($"Camera: ", brush: Helpers.GetBrushFromHex(Globals.Gray200Hex));
-                    rtbLogs.AppendFormattedText($"{command.Camera.Id}. {command.Camera.Name} ", bold: true);
+                    rtbLogs.AppendFormattedText($"{command!.Camera.Id}. {command.Camera.Name} ", bold: true);
                     string camPath = uiLS.ShowFullEndpoint ? response.Endpoint : command.Camera.IP;
                     rtbLogs.AppendFormattedText($"({camPath}). Command: ", brush: Helpers.GetBrushFromHex(Globals.Gray200Hex));
                     rtbLogs.AppendFormattedText($"{command.CommandType}", bold: true);
@@ -213,6 +221,11 @@ namespace JWPTZ.Windows
                         if (uiLS.VerboseErrors && !response.Message.INOE())
                         { rtbLogs.AppendFormattedText(response.Message, brush: Helpers.GetBrushFromHex(Globals.LightRedHex), appendNewLine: true); }
                     }
+                    break;
+
+                case UILogType.Error:
+                    rtbLogs.AppendFormattedText($"> Exception: ", brush: Helpers.GetBrushFromHex(Globals.RedHex));
+                    rtbLogs.AppendFormattedText($"{text}", appendNewLine: true);
                     break;
             }
 
@@ -236,6 +249,7 @@ namespace JWPTZ.Windows
             Settings.UILogs.IncludeParams = chkIncludeParamsToUiLogs.IsChecked();
             Settings.UILogs.ShowFullEndpoint = chkShowFullEndpointToUiLogs.IsChecked();
             Settings.UILogs.VerboseErrors = chkVerboseErrUiLogs.IsChecked();
+            Settings.UILogs.ShowAppExceptions = chkShowAppEx.IsChecked();
         }
 
         private void lblClearUiLogs_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -308,7 +322,7 @@ namespace JWPTZ.Windows
             }
             catch (Exception ex)
             {
-                ShowMessage(ex.Message, MessageBoxImage.Error);
+                LogException(ex, showMessage: true);
             }
             finally
             {
@@ -389,7 +403,7 @@ namespace JWPTZ.Windows
             }
             catch (Exception ex)
             {
-                ShowMessage(ex.Message, MessageBoxImage.Error);
+                LogException(ex, showMessage: true);
             }
             finally
             {
@@ -420,12 +434,18 @@ namespace JWPTZ.Windows
                 if (_camera is not null) { _camera.PropertyChanged += Camera_PropertyChanged; }
                 itbOSD.IsChecked = _camera?.OsdMode ?? false;
                 UpdateCamInfoLabel();
-                LoadPresetCacheImage();
+                LoadCachedPresetImages();
                 SetPTZFOButtonsOpacity();
                 UpdateTitleBar();
             }
-            catch (Exception ex) { ShowMessage(ex.Message, MessageBoxImage.Error); }
-            finally { _internalChange = false; }
+            catch (Exception ex)
+            {
+                LogException(ex, showMessage: true);
+            }
+            finally
+            {
+                _internalChange = false;
+            }
         }
 
         private void Camera_PropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -458,7 +478,7 @@ namespace JWPTZ.Windows
 
         private void ShowMessage(string text, MessageBoxImage mbi = MessageBoxImage.Information)
         {
-            MessageBox.Show(this, text, "JW PTZ - AvA.Soft", MessageBoxButton.OK, mbi);
+            MessageBox.Show(this, text, _appName, MessageBoxButton.OK, mbi);
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -542,6 +562,13 @@ namespace JWPTZ.Windows
                 {
                     if (isCtrlPressed)
                     {
+                        if (_camera.LockPresets)
+                        {
+                            ShowMessage("The presets for this camera are locked. " +
+                                "You can change this for each camera individually, from this app's settings.");
+                            return;
+                        }
+
                         PTZCommand cmd = PTZCommand.SetPresetInit(_camera, numOtherPreset.Value);
                         APIBaseResponse presRes = await APIs.SendCommand(cmd);
                         AddUILog(UILogType.Command, null, cmd, presRes);
@@ -556,7 +583,7 @@ namespace JWPTZ.Windows
             }
             catch (Exception ex)
             {
-                ShowMessage(ex.Message, MessageBoxImage.Error);
+                LogException(ex, showMessage: true);
             }
         }
 
@@ -572,6 +599,7 @@ namespace JWPTZ.Windows
             sldTiltSpeed.Value = 8;
             sldZoomSpeed.Value = 3;
             sldFocusSpeed.Value = 3;
+            AddUILog(UILogType.Info, "PTZF speeds reset to default values. Pan: 8, Tilt: 8, Zoom: 3, Focus: 3");
             CloseMenuPopup();
         }
 
@@ -588,7 +616,7 @@ namespace JWPTZ.Windows
             if (_camera.OsdMode)
             { PTZFOControl_PreviewMouseDownUp(sender, e); }
             else
-            { AddUILog(UILogType.Info, "The current camera is not in OSD mode. Please enable this mode before using the OSD buttons."); }
+            { AddUILog(UILogType.Info, "The current camera is not in OSD mode. Please enable this mode before using the OSD 'enter' or 'back' buttons."); }
         }
 
         private void itbOSD_CheckedChanged(object sender, RoutedEventArgs e)
@@ -693,7 +721,7 @@ namespace JWPTZ.Windows
             }
             catch (Exception ex)
             {
-                ShowMessage(ex.Message, MessageBoxImage.Error);
+                LogException(ex, showMessage: true);
                 return null;
             }
             finally
@@ -817,7 +845,7 @@ namespace JWPTZ.Windows
             else
             {
                 lblBarInfo.Text = string.Empty;
-                this.Title = $"JW PTZ - AvA.Soft";
+                this.Title = _appName;
             }
         }
 
@@ -826,6 +854,79 @@ namespace JWPTZ.Windows
             if (Settings.UILogs.Visible || brush is null) { lblBarInfo.Foreground = Brushes.White; }
             else { lblBarInfo.Foreground = brush; }
 
+        }
+
+        private void LogException(Exception ex, bool showMessage = false)
+        {
+            Helpers.WriteLog(exception: ex);
+            if (Settings.UILogs.ShowAppExceptions) { AddUILog(UILogType.Error, ex.Message); }
+            if (showMessage) { ShowMessage(ex.Message, MessageBoxImage.Error); }
+        }
+
+        private void lblClearAllSnapshots_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if (_camera is null) { return; }
+
+            MessageBoxResult result = AskUser("Are you sure you want to clear all snapshots for the current camera?" +
+                _NL + "This action cannot be undone.");
+            if (result == MessageBoxResult.Yes)
+            {
+                Helpers.DeletePresetCacheImage(_camera.Id);
+
+                for (int i = 1; i <= 15; i++)
+                {
+                    Button? presetButton = this.FindName($"btnPreset{i}") as Button;
+                    if (presetButton is not null)
+                    {
+                        presetButton.Background = Helpers.GetBrushFromHex(Globals.Gray17Hex);
+                    }
+                }
+            }
+        }
+
+        private MessageBoxResult AskUser(string text)
+        {
+            return MessageBox.Show(this, text, _appName, MessageBoxButton.YesNo, MessageBoxImage.Question);
+        }
+
+        private void lblBarInfo_PreviewMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            bool isCtrlPressed = (Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control;
+            if (e.ChangedButton == MouseButton.Left)
+            {
+                if (isCtrlPressed)
+                {
+
+                }
+                else
+                {
+
+                }
+            }
+            else if (e.ChangedButton == MouseButton.Right)
+            {
+                if (isCtrlPressed)
+                {
+
+                }
+                else
+                {
+
+                }
+            }
+            else if (e.ChangedButton == MouseButton.Middle)
+            {
+                if (isCtrlPressed)
+                {
+                    AddUILog(UILogType.Info, $"App version: {Helpers.GetAppVersion()}");
+                    AddUILog(UILogType.Info, $"App build date: {Helpers.GetAppBuildDate(includeTime: true)}");
+                }
+                else
+                {
+                    AddUILog(UILogType.Info, $"Total commands sent: {Settings.Stats.TotalCommandsSent} " +
+                        $"(successful: {Settings.Stats.SuccessfulCommands}, failed: {Settings.Stats.FailedCommands}).");
+                }
+            }
         }
     }
 }

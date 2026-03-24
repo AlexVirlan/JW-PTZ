@@ -3,10 +3,12 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Security.Policy;
 using System.Text;
@@ -32,7 +34,7 @@ namespace JWPTZ.Utilities
 
             string logFolderPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Logs", $"{logType}");
             Directory.CreateDirectory(logFolderPath);
-            string logFilePath = Path.Combine(logFolderPath, $"{DateTime.Now:dd.MM.yyyy}-JWptz-{logType.ToLowerString()}-logs.json");
+            string logFilePath = Path.Combine(logFolderPath, $"{DateTime.Now:dd.MM.yyyy}-JW-PTZ-{logType.ToLowerString()}-logs.json");
 
             LogData log = new LogData()
             {
@@ -173,6 +175,92 @@ namespace JWPTZ.Utilities
         public static SolidColorBrush GetBrush(byte red, byte green, byte blue)
         {
             return new SolidColorBrush(Color.FromRgb(red, green, blue));
+        }
+
+        public static BitmapImage? GetImageFromFile(string filePath)
+        {
+            if (!File.Exists(filePath)) { return null; }
+
+            BitmapImage bitmap = new();
+            using (FileStream stream = new(filePath, FileMode.Open, FileAccess.Read))
+            {
+                bitmap.BeginInit();
+                bitmap.StreamSource = stream;
+                bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                bitmap.EndInit();
+            }
+            return bitmap;
+        }
+
+        public static string GetAppVersion(bool includeSuffix = true)
+        {
+            try
+            {
+                Version? version = Assembly
+                    .GetExecutingAssembly()
+                    .GetName()
+                    .Version;
+                if (version is null) { return "Unknown"; }
+
+                if (!includeSuffix) { return $"{version.Major}.{version.Minor}.{version.Build}"; }
+
+                string? suffix = GetAppVersionSuffix();
+                if (string.IsNullOrWhiteSpace(suffix)) { return $"{version.Major}.{version.Minor}.{version.Build}"; }
+
+                return $"{version.Major}.{version.Minor}.{version.Build}-{suffix}";
+            }
+            catch (Exception)
+            {
+                return "Unknown";
+            }
+        }
+
+        public static string? GetAppVersionSuffix()
+        {
+            try
+            {
+                string? infoVersion = Assembly
+                    .GetExecutingAssembly()
+                    .GetCustomAttribute<AssemblyInformationalVersionAttribute>()?
+                    .InformationalVersion;
+
+                if (string.IsNullOrWhiteSpace(infoVersion)) { return null; }
+
+                string versionWithSuffix = infoVersion.Split('+')[0];
+                int dashIndex = versionWithSuffix.IndexOf('-');
+
+                if (dashIndex < 0 || dashIndex == versionWithSuffix.Length - 1) { return null; }
+
+                return versionWithSuffix[(dashIndex + 1)..];
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
+        public static string GetAppBuildDate(bool includeTime = false)
+        {
+            try
+            {
+                IEnumerable<AssemblyMetadataAttribute> attributes = Assembly
+                    .GetExecutingAssembly()
+                    .GetCustomAttributes<AssemblyMetadataAttribute>();
+
+                string? buildDate = attributes.FirstOrDefault(a => a.Key == "AppBuildDate")?.Value;
+                if (buildDate is null) { return "Unknown"; }
+
+                if (!includeTime) { return buildDate; }
+
+                string? buildTime = attributes.FirstOrDefault(a => a.Key == "AppBuildTime")?.Value;
+                if (buildTime is null) { return buildDate; }
+
+                return $"{buildDate} ({buildTime})";
+            }
+            catch (Exception)
+            {
+                return "Unknown";
+            }
         }
     }
 }

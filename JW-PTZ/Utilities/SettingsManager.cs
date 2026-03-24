@@ -54,6 +54,7 @@ namespace JWPTZ.Utilities
         public static PTZFSpeeds PTZF { get; set; } = new();
         public static ImageSettings Image { get; set; } = new();
         public static UILogsSettings UILogs { get; set; } = new();
+        public static Statistics Stats { get; set; } = new();
         #endregion
 
         #region Methods
@@ -102,6 +103,14 @@ namespace JWPTZ.Utilities
         public bool IncludeParams { get; set; } = true;
         public bool VerboseErrors { get; set; } = false;
         public bool ShowFullEndpoint { get; set; } = false;
+        public bool ShowAppExceptions { get; set; } = false;
+    }
+
+    public class Statistics
+    {
+        public uint TotalCommandsSent { get; set; } = 0;
+        public uint SuccessfulCommands { get; set; } = 0;
+        public uint FailedCommands { get; set; } = 0;
     }
 
     [Serializable]
@@ -122,6 +131,9 @@ namespace JWPTZ.Utilities
 
         [JsonProperty("UILogsSettings")]
         public UILogsSettings uiLogsSettings { get { return UILogs; } set { UILogs = value; } }
+
+        [JsonProperty("Statistics")]
+        public Statistics statistics { get { return Stats; } set { Stats = value; } }
         #endregion
 
         #region Methods

@@ -21,6 +21,8 @@ namespace JWPTZ.Services
             HttpStatusCode? statusCode = null;
             try
             {
+                Settings.Stats.TotalCommandsSent++;
+
                 #region Validations
                 if (ptzCommand.CommandType == CommandType.None)
                 { throw new Exception("The 'CommandType' parameter is set to 'None'."); }
@@ -39,6 +41,8 @@ namespace JWPTZ.Services
                 statusCode = response.StatusCode;
 
                 response.EnsureSuccessStatusCode();
+                Settings.Stats.SuccessfulCommands++;
+
                 return new APIBaseResponse(successful: true, message: responseBody)
                 {
                     Endpoint = endpoint,
@@ -47,6 +51,7 @@ namespace JWPTZ.Services
             }
             catch (Exception ex)
             {
+                Settings.Stats.FailedCommands++;
                 Helpers.WriteLog(exception: ex);
                 return new APIBaseResponse(ex)
                 {
